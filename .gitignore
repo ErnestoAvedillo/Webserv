@@ -4,7 +4,8 @@ tester
 ubuntu_cgi_tester
 ubuntu_tester
 Websrv
-
+*.log
+*.json
 # Prerequisites
 *.d
 
