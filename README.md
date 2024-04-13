@@ -1,10 +1,10 @@
 # Webserv
 ### To-dos
 ##### File configuration
-- [ ] Define File configuration. Explore Nginx file configurations and define the properties that our file config would have.
-- [ ] File Configuration Parser (Synatx errors, comments etc).
+- [ ] Define file configuration. Explore Nginx file configurations and define the properties that our file config would have.
+- [ ] File configuration parser (syntax errors, comments etc).
 ##### WebServer Communications
-- [ ] Get ready to listen to specified ip:port(s), in a own process.
+- [ ] Get ready to listen to specified ip:port(s), in an own process.
 - [ ] Process the requests and send back the information.
 
 ### Resources
