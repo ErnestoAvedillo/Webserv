@@ -6,6 +6,7 @@ ubuntu_tester
 Websrv
 *.log
 *.json
+Unix Network *.pdf
 # Prerequisites
 *.d
 
