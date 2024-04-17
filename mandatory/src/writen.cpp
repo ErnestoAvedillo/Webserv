@@ -1,29 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   str_echo.cpp                                       :+:      :+:    :+:   */
+/*   writen.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/16 18:38:35 by eavedill          #+#    #+#             */
-/*   Updated: 2024/04/17 22:27:17 by eavedill         ###   ########.fr       */
+/*   Created: 2024/04/17 23:26:35 by eavedill          #+#    #+#             */
+/*   Updated: 2024/04/18 00:05:35 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/main.hpp"
 
-void str_echo (int sockfd)
+ssize_t writen(int fd, const void *vptr, size_t n)
 {
-	ssize_t	n;
-	char	buf[MAXLINE];
+	size_t nleft;
+	ssize_t nwriten;
+	const char *ptr;
 
-	while ((n = Readn(sockfd, buf, MAXLINE)) > 0)
+	ptr = (char *) vptr;
+	nleft = n;
+	while (nleft > 0)
 	{
-		Writen(sockfd, buf, n);
-		if (!(n < 0 && errno == EINTR))
-			break;
+		if ((nwriten = write(fd, ptr, nleft)) <= 0)
+		{
+			if (nwriten < 0 && errno == EINTR)
+				nwriten = 0;
+			else
+				return -1;
+		}
+		nleft -= nwriten;
+		ptr += nwriten;
 	}
-	if (n < 0)
-		std::cerr << "str_Echo:read error\n";
-	//err_sys("str_Echo:read error");
+	return (n);
 }

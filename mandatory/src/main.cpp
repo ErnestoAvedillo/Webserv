@@ -6,13 +6,13 @@
 /*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/07 11:21:58 by eavedill          #+#    #+#             */
-/*   Updated: 2024/04/16 22:48:03 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/04/17 22:30:43 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/main.hpp"
 
-int main (int av, char **ac)
+int main ()
 {
 
 	std::cout << "Hola, empezamos el proyecto" << std::endl;
@@ -35,7 +35,7 @@ int main (int av, char **ac)
 		{
 			Close(listenfd);
 			str_echo(confd);
-			exit(0);
+			return (0);
 		}
 		Close(confd);
 	}

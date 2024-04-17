@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/07 11:23:40 by eavedill          #+#    #+#             */
-/*   Updated: 2024/04/16 22:50:39 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/04/18 00:03:41 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,3 +30,7 @@ ssize_t Writen(int filedes, void *buff, size_t nbytes);
 ssize_t Readn(int filedes, void *buff, size_t nbytes);
 ssize_t Readline(int filedes, void *buff, size_t maxlen);
 void str_echo(int sockfd);
+
+ssize_t readn(int fd, void *vptr, size_t n);
+ssize_t writen(int fd, const void *vptr, size_t n);
+ssize_t readline(int fd, void *vptr, size_t maxlen);

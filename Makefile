@@ -6,7 +6,7 @@
 #    By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/01 15:03:29 by eavedill          #+#    #+#              #
-#    Updated: 2024/04/07 12:07:04 by eavedill         ###   ########.fr        #
+#    Updated: 2024/04/17 22:48:50 by eavedill         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,8 +30,8 @@ SRCS := $(wildcard $(DIRSRC)*.cpp)
 
 INCS := $(wildcard $(DIRINC)*.hpp)  
 
-OBJS = $(SRCS:$(DIRSRC)%.cpp=$(OBJDST_DIR)/%.o)
-DSTS := $(SRCS:$(DIRSRC)%.cpp=$(OBJDST_DIR)/%.d)
+OBJS = $(SRCS:$(DIRSRC)%.cpp=$(OBJDST_DIR)%.o)
+DSTS := $(SRCS:$(DIRSRC)%.cpp=$(OBJDST_DIR)%.d)
 
 RM := rm -rfd
 

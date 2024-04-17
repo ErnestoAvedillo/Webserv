@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 22:33:15 by eavedill          #+#    #+#             */
-/*   Updated: 2024/04/16 22:50:35 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/04/17 23:42:38 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,21 @@
 #include <sys/time.h>
 #include <sys/socket.h>
 #include <poll.h>
+#include <errno.h>
+#include <time.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <fcntl.h>
+#include <netdb.h>
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <sys/uio.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <sys/un.h>
 
 #define LISTENQ 1024
 #define MAXLINE 4096
