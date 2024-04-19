@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/07 11:23:40 by eavedill          #+#    #+#             */
-/*   Updated: 2024/04/18 00:03:41 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/04/19 23:56:49 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,4 +33,4 @@ void str_echo(int sockfd);
 
 ssize_t readn(int fd, void *vptr, size_t n);
 ssize_t writen(int fd, const void *vptr, size_t n);
-ssize_t readline(int fd, void *vptr, size_t maxlen);
+ssize_t readline(int fd, void *vptr, ssize_t maxlen);

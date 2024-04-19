@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 18:38:35 by eavedill          #+#    #+#             */
-/*   Updated: 2024/04/17 22:27:17 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/04/19 23:54:17 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ void str_echo (int sockfd)
 
 	while ((n = Readn(sockfd, buf, MAXLINE)) > 0)
 	{
+		std::cout << "texto:" << buf << std::endl;
 		Writen(sockfd, buf, n);
 		if (!(n < 0 && errno == EINTR))
 			break;

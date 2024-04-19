@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/07 11:21:58 by eavedill          #+#    #+#             */
-/*   Updated: 2024/04/17 22:30:43 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/04/19 23:59:27 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ int main ()
 	socklen_t clilen;
 	struct sockaddr_in cliaddr, servaddr;
 
+
 	listenfd = Socket(AF_INET, SOCK_STREAM, 0);
 	bzero(&servaddr, sizeof(servaddr));
 	servaddr.sin_family = AF_INET;
@@ -28,12 +29,15 @@ int main ()
 	servaddr.sin_port = htons(SERV_PORT);
 	Bind(listenfd, (SA *)&servaddr, sizeof(servaddr));
 	Listen(listenfd, LISTENQ);
+	while (true)
 	{
 		clilen = sizeof(cliaddr);
 		confd = Accept(listenfd, (SA *)&cliaddr, &clilen);
 		if ((child_pid = Fork()) == 0)
 		{
+
 			Close(listenfd);
+			std::cout << "El valor de fd es: " << confd << std::endl;
 			str_echo(confd);
 			return (0);
 		}
