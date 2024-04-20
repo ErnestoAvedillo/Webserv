@@ -7,6 +7,8 @@ Websrv
 *.log
 *.json
 Unix Network *.pdf
+www/
+.DS_Store
 # Prerequisites
 *.d
 

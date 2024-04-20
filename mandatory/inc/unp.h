@@ -42,3 +42,5 @@
 #define SERV_PORT 9877
 
 #define SA struct sockaddr
+
+#define INDEX "./www/index.html"

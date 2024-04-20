@@ -17,6 +17,9 @@
 #include <string.h>
 #include <netinet/in.h>
 #include <unistd.h>
+#include <fstream>
+#include <sstream>
+
 
 
 int Socket(int family, int type, int protocol);

@@ -79,7 +79,7 @@ ssize_t Readn(int filedes, void *buff, size_t nbytes)
 {
 	ssize_t n;
 
-	if ((n = readn(filedes, buff, nbytes)) < 0)
+	if ((n = read(filedes, buff, nbytes)) < 0)
 		std::cerr << "readn error\n";
 	return n;
 }
@@ -88,7 +88,7 @@ ssize_t Writen(int filedes, void *buff, size_t nbytes)
 {
 	ssize_t n;
 	
-	if ((n = writen(filedes, buff, nbytes)) < 0)
+	if ((n = write(filedes, buff, nbytes)) < 0)
 		std::cerr << "writen error\n";
 	return n;
 }
