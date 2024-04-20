@@ -17,7 +17,7 @@ int main()
 
 	std::cout << "Hola, empezamos el proyecto" << std::endl;
 	int listenfd, confd;
-	pid_t child_pid;
+	// pid_t child_pid;
 	socklen_t clilen;
 	struct sockaddr_in cliaddr, servaddr;
 	int enable = 1;
@@ -39,11 +39,11 @@ int main()
 	{
 		clilen = sizeof(cliaddr);
 		confd = accept(listenfd, (SA *)&cliaddr, &clilen);
-		if ((child_pid = Fork()) == 0)
-		{
+		// if ((child_pid = Fork()) == 0)
+		// {
 			str_echo(confd);
-			exit (0);
-		}
+		// 	exit (0);
+		// }
 		Close(confd);
 	}
 }

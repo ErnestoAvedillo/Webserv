@@ -20,20 +20,43 @@ void str_echo (int sockfd)
 	std::string	line;
 	std::string	line_2;
 	std::string	complete = "";
-	std::stringstream ss;
+	// std::stringstream ss;
 
-	fileopen.open(INDEX, std::ios::in);
-	while (std::getline(fileopen,line,'\n'))
-		complete += line;
-	std::cout << complete << std::endl;
 	n = Readn(sockfd, buf, MAXLINE);
-	std::string header = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: ";
-	ss << complete.length();
-	header += ss.str() + "\n\n" + complete;
-	line_2 = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: 12\n\nHe\n";
+	std::cout << "Nueva impresion buffer" << std::endl;
+	std::cout << buf << std::endl;
+	std::stringstream ss(buf);
+	// std::vector<std::string> split_string;
+	
+	std::getline(ss,line, ' ');
+	std::getline(ss,line, ' ');
+
+	// line = "";
+	if (line == "/")
+		line = "./www/index.html";
+	else
+		line = "./www" + line; 
+	std::cout << "----------------______________-----------------" << std::endl;
+	std::cout << "----------------" << line << "-----------------" << std::endl;
+	
+	fileopen.open(line, std::ios::in);
+	line = "." + line;
+	std::string header;
+	if (line.find(".png") != std::string::npos)
+		header = "HTTP/1.1 200 OK\nContent-Type: image/png\nContent-Length: ";
+	else
+		header = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: ";
+	
+	while (std::getline(fileopen,line_2,'\n'))
+		complete += line_2;
+	std::stringstream sa;
+	sa << complete.length();
+	header += sa.str() + "\n\n" + complete;
+	// std::cout << "----------------" << header << "-----------------" << std::endl;
+	//line_2 = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: 12";
 	send(sockfd,header.c_str(),strlen(header.c_str()),1);
 	
-	send(sockfd,"llo World\n",11,1);
+	//send(sockfd,"llo World\n",11,1);
 	if (n < 0)
 		std::cerr << "str_Echo:read error\n";
 }
