@@ -6,7 +6,7 @@
 #    By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/01 15:03:29 by eavedill          #+#    #+#              #
-#    Updated: 2024/04/17 22:48:50 by eavedill         ###   ########.fr        #
+#    Updated: 2024/04/21 15:38:14 by jcheel-n         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,7 +24,7 @@ DIRSRC := ./mandatory/src/
 
 DIRINC := ./mandatory/inc/
 
-OBJDST_DIR := ./mandatory/objdst_dir/
+OBJDST_DIR :=	./mandatory/objdst_dir/
 
 SRCS := $(wildcard $(DIRSRC)*.cpp) 
 
