@@ -22,7 +22,7 @@
 #include <vector>
 #include <map>
 #include "Request.hpp"
-
+ #include <sys/stat.h>
 
 
 int Socket(int family, int type, int protocol);

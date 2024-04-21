@@ -37,7 +37,7 @@ RM := rm -rfd
 
 CC:= c++
 
-FLAGS := -Wall -Werror -Wextra  -pedantic -g -std=c++98
+FLAGS := -Wall -Werror -Wextra -pedantic -g -std=c++98 -fsanitize=address
 
 all: $(NAME) Makefile
 	

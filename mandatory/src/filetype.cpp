@@ -2067,4 +2067,5 @@ std::map<std::string, std::string> create_filetypes()
 	filetypes["zip"] = "application/zip";
 	filetypes["zlib"] = "application/zlib";
 	filetypes["zstd"] = "application/zstd";
+	return filetypes;
 }

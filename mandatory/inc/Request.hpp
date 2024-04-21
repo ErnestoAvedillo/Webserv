@@ -16,7 +16,7 @@ class Request{
 		Request();
 		/* Load Constructor */
 		/* @note only process the first line of the header*/
-		Request(std::string &requestLine);
+		//Request(std::string &requestLine);
 
 		/* Copy Constructor */
 		Request(const Request &copy);
@@ -27,7 +27,7 @@ class Request{
 		~Request();
 
 		// std::string	read
-		void loadRequestLine(const std::string &requestLine);
+		void loadRequestLine(const std::string requestHeader);
 		void loadLine(const std::string &requestLine); 
 		void loadCompleteRequest(const std::string &requestHeader);
 

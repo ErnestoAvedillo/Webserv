@@ -7,11 +7,12 @@ Request::Request()
 }
 
 /* Load Constructor */
-Request::Request(std::string &requestHeader)
-{
-	std::cout << "Load Constructor called" << std::endl;	
-	this->loadRequestLine(requestHeader);
-}
+// Request::Request(std::string &requestHeader)
+// {
+// 	std::cout << "Load Constructor called" << std::endl;	
+// 	//this->loadRequestLine(requestHeader);
+// 	(void)requestHeader;
+// }
 
 /* Copy Constructor */
 Request::Request(const Request &copy)
@@ -67,49 +68,36 @@ void Request::loadLine(const std::string &requestLine)
 	std::string	key;
 	std::string value;
 
-	for (int i = 0; i < 2; i++)
-	{
-		std::getline(ss, token, ' ');
-		switch (i)
-		{
-			case 0:
-				key = token;
-				break;
-			case 1:
-				value = token;
-				break;
-		}
-	}
+	// for (int i = 0; i < 2; i++)
+	// {
+	// 	std::getline(ss, token, ':');
+	size_t pos1 = requestLine.find(":",0);
+	//size_t pos2 = requestLine.find(_delimiter,pos1 + 1) ;
+	//_list_data.insert(std::pair<std::string, std::string>(requestLine.substr(0, pos1), requestLine.substr(pos1 + 1,)));
+	key = requestLine.substr(0, pos1);
+	value =  requestLine.substr(pos1 + 1, requestLine.length() - pos1 - 1);
 	this->Header[key] = value;
 }
 
-static int countChar(const std::string& str, char c)
-{
-    int count = 0;
-    for (size_t i = 0; i < str.length(); i++) {
-        if (str[i] == c) {
-            count++;
-        }
-    }
-    return count;
-}
 
 void Request::loadCompleteRequest(const std::string &requestHeader)
 {
 	std::string token;
 	std::stringstream ss(requestHeader);
+	
+	// if (countChar(requestHeader, ':') > 0)
+	// {
+	// 	std::cout << requestHeader << std::endl;
+	//std::getline(ss, token, '\n');
+	std::getline(ss, token, '\n');
+	this->loadRequestLine(token);
+	while (std::getline(ss, token, '\n'))
+		this->loadLine(token);
 
-	if (countChar(requestHeader, ' ') != 2)
-	{
-		while (std::getline(ss, token, '\n'))
-			this->loadLine(token);
-	}
-	else 
-		this->loadRequestLine(requestHeader);
 }
 
 /* @brief to load the first line of an http header or Request Line Attributes*/
-void Request::loadRequestLine(const std::string &requestHeader)
+void Request::loadRequestLine(const std::string requestHeader)
 {
 	std::string token;
 	std::stringstream ss(requestHeader);
@@ -126,8 +114,8 @@ void Request::loadRequestLine(const std::string &requestHeader)
 				this->Path = token;
 				break ;
 			case 2:
-				if (token.back() == '\n')
-					this->Protocol = token;
+				this->Protocol = token;
+				if (this->Protocol.back() == '\n')
 					this->Protocol.pop_back();
 				break ;
 		}	

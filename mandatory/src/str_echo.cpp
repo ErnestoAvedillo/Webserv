@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #include "../inc/main.hpp"
-
+#include <unistd.h>
 void str_echo (int sockfd)
 {
 	ssize_t	n;
@@ -26,47 +26,41 @@ void str_echo (int sockfd)
 	std::cout << "Nueva impresion buffer" << std::endl;
 	Request Instance;
 	Instance.loadCompleteRequest(buf);
-	std::map<std::string, std::string> Header;
 
-	Header = Instance.getHeader();
-	std::cout << "#######################################################" << std::endl;
-	for (std::map<std::string, std::string>::iterator it = Header.begin(); it != Header.end(); ++it)
-	{
-		std::cout << it->first << " " << it->second << std::endl;
-	}
-	std::cout << "#######################################################" << std::endl;
-	// std::cout << buf << std::endl;
-	std::stringstream ss(buf);
-	// std::vector<std::string> split_string;
-	
-	std::getline(ss,line, ' ');
-	std::getline(ss,line, ' ');
-
-	// line = "";
+	line = Instance.getPath();
 	if (line == "/")
 		line = "./www/index.html";
 	else
 		line = "./www" + line; 
-	std::cout << "----------------______________-----------------" << std::endl;
-	std::cout << "----------------" << line << "-----------------" << std::endl;
-	
+	struct stat *fileinfo = NULL;
+
+	stat(line.c_str(), fileinfo);
 	fileopen.open(line, std::ios::in);
-	line = "." + line;
+
 	std::string header;
-	if (line.find(".png") != std::string::npos)
-		header = "HTTP/1.1 200 OK\nContent-Type: image/png\nContent-Length: ";
-	else
-		header = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: ";
+	std::map<std::string, std::string> mimeTypes = create_filetypes();
+	size_t j = line.find_last_of(".");
+	//line.substr(n, line.length() - n);
 	
+	std::cout << "Mime " << mimeTypes[line.substr(j + 1, line.length() - j - 1)] << "<<>>"<< line.substr(j + 1, line.length() - j - 1) << std::endl;
+	header = "HTTP/1.1 200 OK\nContent-Type: " + mimeTypes[line.substr(j + 1, line.length() - j - 1)];// + "\nContent-Length: ";
 	while (std::getline(fileopen,line_2,'\n'))
 		complete += line_2;
+	if (mimeTypes[line.substr(j + 1, line.length() - j - 1)] == "text/html")
+		header = header + "\nContent-Length: " + itoa(complete.length());
+	
+
 	std::stringstream sa;
-	sa << complete.length();
-	header += sa.str() + "\n\n" + complete;
+	// sa << fileinfo->st_size;
+	header += sa.str() + "\n\n";
+	//  complete;
 	// std::cout << "----------------" << header << "-----------------" << std::endl;
 	//line_2 = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: 12";
 	send(sockfd,header.c_str(),strlen(header.c_str()),1);
-	
+	if (mimeTypes[line.substr(j, line.length() - j)] == "image/png")
+		send(sockfd,complete.c_str(), (long)fileinfo->st_size,1);
+	else
+		send(sockfd,complete.c_str(), complete.length(),1);
 	//send(sockfd,"llo World\n",11,1);
 	if (n < 0)
 		std::cerr << "str_Echo:read error\n";
