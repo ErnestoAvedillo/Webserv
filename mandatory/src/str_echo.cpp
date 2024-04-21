@@ -42,25 +42,34 @@ void str_echo (int sockfd)
 	size_t j = line.find_last_of(".");
 	//line.substr(n, line.length() - n);
 	
-	std::cout << "Mime " << mimeTypes[line.substr(j + 1, line.length() - j - 1)] << "<<>>"<< line.substr(j + 1, line.length() - j - 1) << std::endl;
-	header = "HTTP/1.1 200 OK\nContent-Type: " + mimeTypes[line.substr(j + 1, line.length() - j - 1)];// + "\nContent-Length: ";
+	//std::cout << "Mime " << mimeTypes[line.substr(j + 1, line.length() - j - 1)] << "<<>>"<< line.substr(j + 1, line.length() - j - 1) << std::endl;
+	std::cout << mimeTypes[line.substr(j + 1, line.length() - j - 1)] << std::endl;
+	header = "HTTP/1.1 200 OK\nContent-Type: " + mimeTypes[line.substr(j + 1, line.length() - j - 1)] + "\n";// + "\nContent-Length: ";
 	while (std::getline(fileopen,line_2,'\n'))
 		complete += line_2;
-	if (mimeTypes[line.substr(j + 1, line.length() - j - 1)] == "text/html")
-		header = header + "\nContent-Length: " + itoa(complete.length());
+	if (mimeTypes[line.substr(j, line.length() - j)] == "image/png")
+		;//header = header + "Content-Length: " + std::to_string(fileinfo->st_size) + "\n\n";
+	else 
+		header = header + "Content-Length: " + std::to_string(complete.length()) + "\n\n" + complete;
 	
+	size_t y = header.length();
 
-	std::stringstream sa;
+	header += complete;
+	 //+ complete;
+
+	//std::stringstream sa;
 	// sa << fileinfo->st_size;
-	header += sa.str() + "\n\n";
+	//header += sa.str() + "\n\n";
 	//  complete;
 	// std::cout << "----------------" << header << "-----------------" << std::endl;
 	//line_2 = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: 12";
-	send(sockfd,header.c_str(),strlen(header.c_str()),1);
+	
 	if (mimeTypes[line.substr(j, line.length() - j)] == "image/png")
-		send(sockfd,complete.c_str(), (long)fileinfo->st_size,1);
+		send(sockfd,header.c_str(), y + (long)fileinfo->st_size,0);
 	else
-		send(sockfd,complete.c_str(), complete.length(),1);
+		send(sockfd,header.c_str(),strlen(header.c_str()),0);
+	// else
+	// 	send(sockfd,header.c_str(), header.length(),1);
 	//send(sockfd,"llo World\n",11,1);
 	if (n < 0)
 		std::cerr << "str_Echo:read error\n";
