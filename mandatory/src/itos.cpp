@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/21 13:55:21 by eavedill          #+#    #+#             */
-/*   Updated: 2024/04/21 14:06:13 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/04/21 14:10:18 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,5 +21,5 @@ std::string itos (int n)
 	ss << n;
 	ss >> str;
 
-	return  str;
+	return  str;	
 }

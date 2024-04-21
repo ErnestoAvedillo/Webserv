@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   str_echo.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 18:38:35 by eavedill          #+#    #+#             */
-/*   Updated: 2024/04/19 23:54:17 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/04/21 14:11:00 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ void str_echo (int sockfd)
 	while (std::getline(fileopen,line_2,'\n'))
 		complete += line_2;
 	if (mimeTypes[line.substr(j + 1, line.length() - j - 1)] == "text/html")
-		header = header + "\nContent-Length: " + itoa(complete.length());
+		header = header + "\nContent-Length: " + itos(complete.length());
 	
 
 	std::stringstream sa;
