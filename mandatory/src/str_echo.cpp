@@ -24,7 +24,18 @@ void str_echo (int sockfd)
 
 	n = Readn(sockfd, buf, MAXLINE);
 	std::cout << "Nueva impresion buffer" << std::endl;
-	std::cout << buf << std::endl;
+	Request Instance;
+	Instance.loadCompleteRequest(buf);
+	std::map<std::string, std::string> Header;
+
+	Header = Instance.getHeader();
+	std::cout << "#######################################################" << std::endl;
+	for (std::map<std::string, std::string>::iterator it = Header.begin(); it != Header.end(); ++it)
+	{
+		std::cout << it->first << " " << it->second << std::endl;
+	}
+	std::cout << "#######################################################" << std::endl;
+	// std::cout << buf << std::endl;
 	std::stringstream ss(buf);
 	// std::vector<std::string> split_string;
 	
