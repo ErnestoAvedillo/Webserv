@@ -21,5 +21,9 @@ std::string itos (int n)
 	ss << n;
 	ss >> str;
 
+<<<<<<< HEAD
 	return  str;	
+=======
+	return  str;
+>>>>>>> 6887cbd6818abf438650f3c8864235c0ad16fa84
 }

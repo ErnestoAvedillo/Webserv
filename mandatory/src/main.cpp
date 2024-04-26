@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/07 11:21:58 by eavedill          #+#    #+#             */
-/*   Updated: 2024/04/19 23:59:27 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/04/24 19:35:09 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,11 +39,7 @@ int main()
 	{
 		clilen = sizeof(cliaddr);
 		confd = accept(listenfd, (SA *)&cliaddr, &clilen);
-		// if ((child_pid = Fork()) == 0)
-		// {
-			str_echo(confd);
-		// 	exit (0);
-		// }
+		str_echo(confd);
 		Close(confd);
 	}
 }
