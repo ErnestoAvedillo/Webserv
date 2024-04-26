@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 18:38:35 by eavedill          #+#    #+#             */
-/*   Updated: 2024/04/19 23:54:17 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/04/26 16:07:31 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,16 +26,18 @@ void str_echo (int sockfd)
 	std::cout << "Nueva impresion buffer" << std::endl;
 	Request Instance;
 	Instance.loadCompleteRequest(buf);
-
+/*
 	line = Instance.getPath();
 	if (line == "/")
 		line = "./www/index.html";
 	else
 		line = "./www" + line; 
 	struct stat *fileinfo = NULL;
+*/
+	line = Instance.getFileName();
+	int result = stat(line.c_str(), buf2);
 
-	stat(line.c_str(), fileinfo);
-	fileopen.open(line, std::ios::in);
+	fileopen.open(line.c_str(), std::ios::in);
 
 	std::string header;
 	std::map<std::string, std::string> mimeTypes = create_filetypes();
