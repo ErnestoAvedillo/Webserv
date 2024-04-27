@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+         #
+#    By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/01 15:03:29 by eavedill          #+#    #+#              #
-#    Updated: 2024/04/21 15:38:14 by jcheel-n         ###   ########.fr        #
+#    Updated: 2024/04/25 00:22:25 by jcheel-n         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
