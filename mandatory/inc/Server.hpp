@@ -1,6 +1,7 @@
 #pragma once
 # include <vector>
 # include <string>
+# include <map>
 # include <iostream>
 # include "Location.hpp"
 
@@ -36,11 +37,13 @@ class Server {
 
 		int			getPort();
 		int			getClientBodySize();
-		bool getIsDefault();
+		bool		getIsDefault();
 		std::string	getHost();
 		std::string	getServerName();
 		std::string	getErrorPage();
 		std::string	getRoot();
 		std::string	getIndex();
 		std::vector<class Location> getLocations();
+
+		void printServer();
 };

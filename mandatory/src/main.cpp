@@ -29,8 +29,47 @@ int main()
 		std::cout << it->first << ": " << it->second << std::endl;
 	}
 	
+
 	WebServer ws;
-	ws.loadConfigFile("./conf/default");
+	Server server;
+	server.setPort(2000);
+	server.setHost("localhost");
+	server.setServerName("localhost");
+	server.setErrorPage("error.html");
+	server.setClientBodySize(1000);
+	server.setRoot("/var/www/html");
+	server.setIndex("index.html");
+	server.setIsDefault(true);
+	server.printServer();
+	// ws.servers.push_back(Server().);
+	//ws.loadConfigFile("./conf/default");
+	
+	ws.servers.push_back(server);
+
+	server.setPort(1000);
+	server.setHost("localhost");
+	server.setServerName("localhost");
+	server.setErrorPage("error.html");
+	server.setClientBodySize(1000);
+	server.setRoot("/var/www/html");
+	server.setIndex("index.html");
+	server.setIsDefault(true);
+	server.printServer();
+	// ws.servers.push_back(Server().);
+	//ws.loadConfigFile("./conf/default");
+	
+	server.setPort(8080);
+	server.setHost("localhost");
+	server.setServerName("localhost");
+	server.setErrorPage("error.html");
+	server.setClientBodySize(1000);
+	server.setRoot("/var/www/html");
+	server.setIndex("index.html");
+	server.setIsDefault(true);
+	server.printServer();
+	
+	ws.servers.push_back(server);
+	ws.launchServers();
 }
 
 // int main()
