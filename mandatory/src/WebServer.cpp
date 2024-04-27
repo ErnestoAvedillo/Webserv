@@ -21,7 +21,7 @@ WebServer::~WebServer(){} // WebServer destructor
 void WebServer::loadConfigFile(std::string configFile) // WebServer loadConfigFile
 {
 	this->configFilename = configFile;
-	this->configFile.open(configFile);
+	this->configFile.open(configFile.toChar());
 	if (!this->configFile.is_open())
 	{
 		std::cerr << "Error: No se ha podido abrir el archivo de configuración" << std::endl;

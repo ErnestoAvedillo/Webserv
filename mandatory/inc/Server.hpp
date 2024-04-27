@@ -5,6 +5,7 @@
 # include <string>
 # include <iostream>
 # include <sstream>
+# include <stdlib.h>
 # include "commonFunctions.hpp"
 
 #define VAR_VPORT	"port"
