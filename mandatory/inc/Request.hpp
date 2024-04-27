@@ -10,7 +10,7 @@ class Request{
 		std::string							Method;
 		std::string							Path;	
 		std::string							Protocol;
-		std::map<std::string, std::string>	Header;
+		std::map<std::string, std::string>	Attrib;
 	public:
 		/* Default Constructor */
 		Request();
