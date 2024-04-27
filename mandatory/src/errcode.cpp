@@ -1,4 +1,6 @@
-#include "../inc/main.hpp"
+#include <map>
+#include <string>
+
 
 std::map<int, std::string> getHttpErrorTypes() {
 	std::map<int, std::string> errorTypes;

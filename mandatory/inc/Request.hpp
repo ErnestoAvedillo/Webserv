@@ -3,15 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/24 17:42:05 by eavedill          #+#    #+#             */
-/*   Updated: 2024/04/25 19:45:43 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/04/27 10:39:48 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
-#include "../inc/main.hpp"
+#include <iostream>
+#include "../inc/Header.hpp"
 class Request
 {
 private:

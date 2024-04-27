@@ -65,8 +65,10 @@ void Request::updateRequest(std::string const &key, std::string const &value)
 	this->request[key] = value;
 }
 
-void Request::loadCompleteRequest(const std::string &requestHeader)
+void Request::loadCompleteRequest( std::string const &requestHeader)
 {
+	std::cout << "Request Header: " << requestHeader << std::endl;
+
 	std::vector<std::string> lines = splitString(requestHeader, '\n');
 	this->header.setHeader(lines[0]);
 	for (size_t i = 1; i < lines.size(); i++)

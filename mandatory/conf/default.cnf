@@ -1,0 +1,18 @@
+"server":{
+	"name": Server 1
+	"host": example.com
+	"port": 80
+	"location": /
+},
+"server":{
+	"name": Server 2
+	"host": example.net
+	"port": 8080
+	"location": /api
+},
+"server":{
+	"name": Server 3
+	"host": example.org
+	"port": 443,
+	"location": /
+}
