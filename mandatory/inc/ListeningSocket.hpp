@@ -32,7 +32,7 @@ private:
 		else
 		{
 				std::cout << "Received " << n << "\n bytes: " << buffer << std::endl;
-				std::string buffer = "HTTP/1.1 200 OK\nContent-Type: text/html\n\n<html><body><h1>Hello, World!</h1></body></html>\n";
+				std::string buffer = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello, World!</h1></body></html>\r\n";
 				send(clientSocketFd, buffer.c_str(), buffer.size(), 0);
 		}
 		// Remember to close the client socket when done
