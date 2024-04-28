@@ -15,9 +15,6 @@
 #define VAR_ROOT	"root"
 #define VAR_INDEX	"index"
 
-
-class Location;
-
 class Server {
 	protected:
 		bool		isDefault;
@@ -29,6 +26,7 @@ class Server {
 		std::string root;
 		std::string index;
 		//std::vector<class Location> locations;
+		void	setDefaultData();
 
 	public:
 		Server();
@@ -36,7 +34,7 @@ class Server {
 		~Server();
 		Server(Server const &);
 		Server &operator=(Server const &);
-		void	loadData(std::string const &);
+		int		loadData(std::string const &);
 		void	setPort(std::string );
 		void	setHost(std::string );
 		void	setServerName(std::string );

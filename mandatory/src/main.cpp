@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/07 11:21:58 by eavedill          #+#    #+#             */
-/*   Updated: 2024/04/27 18:21:33 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/04/28 16:56:16 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 int main(int av, char **ac)
 {
-	if (av != 2)
+		if (av != 2)
 	{
 		std::cerr << "Error: No se ha pasado el archivo de configuración" << std::endl;
 		return 1;

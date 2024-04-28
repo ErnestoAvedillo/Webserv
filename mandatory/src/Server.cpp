@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/27 14:24:35 by eavedill          #+#    #+#             */
-/*   Updated: 2024/04/27 18:44:13 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/04/28 17:04:37 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,20 +37,30 @@ std::map<std::string, server> getServerMethods() {
 	return serverMethods;
 }
 
-Server::Server() {
+void	Server::setDefaultData()
+{
 	this->isDefault = false;
-	this->port.push_back(0);
-	this->maxClientBodySize = 0;
-	this->Host = "";
-	this->serverName = "";
-	this->errorPage = "";
-	this->root = "";
-	this->index = "";
+	this->port.push_back(8080);
+	this->maxClientBodySize = 1024;
+	this->Host = "DefaultHost";
+	this->serverName = "DefaultServer";
+	this->errorPage = "/Error";
+	this->root = "/";
+	this->index = "index.html";
+}
+
+
+Server::Server() {
+	this->setDefaultData();
 }
 
 Server::Server(std::string const &str) 
 {
-	this->loadData(str);
+	this->setDefaultData();
+	if(this->loadData(str) == -1)
+	{
+		std::cerr << "Error: No se ha podido cargar la configuración del servidor. Parámetros por defecto establecidos." << std::endl;
+	}
 }
 
 Server::~Server() {}
@@ -74,13 +84,26 @@ Server &Server::operator=(Server const &copy) {
 	return *this;
 }
 
-void Server::loadData(std::string const &content) {
+int Server::loadData(std::string const &content) {
 	std::string line;
 	std::string straux;
 	std::map<std::string, int> varnames = var_names();
-	std::istringstream fileContentStream(content);
-	while (std::getline(fileContentStream, line))
+	if (std::count(content.begin(), content.end(), '{') - std::count(content.begin(), content.end(), '}') != 0)
 	{
+		std::cerr << "Error: Llaves no balanceadas" << std::endl;
+		return -1;
+	}
+	if(content.find("server:{") != 0)
+	{
+		std::cerr << "Error: La configuración del servidor debe empezar con \"server:{\"" << std::endl;
+		return -1;
+	}
+	
+	std::istringstream fileContentStream(content.substr(8, content.length() - 1));
+	while (std::getline(fileContentStream, line,';'))
+	{
+		if(line == "}")
+			continue;
 		std::map<std::string, int>::iterator it = varnames.begin();
 		while (it != varnames.end())
 		{
@@ -101,7 +124,7 @@ void Server::loadData(std::string const &content) {
 			(this->*getServerMethods()[it->first])(straux);
 		}
 	}
-
+	return 0;
 }
 
 void Server::setPort(std::string port) {
