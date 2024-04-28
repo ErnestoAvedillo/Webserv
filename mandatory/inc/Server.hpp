@@ -7,6 +7,7 @@
 # include <sstream>
 # include <stdlib.h>
 # include "commonFunctions.hpp"
+#include "ListeningSocket.hpp"
 
 #define VAR_VPORT	"port"
 #define VAR_HOST	"host"
@@ -18,7 +19,7 @@
 class Server {
 	protected:
 		bool		isDefault;
-		std::vector <size_t>	port;
+		std::map <size_t,ListeningSocket *>	port;
 		size_t			maxClientBodySize;
 		std::string	Host;
 		std::string	serverName;
@@ -39,13 +40,13 @@ class Server {
 		void	setHost(std::string );
 		void	setServerName(std::string );
 		void	setErrorPage(std::string );
-		void	setClientBodySize(std::string );
+		void	setClientMaxBodySize(std::string );
 		void	setRoot(std::string );
 		void	setIndex(std::string );
 		//void	addLocation(Location );
 		void	setIsDefault(std::string );
 
-		size_t		getPort(int i);
+		ListeningSocket *		getPort(int i);
 		size_t			getClientBodySize();
 		bool getIsDefault();
 		std::string	getHost();

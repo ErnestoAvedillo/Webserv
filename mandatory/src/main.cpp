@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/07 11:21:58 by eavedill          #+#    #+#             */
-/*   Updated: 2024/04/28 16:56:16 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/04/28 18:02:14 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ int main(int av, char **ac)
 	}
 	WebServer webServer;
 	webServer.loadConfigFile(ac[1]);
+/*
 	int listenfd, confd;
 	// pid_t child_pid;
 	socklen_t clilen;
@@ -33,6 +34,8 @@ int main(int av, char **ac)
         std::cerr << "Error al configurar SO_REUSEADDR\n";
         return 1;
 	}
+	else
+		std::cout << "SO_REUSEADDR configurado\n";
 	bzero(&servaddr, sizeof(servaddr));
 	servaddr.sin_family = AF_INET;
 	servaddr.sin_addr.s_addr =	htonl(INADDR_ANY);
@@ -47,4 +50,5 @@ int main(int av, char **ac)
 		str_echo(confd);
 		close(confd);
 	}
+	*/
 }

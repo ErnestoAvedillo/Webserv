@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/27 14:24:35 by eavedill          #+#    #+#             */
-/*   Updated: 2024/04/28 17:04:37 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/04/28 18:03:16 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ std::map<std::string, int> var_names()
 	varnames["error_page"] = 0;
 	varnames["root"] = 0;
 	varnames["index"] = 0;
-	varnames["client_body_size"] = 0;
+	varnames["client_max_body_size"] = 0;
 	return varnames;
 }
 
@@ -33,14 +33,14 @@ std::map<std::string, server> getServerMethods() {
 	serverMethods["error_page"] = &Server::setErrorPage;
 	serverMethods["root"] = &Server::setRoot;
 	serverMethods["index"] = &Server::setIndex;
-	serverMethods["client_body_size"] = &Server::setClientBodySize;
+	serverMethods["client_max_body_size"] = &Server::setClientMaxBodySize;
 	return serverMethods;
 }
 
 void	Server::setDefaultData()
 {
 	this->isDefault = false;
-	this->port.push_back(8080);
+	this->port[8080] = new ListeningSocket(8080);
 	this->maxClientBodySize = 1024;
 	this->Host = "DefaultHost";
 	this->serverName = "DefaultServer";
@@ -52,6 +52,15 @@ void	Server::setDefaultData()
 
 Server::Server() {
 	this->setDefaultData();
+	std::map<size_t, ListeningSocket*>::iterator itb = this->port.begin();
+	std::map<size_t, ListeningSocket*>::iterator ite = this->port.end();
+	while (itb != ite) {
+		if (itb->second->startListening()) {
+			itb->second->handleEvents();
+		}
+		itb->second->stopListening();
+		itb++;
+	}
 }
 
 Server::Server(std::string const &str) 
@@ -60,6 +69,15 @@ Server::Server(std::string const &str)
 	if(this->loadData(str) == -1)
 	{
 		std::cerr << "Error: No se ha podido cargar la configuración del servidor. Parámetros por defecto establecidos." << std::endl;
+	}
+	std::map<size_t, ListeningSocket*>::iterator itb = this->port.begin();
+	std::map<size_t, ListeningSocket*>::iterator ite = this->port.end();
+	while (itb != ite) {
+		if (itb->second->startListening()) {
+			itb->second->handleEvents();
+		}
+		itb->second->stopListening();
+		itb++;
 	}
 }
 
@@ -117,7 +135,7 @@ int Server::loadData(std::string const &content) {
 			it++;
 		}
 		if (it == varnames.end())
-			std::cout << "Error: Variable no reconocida." << std::endl;
+			std::cout << "Error: Variable no reconocida: " << line.substr(0, line.find(":")) << std::endl;
 		else
 		{
 			straux = line.substr(line.find(":") + 1, line.size());
@@ -141,10 +159,10 @@ void Server::setPort(std::string port) {
 				exit(1);
 			}
 			for(size_t i = stringToSizeT(aux2[0]); i <= stringToSizeT(aux2[1]); i++)
-				this->port.push_back(i);
+				this->port[i] = new ListeningSocket(i);
 		}
 		else
-			this->port.push_back(stringToSizeT(aux));
+			this->port[stringToSizeT(aux)] = new ListeningSocket(stringToSizeT(aux));
 	}
 }
 
@@ -160,7 +178,7 @@ void Server::setErrorPage(std::string error_page) {
 	this->errorPage = error_page;
 }
 
-void Server::setClientBodySize(std::string max_client_body_size) {
+void Server::setClientMaxBodySize(std::string max_client_body_size) {
 	this->maxClientBodySize = stringToSizeT(max_client_body_size);
 }
 
@@ -188,7 +206,13 @@ void Server::setIsDefault(std::string is_default) {
 	}
 }
 
-size_t Server::getPort(int i) {
+ListeningSocket *Server::getPort(int i) {
+	std::map<size_t, ListeningSocket *>::iterator it = this->port.find(i);
+	if (it == this->port.end())
+	{
+		std::cerr << "Error: Puerto no encontrado." << std::endl;
+		exit(1);
+	}
 	return this->port[i];
 }
 
