@@ -15,7 +15,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
-
+ #include <unistd.h>
+ 
 #define BACKLOG 10
 #define MAX_EVENTS 10
 #define MAX_CLIENTS 10
@@ -32,8 +33,9 @@ class WebServer {
 		/* Socket Configuration */
 		std::vector<int>	serverSocket;
 		std::vector<int>	serverAccepted;
+		struct kevent		eventSet;
 		int kq;
-		int client_events[MAX_CLIENTS] = {0};
+		int client_events[MAX_CLIENTS];// {0};
 
 	public:
 		std::vector<Server>	servers;
@@ -50,7 +52,7 @@ class WebServer {
 		
 		
 		void	createSocket();
-		struct kevent	addEventSet();
+		void	addEventSet();
 		void	eventLoop();
 		
 		int getConnection(int fd);

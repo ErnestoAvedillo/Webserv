@@ -29,9 +29,11 @@ int main()
 		std::cout << it->first << ": " << it->second << std::endl;
 	}
 	
+	//ws.loadConfigFile("./conf/default");
 
 	WebServer ws;
 	Server server;
+	
 	server.setPort(2000);
 	server.setHost("localhost");
 	server.setServerName("localhost");
@@ -41,34 +43,37 @@ int main()
 	server.setIndex("index.html");
 	server.setIsDefault(true);
 	server.printServer();
-	// ws.servers.push_back(Server().);
-	//ws.loadConfigFile("./conf/default");
 	
 	ws.servers.push_back(server);
+	
+	Server server2;
+	server2.setPort(1000);
+	server2.setHost("localhost");
+	server2.setServerName("localhost");
+	server2.setErrorPage("error.html");
+	server2.setClientBodySize(1000);
+	server2.setRoot("/var/www/html");
+	server2.setIndex("index.html");
+	server2.setIsDefault(true);
+	
+	server2.printServer();
+	
+	ws.servers.push_back(server2);
+	//ws.loadConfigFile("./conf/default");
+	
+	Server server3;
+	server3.setPort(8080);
+	server3.setHost("localhost");
+	server3.setServerName("localhost");
+	server3.setErrorPage("error.html");
+	server3.setClientBodySize(1000);
+	server3.setRoot("/var/www/html");
+	server3.setIndex("index.html");
+	server3.setIsDefault(true);
+	server3.printServer();
+	
+	ws.servers.push_back(server3);
 
-	server.setPort(1000);
-	server.setHost("localhost");
-	server.setServerName("localhost");
-	server.setErrorPage("error.html");
-	server.setClientBodySize(1000);
-	server.setRoot("/var/www/html");
-	server.setIndex("index.html");
-	server.setIsDefault(true);
-	server.printServer();
-	// ws.servers.push_back(Server().);
-	//ws.loadConfigFile("./conf/default");
-	
-	server.setPort(8080);
-	server.setHost("localhost");
-	server.setServerName("localhost");
-	server.setErrorPage("error.html");
-	server.setClientBodySize(1000);
-	server.setRoot("/var/www/html");
-	server.setIndex("index.html");
-	server.setIsDefault(true);
-	server.printServer();
-	
-	ws.servers.push_back(server);
 	ws.launchServers();
 }
 
