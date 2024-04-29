@@ -6,7 +6,7 @@
 #    By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/01 15:03:29 by eavedill          #+#    #+#              #
-#    Updated: 2024/04/17 22:48:50 by eavedill         ###   ########.fr        #
+#    Updated: 2024/04/28 22:59:33 by eavedill         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -39,8 +39,12 @@ CC:= c++
 
 FLAGS := -Wall -Werror -Wextra -pedantic -g -std=c++98 -fsanitize=address
 
-all: $(NAME) Makefile
-	
+all:	SYSTEM = -DMAC
+all:	$(NAME) Makefile
+
+lnx:	SYSTEM = -DLNX
+lnx:	$(NAME) Makefile
+
 $(NAME): $(DSTS) $(OBJS) 
 	@printf "\rLinking: $(NAME)                                                  \n"
 	@$(CC) $(FLAGS) -I $(DIRINC) $(OBJS) -o $(NAME)
@@ -52,9 +56,9 @@ $(OBJDST_DIR)%.o: $(DIRSRC)%.cpp $(OBJDST_DIR)%.d
 
 $(OBJDST_DIR)%.d: $(DIRSRC)%.cpp
 	@mkdir -p $(OBJDST_DIR)
-	@printf "$(BLUE)\rCreating Dependencies $*.d: $(notdir $<).                   $(RESET)"
+	@printf "$(BLUE)\rCreating Dependencies $*.d: $(notdir $<).  $(SYSTEM)                 $(RESET)"
 	@set -e; rm -f $@; \
-	$(CC) -M $(FLAGS) $< > $@.$$$$; \
+	$(CC) -M $(FLAGS) $(SYSTEM) $< > $@.$$$$; \
 	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
 	rm -f $@.$$$$
 
@@ -78,7 +82,7 @@ fclean: clean
 
 re: fclean all
 
-PHONY: all clean fclean re print
+PHONY: all clean fclean re print lnx
 
 .SILENT:
 

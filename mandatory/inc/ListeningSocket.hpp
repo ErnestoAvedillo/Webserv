@@ -3,7 +3,11 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <sys/event.h>
+#ifdef MAC
+	#include <sys/event.h>
+#else if LNX
+	#include <sys/event.h>
+#endif
 #include <unistd.h>
 #include <map>
 
