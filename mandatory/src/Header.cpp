@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Header.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 19:10:51 by eavedill          #+#    #+#             */
-/*   Updated: 2024/04/27 11:12:01 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/04/30 09:44:35 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 Header::Header()
 {
 	this->Type = "";
-	this->FileName.setFilename("");
+	this->filename.setFilename("");
 	this->HTTPvers = "";
 }
 
@@ -27,10 +27,10 @@ Header::Header(Header const &src)
 // Header &Header::operator=(Header const &header)
 // {
 // 	this->Type = header.Type;
-// 	this->FileName.setFilename(header.getFileName());
+// 	this->filename.setFilename(header.getFileName());
 // 	this->HTTPvers = header.HTTPvers;
 // 	this->ContentLength = header.ContentLength;
-// 	this->FileName.getErrCode();
+// 	this->filename.getErrCode();
 // 	return (*this);
 // }
 
@@ -45,12 +45,12 @@ std::string Header::getType()
 
 std::string Header::getFileName() const
 {
-	return (this->FileName.getFilename());
+	return (this->filename.getFilename());
 }
 
-void Header::setFilename(std::string filename)
+void Header::setFilename(std::string name)
 {
-	this->FileName.setFilename(filename);
+	this->filename.setFilename(name);
 }
 
 std::string Header::getHTTPvers()
@@ -92,7 +92,7 @@ void Header::setHeader(std::string header)
 
 std::string Header::getHeader()
 {
-	std::string header = HTTPvers + " " + itos(this->FileName.getErrCode()) + " " + this->FileName.getErrDesc() + " " + FileName.getErrDesc() + "\nContent-Type: " + this->Type + "\nContent-Length: ";
+	std::string header = HTTPvers + " " + itos(this->filename.getErrCode()) + " " + this->filename.getErrDesc() + " " + filename.getErrDesc() + "\nContent-Type: " + this->Type + "\nContent-Length: ";
 	return (header);
 }
 

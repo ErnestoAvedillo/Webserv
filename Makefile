@@ -6,7 +6,7 @@
 #    By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/01 15:03:29 by eavedill          #+#    #+#              #
-#    Updated: 2024/04/28 22:59:33 by eavedill         ###   ########.fr        #
+#    Updated: 2024/05/01 19:44:22 by eavedill         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -35,15 +35,16 @@ DSTS := $(SRCS:$(DIRSRC)%.cpp=$(OBJDST_DIR)%.d)
 
 RM := rm -rfd
 
-CC:= c++
+CC:= g++
 
-FLAGS := -Wall -Werror -Wextra -pedantic -g -std=c++98 -fsanitize=address
 
-all:	SYSTEM = -DMAC
-all:	$(NAME) Makefile
+ifeq (,$(findstring "Linux",$(shell uname -s)))
+	SYSTEM := -DLNX
+endif
 
-lnx:	SYSTEM = -DLNX
-lnx:	$(NAME) Makefile
+FLAGS := -Wall -Werror -Wextra -pedantic -g -std=c++98 $(SYSTEM) -fsanitize=address 
+
+all:	print_system $(NAME) Makefile 
 
 $(NAME): $(DSTS) $(OBJS) 
 	@printf "\rLinking: $(NAME)                                                  \n"
@@ -56,9 +57,9 @@ $(OBJDST_DIR)%.o: $(DIRSRC)%.cpp $(OBJDST_DIR)%.d
 
 $(OBJDST_DIR)%.d: $(DIRSRC)%.cpp
 	@mkdir -p $(OBJDST_DIR)
-	@printf "$(BLUE)\rCreating Dependencies $*.d: $(notdir $<).  $(SYSTEM)                 $(RESET)"
+	@printf "$(BLUE)\rCreating Dependencies $*.d: $(notdir $<). with flag $(SYSTEM)                       $(RESET)"
 	@set -e; rm -f $@; \
-	$(CC) -M $(FLAGS) $(SYSTEM) $< > $@.$$$$; \
+	$(CC) -M $(FLAGS) $< > $@.$$$$; \
 	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
 	rm -f $@.$$$$
 
@@ -71,6 +72,7 @@ print:
 	@echo OBJDST_DIR: $(OBJDST_DIR)
 	@echo DIRSRC: $(DIRSRC)
 	@echo DIRINC: $(DIRINC)
+	@echo FLAG SISTEMA: $(SYSTEM)
 
 clean:
 	@printf "$(RED)Removing objects folder $(OBJDST_DIR).$(RESET)\n"
@@ -82,7 +84,11 @@ fclean: clean
 
 re: fclean all
 
-PHONY: all clean fclean re print lnx
+print_system:
+	@printf "\n$(YELLOW)System compiles $(NAME) with $(shell uname -s)$(RESET)\n"
+
+
+PHONY: all clean fclean re print lnx print_system
 
 .SILENT:
 
@@ -91,3 +97,6 @@ ifeq (,$(findstring re,$(MAKECMDGOALS)))
 -include $(DSTS)
 endif
 endif
+
+
+

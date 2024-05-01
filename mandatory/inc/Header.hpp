@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Header.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 19:10:59 by eavedill          #+#    #+#             */
-/*   Updated: 2024/04/27 18:22:16 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/04/30 09:42:40 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ class Header
 {
 	private:
 		std::string Type;
-		FileName	FileName;
+		FileName	filename;
 		std::string HTTPvers;
 		std::string MimmeType;
 		size_t		ContentLength;

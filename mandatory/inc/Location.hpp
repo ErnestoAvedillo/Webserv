@@ -2,7 +2,18 @@
 #define LOCATION_HPP
 
 #include <string>
-
+#include <map>
+#include <algorithm>
+#include <iostream>
+#include <sstream>
+#define VAR_LOC_NAME "name"
+#define VAR_LOC_ROOT "root"
+#define VAR_LOC_RETURN "return"
+#define VAR_LOC_INDEX "index"
+#define VAR_LOC_ALLOW_METHODS "allow_methods"
+#define VAR_LOC_AUTOINDEX "auto_index"
+#define VAR_LOC_ALIAS "alias"
+#define STR_START "location:{"
 class Location 
 {
 	private:
@@ -13,9 +24,13 @@ class Location
 		std::string allow_methods;
 		std::string autoindex;
 		std::string alias;
+		int loadData(const std::string &data);
+
 	public:
 		// Default constructor
-		Location() ;
+		Location();
+		// constructor from content string "location :{}"
+		Location(std::string const &);
 
 		// Copy constructor
 		Location(const Location& other);
@@ -40,6 +55,11 @@ class Location
 		void setAllowMethods(const std::string& );
 		void setAutoindex(const std::string&);
 		void setAlias(const std::string&);
+
+		// Load data from a string configuration
 };
 
-#endif // LOCATION_HPP
+//typedef void (Location::*location)(std::string);
+//typedef std::map<std::string, location> location_methods_t;
+
+#endif 

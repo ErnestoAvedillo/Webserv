@@ -71,6 +71,7 @@ void WebServer::processConfigFile() // WebServer processConfigFile
 			aux = serverContentConfig.substr(0, pos);
 		else
 			aux = serverContentConfig.substr(0, pos - 1);
+		std::cout << "Server to open: " << aux << std::endl;
 		servers.push_back(new Server(aux));
 		if(serverContentConfig.find("server:{", 8) == std::string::npos)
 			break;

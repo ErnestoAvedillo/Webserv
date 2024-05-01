@@ -35,7 +35,7 @@ server:{
 	index:index.html;                   # default page when requesting a directory, index.html by default
 
 	location:{
-		alias:/tours                    # name of the alias location where to find the server.
+		name:/tours                    # name of the alias location where to find the server.
 		root:docs/fusion_web;           # root folder of the location, if not specified, taken from the server. 
 										# EX: - URI /tours           --> docs/fusion_web/tours
 										#     - URI /tours/page.html --> docs/fusion_web/tours/page.html 

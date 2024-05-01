@@ -3,44 +3,46 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/27 14:24:35 by eavedill          #+#    #+#             */
-/*   Updated: 2024/04/28 18:03:16 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/01 20:24:02 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/Server.hpp"
 
-std::map<std::string, int> var_names()
+std::map<std::string, int> var_names_server()
 {
 	std::map<std::string, int> varnames;
-	varnames["port"] = 0;
-	varnames["host"] = 0;
-	varnames["server_name"] = 0;
-	varnames["error_page"] = 0;
-	varnames["root"] = 0;
-	varnames["index"] = 0;
-	varnames["client_max_body_size"] = 0;
+	varnames[VAR_PORT] = 0;
+	varnames[VAR_HOST] = 0;
+	varnames[VAR_SERVER_NAME] = 0;
+	varnames[VAR_ERROR_PAGE] = 0;
+	varnames[VAR_ROOT] = 0;
+	varnames[VAR_INDEX] = 0;
+	varnames[VAR_CLIENT_MAX_BODY_SIZE] = 0;
 	return varnames;
 }
 
-std::map<std::string, server> getServerMethods() {
-	server_methods_t serverMethods;
-	serverMethods["port"] = &Server::setPort;
-	serverMethods["host"] = &Server::setHost;
-	serverMethods["server_name"] = &Server::setServerName;
-	serverMethods["error_page"] = &Server::setErrorPage;
-	serverMethods["root"] = &Server::setRoot;
-	serverMethods["index"] = &Server::setIndex;
-	serverMethods["client_max_body_size"] = &Server::setClientMaxBodySize;
+std::map<std::string, void (Server::*)(const std::string &)> getServerMethods()
+{
+	std::map<std::string, void (Server::*)(const std::string &)> serverMethods;
+
+	serverMethods[VAR_PORT] = &Server::setPort;
+	serverMethods[VAR_HOST] = &Server::setHost;
+	serverMethods[VAR_SERVER_NAME] = &Server::setServerName;
+	serverMethods[VAR_ERROR_PAGE] = &Server::setErrorPage;
+	serverMethods[VAR_ROOT] = &Server::setRoot;
+	serverMethods[VAR_INDEX] = &Server::setIndex;
+	serverMethods[VAR_CLIENT_MAX_BODY_SIZE] = &Server::setClientMaxBodySize;
 	return serverMethods;
 }
 
 void	Server::setDefaultData()
 {
 	this->isDefault = false;
-	this->port[8080] = new ListeningSocket(8080);
+	this->port[8080] = new ListeningSocket(443);
 	this->maxClientBodySize = 1024;
 	this->Host = "DefaultHost";
 	this->serverName = "DefaultServer";
@@ -73,7 +75,7 @@ Server::Server(std::string const &str)
 	std::map<size_t, ListeningSocket*>::iterator itb = this->port.begin();
 	std::map<size_t, ListeningSocket*>::iterator ite = this->port.end();
 	while (itb != ite) {
-		if (itb->second->startListening()) {
+		if (itb->second->startListening()){
 			itb->second->handleEvents();
 		}
 		itb->second->stopListening();
@@ -105,7 +107,7 @@ Server &Server::operator=(Server const &copy) {
 int Server::loadData(std::string const &content) {
 	std::string line;
 	std::string straux;
-	std::map<std::string, int> varnames = var_names();
+	std::map<std::string, int> varnames = var_names_server();
 	if (std::count(content.begin(), content.end(), '{') - std::count(content.begin(), content.end(), '}') != 0)
 	{
 		std::cerr << "Error: Llaves no balanceadas" << std::endl;
@@ -145,7 +147,8 @@ int Server::loadData(std::string const &content) {
 	return 0;
 }
 
-void Server::setPort(std::string port) {
+void Server::setPort(std::string const &port)
+{
 	std::string aux;
 	std::istringstream portStream(port);
 	while (std::getline(portStream, aux, ','))
@@ -166,35 +169,42 @@ void Server::setPort(std::string port) {
 	}
 }
 
-void Server::setHost(std::string host) {
+void Server::setHost(std::string const &host)
+{
 	this->Host = host;
 }
 
-void Server::setServerName(std::string server_name) {
+void Server::setServerName(std::string const &server_name)
+{
 	this->serverName = server_name;
 }
 
-void Server::setErrorPage(std::string error_page) {
+void Server::setErrorPage(std::string const &error_page)
+{
 	this->errorPage = error_page;
 }
 
-void Server::setClientMaxBodySize(std::string max_client_body_size) {
+void Server::setClientMaxBodySize(std::string const &max_client_body_size)
+{
 	this->maxClientBodySize = stringToSizeT(max_client_body_size);
 }
 
-void Server::setRoot(std::string root) {
+void Server::setRoot(std::string const &root)
+{
 	this->root = root;
 }
 
-void Server::setIndex(std::string index) {
+void Server::setIndex(std::string const &index)
+{
 	this->index = index;
 }
 
-// void Server::addLocation(Location location) {
-// 	//this->locations.push_back(location);
-// }
+void Server::addLocation(std::string const &content) {
+	this->locations.push_back(new Location(content));
+}
 
-void Server::setIsDefault(std::string is_default) {
+void Server::setIsDefault(std::string const &is_default)
+{
 	if (is_default == "true")
 		this->isDefault = true;
 	else if (is_default == "false")
@@ -243,3 +253,4 @@ std::string Server::getRoot() {
 std::string Server::getIndex() {
 	return this->index;
 }
+

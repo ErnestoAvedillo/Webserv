@@ -6,15 +6,19 @@
 # include <iostream>
 # include <sstream>
 # include <stdlib.h>
+# include <string>
+# include <algorithm>
 # include "commonFunctions.hpp"
-#include "ListeningSocket.hpp"
+# include "ListeningSocket.hpp"
+# include "Location.hpp"
 
-#define VAR_VPORT	"port"
+#define VAR_PORT	"port"
 #define VAR_HOST	"host"
 #define VAR_SERVER_NAME	"server_name"
 #define VAR_ERROR_PAGE	"error_page"
 #define VAR_ROOT	"root"
 #define VAR_INDEX	"index"
+#define VAR_CLIENT_MAX_BODY_SIZE	"client_max_body_size"
 
 class Server {
 	protected:
@@ -26,7 +30,7 @@ class Server {
 		std::string errorPage;
 		std::string root;
 		std::string index;
-		//std::vector<class Location> locations;
+		std::vector<Location *> locations;
 		void	setDefaultData();
 
 	public:
@@ -36,15 +40,15 @@ class Server {
 		Server(Server const &);
 		Server &operator=(Server const &);
 		int		loadData(std::string const &);
-		void	setPort(std::string );
-		void	setHost(std::string );
-		void	setServerName(std::string );
-		void	setErrorPage(std::string );
-		void	setClientMaxBodySize(std::string );
-		void	setRoot(std::string );
-		void	setIndex(std::string );
-		//void	addLocation(Location );
-		void	setIsDefault(std::string );
+		void	setPort(std::string const &);
+		void	setHost(std::string const &);
+		void	setServerName(std::string const &);
+		void	setErrorPage(std::string const &);
+		void	setClientMaxBodySize(std::string const &);
+		void	setRoot(std::string const &);
+		void	setIndex(std::string const &);
+		void	addLocation(std::string const &);
+		void	setIsDefault(std::string const &);
 
 		ListeningSocket *		getPort(int i);
 		size_t			getClientBodySize();
