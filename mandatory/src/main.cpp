@@ -6,7 +6,7 @@
 /*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/07 11:21:58 by eavedill          #+#    #+#             */
-/*   Updated: 2024/04/25 00:17:45 by jcheel-n         ###   ########.fr       */
+/*   Updated: 2024/05/03 13:48:28 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,9 +42,9 @@ int main()
 	server.setRoot("/var/www/html");
 	server.setIndex("index.html");
 	server.setIsDefault(true);
-	server.printServer();
+	// server.printServer();
 	
-	ws.servers.push_back(server);
+	// ws.servers.push_back(server);
 	
 	Server server2;
 	server2.setPort(1000);
@@ -56,9 +56,9 @@ int main()
 	server2.setIndex("index.html");
 	server2.setIsDefault(true);
 	
-	server2.printServer();
+	// server2.printServer();
 	
-	ws.servers.push_back(server2);
+	// ws.servers.push_back(server2);
 	//ws.loadConfigFile("./conf/default");
 	
 	Server server3;
@@ -70,9 +70,17 @@ int main()
 	server3.setRoot("/var/www/html");
 	server3.setIndex("index.html");
 	server3.setIsDefault(true);
-	server3.printServer();
+	// server3.printServer();
 	
+	// ws.servers.push_back(server3);
+
+	ws.servers.push_back(server);
 	ws.servers.push_back(server3);
+	ws.servers.push_back(server2);
+	for (std::vector<Server>::iterator it = ws.servers.begin(); it != ws.servers.end(); it++)
+	{
+		it->printServer();
+	}
 
 	ws.launchServers();
 }

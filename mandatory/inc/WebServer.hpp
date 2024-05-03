@@ -18,8 +18,8 @@
  #include <unistd.h>
  
 #define BACKLOG 10
-#define MAX_EVENTS 10
-#define MAX_CLIENTS 10
+#define MAX_EVENTS 100
+#define MAX_CLIENTS 100
 #define MAX_MSG_SIZE 1024
 //  The backlog parameter defines the maximum length for the queue of pending
 //      connections.  If a connection request arrives with the queue full, the
@@ -33,7 +33,7 @@ class WebServer {
 		/* Socket Configuration */
 		std::vector<int>	serverSocket;
 		std::vector<int>	serverAccepted;
-		struct kevent		eventSet;
+		// struct kevent		eventSet;
 		int kq;
 		int client_events[MAX_CLIENTS];// {0};
 
@@ -58,5 +58,8 @@ class WebServer {
 		int getConnection(int fd);
 		int	addConnection(int fd);
 		int	removeConnection(int fd);
+
+		void removeFilter(struct kevent eventList, int type);
+		void addFilter(struct kevent eventList, int type);
 };
 
