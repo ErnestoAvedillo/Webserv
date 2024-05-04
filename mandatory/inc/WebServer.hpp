@@ -15,8 +15,12 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
- #include <unistd.h>
- 
+#include <unistd.h>
+# include "Request.hpp"
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+  #include <arpa/inet.h>
 #define BACKLOG 10
 #define MAX_EVENTS 100
 #define MAX_CLIENTS 100
@@ -24,6 +28,7 @@
 //  The backlog parameter defines the maximum length for the queue of pending
 //      connections.  If a connection request arrives with the queue full, the
 //      client may receive an error with an indication of ECONNREFUSED
+
 class WebServer {
 	private:
 		
@@ -58,6 +63,7 @@ class WebServer {
 		int getConnection(int fd);
 		int	addConnection(int fd);
 		int	removeConnection(int fd);
+		struct sockaddr_in convertHost(std::string hostname, int port);
 
 		void removeFilter(struct kevent eventList, int type);
 		void addFilter(struct kevent eventList, int type);
