@@ -9,7 +9,6 @@
 # include <string>
 # include <algorithm>
 # include "commonFunctions.hpp"
-# include "ListeningSocket.hpp"
 # include "Location.hpp"
 
 #define VAR_PORT	"port"
@@ -19,6 +18,9 @@
 #define VAR_ROOT	"root"
 #define VAR_INDEX	"index"
 #define VAR_CLIENT_MAX_BODY_SIZE	"client_max_body_size"
+
+class ListeningSocket;
+#include "ListeningSocket.hpp"
 
 class Server {
 	protected:

@@ -36,7 +36,10 @@ class WebServer {
 		std::string 		fileContent;
 		/* Socket Configuration */
 		std::map<int, ListeningSocket *>	serverSocket;
+		
 		std::vector<Server *>	servers;
+		
+		
 		int kq;
 		int client_events[MAX_CLIENTS];
 		void	processConfigFile();

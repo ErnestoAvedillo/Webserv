@@ -32,11 +32,13 @@
 #include <string.h>
 
 #define MAX_CONNECTIONS 10
+class Server;
+#include "Server.hpp"
 // #define MAX_EVENTS 10
 	class ListeningSocket
 	{
 	public:
-		ListeningSocket(int port);
+		ListeningSocket(int port, Server *srv);
 		bool startListening();
 		void stopListening();
 		void handleEvents();
@@ -45,6 +47,7 @@
 		char *buffer;
 
 	private:
+		Server *server;
 		int port;
 		int socketFd;
 	#ifdef LNX

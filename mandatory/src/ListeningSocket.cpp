@@ -119,7 +119,7 @@ void ListeningSocket::handleEvents()
 
 #else
 
-	ListeningSocket::ListeningSocket(int port) : port(port), socketFd(-1), kq(-1) {}
+	ListeningSocket::ListeningSocket(int port, Server *srv) : port(port), server(srv), socketFd(-1), kq(-1) {}
 
 	bool ListeningSocket::startListening() {
 		// Create a socket

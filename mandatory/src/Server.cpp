@@ -42,7 +42,7 @@ std::map<std::string, void (Server::*)(const std::string &)> getServerMethods()
 void	Server::setDefaultData()
 {
 	this->isDefault = false;
-	this->port[443] = new ListeningSocket(443);
+	this->port[443] = new ListeningSocket(443, this);
 	this->maxClientBodySize = 1024;
 	this->Host = "DefaultHost";
 	this->serverName = "DefaultServer";
@@ -181,13 +181,13 @@ void Server::setPort(std::string const &port)
 			}
 			for(size_t i = stringToSizeT(aux2[0]); i <= stringToSizeT(aux2[1]); i++)
 			{
-				ls = new ListeningSocket(i);
+				ls = new ListeningSocket(i, this);
 				this->port[ls->getFd()] = ls;
 			}
 		}
 		else
 		{
-			ls = new ListeningSocket(stringToSizeT(aux));
+			ls = new ListeningSocket(stringToSizeT(aux), this);
 			this->port[ls->getFd()] = ls;
 		}
 	}
