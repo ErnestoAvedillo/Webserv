@@ -7,12 +7,11 @@ Request::Request()
 }
 
 /* Load Constructor */
-// Request::Request(std::string &requestHeader)
-// {
-// 	std::cout << "Load Constructor called" << std::endl;	
-// 	//this->loadRequestLine(requestHeader);
-// 	(void)requestHeader;
-// }
+Request::Request(std::string &requestHeader)
+{
+	std::cout << "Load Constructor called" << std::endl;	
+	this->loadCompleteRequest(requestHeader);
+}
 
 /* Copy Constructor */
 Request::Request(const Request &copy)
@@ -61,34 +60,30 @@ std::map<std::string, std::string> Request::getHeader() const
 }
 
 
-void Request::loadLine(const std::string &requestLine)
+void Request::loadLine(std::string requestLine)
 {
 	std::string	token;
 	std::stringstream ss(requestLine);
 	std::string	key;
 	std::string value;
 
-	// for (int i = 0; i < 2; i++)
-	// {
-	// 	std::getline(ss, token, ':');
+	if (requestLine.length() == 0)
+		return ;
+	requestLine.pop_back();
+	if (requestLine.length() == 0)
+		return ;
 	size_t pos1 = requestLine.find(":",0);
-	//size_t pos2 = requestLine.find(_delimiter,pos1 + 1) ;
-	//_list_data.insert(std::pair<std::string, std::string>(requestLine.substr(0, pos1), requestLine.substr(pos1 + 1,)));
 	key = requestLine.substr(0, pos1);
 	value =  requestLine.substr(pos1 + 1, requestLine.length() - pos1 - 1);
 	this->Header[key] = value;
 }
 
 
-void Request::loadCompleteRequest(const std::string &requestHeader)
+void Request::loadCompleteRequest(std::string requestHeader)
 {
 	std::string token;
 	std::stringstream ss(requestHeader);
-	
-	// if (countChar(requestHeader, ':') > 0)
-	// {
-	// 	std::cout << requestHeader << std::endl;
-	//std::getline(ss, token, '\n');
+
 	std::getline(ss, token, '\n');
 	this->loadRequestLine(token);
 	while (std::getline(ss, token, '\n'))
@@ -97,7 +92,7 @@ void Request::loadCompleteRequest(const std::string &requestHeader)
 }
 
 /* @brief to load the first line of an http header or Request Line Attributes*/
-void Request::loadRequestLine(const std::string requestHeader)
+void Request::loadRequestLine(std::string requestHeader)
 {
 	std::string token;
 	std::stringstream ss(requestHeader);

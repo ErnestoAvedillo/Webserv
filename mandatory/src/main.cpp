@@ -11,6 +11,8 @@
 /* ************************************************************************** */
 
 #include "../inc/main.hpp"
+# include "../inc/Server.hpp"
+# include "../inc/WebServer.hpp"
 
 int main(int av, char **ac)
 {

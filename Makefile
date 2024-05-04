@@ -24,7 +24,7 @@ DIRSRC := ./mandatory/src/
 
 DIRINC := ./mandatory/inc/
 
-OBJDST_DIR := ./mandatory/objdst_dir/
+OBJDST_DIR :=	./mandatory/objdst_dir/
 
 SRCS := $(wildcard $(DIRSRC)*.cpp) 
 
