@@ -13,3 +13,4 @@
 * **[RFC 7231 HTTP protocol(June 2014)](https://datatracker.ietf.org/doc/html/rfc7231#section-1)**
 * **[RFC 2616 HTTP protocol(June 1999)](https://datatracker.ietf.org/doc/html/rfc2616#section-9.5)**
 * **[Unix Network Programming Volume 1](https://doc.lagout.org/programmation/unix/Unix%20Network%20Programming%20Volume%201.pdf)**
+* **[select, poll, epoll and kqueue](https://nima101.github.io/io_multiplexing)**
