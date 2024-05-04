@@ -32,7 +32,7 @@
 #include <string.h>
 
 #define MAX_CONNECTIONS 10
-#define MAX_EVENTS 10
+// #define MAX_EVENTS 10
 	class ListeningSocket
 	{
 	public:
@@ -40,6 +40,9 @@
 		bool startListening();
 		void stopListening();
 		void handleEvents();
+		int	getPort();
+		int getFd() ;
+		char *buffer;
 
 	private:
 		int port;
@@ -49,7 +52,6 @@
 	#else
 		int kq;
 	#endif
-	char buffer[1024];
 	int n;
 
 	void handleConnection(int clientSocketFd);

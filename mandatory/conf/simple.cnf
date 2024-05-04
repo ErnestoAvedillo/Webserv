@@ -18,8 +18,3 @@ server:{
 	root:docs/fusion_web/;              # root folder of site directory, full or relative path, mandatory parameter
 	index:index.html;                   # default page when requesting a directory, index.html by default
 };
-
-
-server:{port:8080,8081;host:127.0.0.1;server_name:test;error_page:/error/;client_max_body_size:1024;root:docs/fusion_web/;
-index:index.html;};server:{port:8080,8081;host:127.0.0.1;server_name:test;error_page:/error/;client_max_body_size:1024;root:docs/fusion_web/;
-index:index.html;};

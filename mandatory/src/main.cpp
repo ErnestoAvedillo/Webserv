@@ -11,8 +11,6 @@
 /* ************************************************************************** */
 
 #include "../inc/main.hpp"
-# include "../inc/Server.hpp"
-# include "../inc/WebServer.hpp"
 
 int main(int av, char **ac)
 {
@@ -23,5 +21,5 @@ int main(int av, char **ac)
 	}
 	WebServer webServer;
 	webServer.loadConfigFile(ac[1]);
-
+	webServer.launchServers();
 }

@@ -128,7 +128,17 @@ void ListeningSocket::handleEvents()
 			std::cerr << "Failed to create socket" << std::endl;
 			return false;
 		}
+		std::cout << "socketFdNNN " << socketFd << std::endl;
 
+		if (fcntl(socketFd, F_SETFL, O_NONBLOCK) < 0)
+		{
+			std::cerr << "Error" << std::endl;
+			exit(1);
+		}
+
+		int enable = 1;
+		setsockopt(socketFd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int));
+		
 		// Set up the server address
 		sockaddr_in serverAddress;
 		serverAddress.sin_family = AF_INET;
@@ -147,21 +157,7 @@ void ListeningSocket::handleEvents()
 			return false;
 		}
 
-		// Create a new kqueue
-		kq = kqueue();
-		if (kq == -1) {
-			std::cerr << "Failed to create kqueue" << std::endl;
-			return false;
-		}
-
 		// Add the socket file descriptor to the kqueue
-		struct kevent event;
-		EV_SET(&event, socketFd, EVFILT_READ, EV_ADD, 0, 0, NULL);
-		if (kevent(kq, &event, 1, NULL, 0, NULL) == -1) {
-			std::cerr << "Failed to add socket to kqueue" << std::endl;
-			return false;
-		}
-
 		std::cout << "Listening on port " << port << std::endl;
 		return true;
 	}
@@ -230,4 +226,16 @@ void ListeningSocket::handleConnection(int clientSocketFd)
 	{
 		std::cout << "Closed client socket" << std::endl;
 	}
+}
+
+int	ListeningSocket::getPort()
+{
+	std::cout << "port " << this->port << std::endl;
+	return (this->port);
+}
+
+int ListeningSocket::getFd()
+{
+	std::cout << "socketFd " << this->socketFd << std::endl;
+	return socketFd;
 }

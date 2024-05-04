@@ -54,8 +54,8 @@ void	Server::setDefaultData()
 
 Server::Server() {
 	this->setDefaultData();
-	std::map<size_t, ListeningSocket*>::iterator itb = this->port.begin();
-	std::map<size_t, ListeningSocket*>::iterator ite = this->port.end();
+	std::map<int, ListeningSocket*>::iterator itb = this->port.begin();
+	std::map<int, ListeningSocket*>::iterator ite = this->port.end();
 	while (itb != ite) {
 		if (itb->second->startListening()) {
 			itb->second->handleEvents();
@@ -65,21 +65,36 @@ Server::Server() {
 	}
 }
 
+std::vector<int>	Server::getServerFds()
+{
+	std::vector<int> fd;
+	std::map<int, ListeningSocket*>::iterator itb = this->port.begin();
+	std::map<int, ListeningSocket*>::iterator ite = this->port.end();
+	while (itb != ite) {
+		fd.push_back(itb->second->getFd());
+		itb++;
+	}
+	return fd;
+}
+
 Server::Server(std::string const &str) 
 {
+	bool ret;
 	this->setDefaultData();
 	if(this->loadData(str) == -1)
 	{
 		std::cerr << "Error: No se ha podido cargar la configuración del servidor. Parámetros por defecto establecidos." << std::endl;
 	}
-	std::map<size_t, ListeningSocket*>::iterator itb = this->port.begin();
-	std::map<size_t, ListeningSocket*>::iterator ite = this->port.end();
+	std::map<int, ListeningSocket*>::iterator itb = this->port.begin();
+	std::map<int, ListeningSocket*>::iterator ite = this->port.end();
 	while (itb != ite) {
-		if (itb->second->startListening()){
-			itb->second->handleEvents();
-		}
-		itb->second->stopListening();
-		itb++;
+		ret  = itb->second->startListening();
+		std::cout << "Listening on port " << itb->first << "  " << ret << std::endl;
+		//std::cin.get();
+
+		// 		itb->second->handleEvents();
+	// 	itb->second->stopListening();
+	 	itb++;
 	}
 }
 
@@ -149,6 +164,7 @@ int Server::loadData(std::string const &content) {
 
 void Server::setPort(std::string const &port)
 {
+	ListeningSocket *ls;
 	std::string aux;
 	std::istringstream portStream(port);
 	if(this->port.size() != 0)
@@ -164,10 +180,16 @@ void Server::setPort(std::string const &port)
 				exit(1);
 			}
 			for(size_t i = stringToSizeT(aux2[0]); i <= stringToSizeT(aux2[1]); i++)
-				this->port[i] = new ListeningSocket(i);
+			{
+				ls = new ListeningSocket(i);
+				this->port[ls->getFd()] = ls;
+			}
 		}
 		else
-			this->port[stringToSizeT(aux)] = new ListeningSocket(stringToSizeT(aux));
+		{
+			ls = new ListeningSocket(stringToSizeT(aux));
+			this->port[ls->getFd()] = ls;
+		}
 	}
 }
 
@@ -219,7 +241,7 @@ void Server::setIsDefault(std::string const &is_default)
 }
 
 ListeningSocket *Server::getPort(int i) {
-	std::map<size_t, ListeningSocket *>::iterator it = this->port.find(i);
+	std::map<int, ListeningSocket *>::iterator it = this->port.find(i);
 	if (it == this->port.end())
 	{
 		std::cerr << "Error: Puerto no encontrado." << std::endl;
@@ -256,3 +278,12 @@ std::string Server::getIndex() {
 	return this->index;
 }
 
+ListeningSocket *Server::getListening(int i) {
+	std::map<int, ListeningSocket *>::iterator it = this->port.find(i);
+	if (it == this->port.end())
+	{
+		std::cerr << "Error: Puerto no encontrado." << std::endl;
+		exit(1);
+	}
+	return this->port[i];
+}
