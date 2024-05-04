@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/07 11:23:40 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/01 19:01:16 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/04 14:15:12 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,9 +23,6 @@
 #include <map>
 #include <sys/stat.h>
 #include "unp.h"
-#include "Header.hpp"
-#include "Request.hpp"
-#include "SendFile.hpp"
 #include "commonFunctions.hpp"
 #include "itos.hpp"
 #include "WebServer.hpp"

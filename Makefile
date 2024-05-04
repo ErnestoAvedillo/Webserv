@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+         #
+#    By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/01 15:03:29 by eavedill          #+#    #+#              #
-#    Updated: 2024/05/01 19:44:22 by eavedill         ###   ########.fr        #
+#    Updated: 2024/05/04 11:48:12 by eavedill         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -40,6 +40,9 @@ CC:= g++
 
 ifeq (,$(findstring "Linux",$(shell uname -s)))
 	SYSTEM := -DLNX
+endif
+ifeq (,$(findstring "Darwin",$(shell uname -s)))
+	SYSTEM := -DMAC
 endif
 
 FLAGS := -Wall -Werror -Wextra -pedantic -g -std=c++98 $(SYSTEM) -fsanitize=address 

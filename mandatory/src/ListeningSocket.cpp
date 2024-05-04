@@ -118,6 +118,7 @@ void ListeningSocket::handleEvents()
 }
 
 #else
+
 	ListeningSocket::ListeningSocket(int port) : port(port), socketFd(-1), kq(-1) {}
 
 	bool ListeningSocket::startListening() {
@@ -154,7 +155,7 @@ void ListeningSocket::handleEvents()
 		}
 
 		// Add the socket file descriptor to the kqueue
-		kevent_t event;
+		struct kevent event;
 		EV_SET(&event, socketFd, EVFILT_READ, EV_ADD, 0, 0, NULL);
 		if (kevent(kq, &event, 1, NULL, 0, NULL) == -1) {
 			std::cerr << "Failed to add socket to kqueue" << std::endl;
@@ -177,7 +178,7 @@ void ListeningSocket::handleEvents()
 	}
 
 	void ListeningSocket::handleEvents() {
-		kevent_t events[10];
+		struct kevent events[10];
 		while (true) {
 			int numEvents = kevent(kq, NULL, 0, events, 10, NULL);
 			if (numEvents == -1) {

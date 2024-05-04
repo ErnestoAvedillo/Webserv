@@ -2,6 +2,10 @@
 #include <iostream>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+# include <netdb.h>
+# include <unistd.h>
+# include <stdlib.h>
+# include <string.h>
 
 #ifdef LNX
 	#include </usr/include/sys/socket.h>
@@ -10,8 +14,13 @@
 	#include </usr/include/sys/types.h>
 	//#include </usr/include/sys/event2/event-config.h>
 #else
-	#include <sys/socket.h>
+# include <sys/socket.h>
+# include <sys/types.h>
+
+
+
 	#include <sys/event.h>
+	#include <sys/time.h>
 #endif
 
 #include <unistd.h>
