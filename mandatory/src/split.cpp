@@ -1,25 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   unp.h                                              :+:      :+:    :+:   */
+/*   split.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/16 22:33:15 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/04 12:58:22 by eavedill         ###   ########.fr       */
+/*   Created: 2024/04/24 17:43:57 by eavedill          #+#    #+#             */
+/*   Updated: 2024/04/27 18:34:57 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-/* Our own header. Tabs are set for 4 spaces, not 8 */
+#include <string>
+#include <vector>
+#include <sstream>
 
-#pragma once
-/* If anything changes in the following list of #includes, must change acsite.m4 also, for configure's tests. */
+std::vector<std::string> splitString(const std::string& str, char delimiter) {
+	std::vector<std::string> result;
+	std::string token;
+	std::istringstream tokenStream(str);
 
-#define LISTENQ 1024
-#define MAXLINE 4096
-#define BUFFSIZE 8192
-#define SERV_PORT 9877
+	while (std::getline(tokenStream, token, delimiter)) {
+		result.push_back(token);
+	}
 
-#define SA struct sockaddr
-
-#define INDEX "./www/index.html"
+	return result;
+}

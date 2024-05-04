@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/07 11:21:58 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/03 13:48:28 by jcheel-n         ###   ########.fr       */
+/*   Updated: 2024/05/04 14:16:00 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,74 +14,14 @@
 # include "../inc/Server.hpp"
 # include "../inc/WebServer.hpp"
 
-int main()
+int main(int av, char **ac)
 {
-	// std::cout << "Hola, empezamos el proyecto" << std::endl;
-	Request req;
-	
-	req.loadCompleteRequest("GET / HTTP/1.1\r\nHost: localhost:8080\r\nUser-Agent: curl/7.68.0\r\nAccept: */*\r\n\r\n");
-	std::cout << req.getMethod() << std::endl;
-	std::cout << req.getPath() << std::endl;
-	std::cout << req.getProtocol() << std::endl;
-	std::map<std::string, std::string> header = req.getHeader();
-	for (std::map<std::string, std::string>::iterator it = header.begin(); it != header.end(); it++)
+		if (av != 2)
 	{
-		std::cout << it->first << ": " << it->second << std::endl;
+		std::cerr << "Error: No se ha pasado el archivo de configuración" << std::endl;
+		return 1;
 	}
-	
-	//ws.loadConfigFile("./conf/default");
+	WebServer webServer;
+	webServer.loadConfigFile(ac[1]);
 
-	WebServer ws;
-	Server server;
-	
-	server.setPort(2000);
-	server.setHost("localhost");
-	server.setServerName("localhost");
-	server.setErrorPage("error.html");
-	server.setClientBodySize(1000);
-	server.setRoot("/var/www/html");
-	server.setIndex("index.html");
-	server.setIsDefault(true);
-	// server.printServer();
-	
-	// ws.servers.push_back(server);
-	
-	Server server2;
-	server2.setPort(1000);
-	server2.setHost("localhost");
-	server2.setServerName("localhost");
-	server2.setErrorPage("error.html");
-	server2.setClientBodySize(1000);
-	server2.setRoot("/var/www/html");
-	server2.setIndex("index.html");
-	server2.setIsDefault(true);
-	
-	// server2.printServer();
-	
-	// ws.servers.push_back(server2);
-	//ws.loadConfigFile("./conf/default");
-	
-	Server server3;
-	server3.setPort(80);
-	server3.setHost("localhost");
-	server3.setServerName("localhost");
-	server3.setErrorPage("error.html");
-	server3.setClientBodySize(1000);
-	server3.setRoot("/var/www/html");
-	server3.setIndex("index.html");
-	server3.setIsDefault(true);
-	// server3.printServer();
-	
-	// ws.servers.push_back(server3);
-
-	ws.servers.push_back(server);
-	ws.servers.push_back(server3);
-	ws.servers.push_back(server2);
-	for (std::vector<Server>::iterator it = ws.servers.begin(); it != ws.servers.end(); it++)
-	{
-		it->printServer();
-	}
-
-	ws.launchServers();
-	return 0;
 }

@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+         #
+#    By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/01 15:03:29 by eavedill          #+#    #+#              #
-#    Updated: 2024/04/25 00:22:25 by jcheel-n         ###   ########.fr        #
+#    Updated: 2024/05/04 11:48:12 by eavedill         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -35,12 +35,20 @@ DSTS := $(SRCS:$(DIRSRC)%.cpp=$(OBJDST_DIR)%.d)
 
 RM := rm -rfd
 
-CC:= c++
+CC:= g++
 
-FLAGS := -Wall -Werror -Wextra -pedantic -g -std=c++98 -fsanitize=address
 
-all: $(NAME) Makefile
-	
+ifeq (,$(findstring "Linux",$(shell uname -s)))
+	SYSTEM := -DLNX
+endif
+ifeq (,$(findstring "Darwin",$(shell uname -s)))
+	SYSTEM := -DMAC
+endif
+
+FLAGS := -Wall -Werror -Wextra -pedantic -g -std=c++98 $(SYSTEM) -fsanitize=address 
+
+all:	print_system $(NAME) Makefile 
+
 $(NAME): $(DSTS) $(OBJS) 
 	@printf "\rLinking: $(NAME)                                                  \n"
 	@$(CC) $(FLAGS) -I $(DIRINC) $(OBJS) -o $(NAME)
@@ -52,7 +60,7 @@ $(OBJDST_DIR)%.o: $(DIRSRC)%.cpp $(OBJDST_DIR)%.d
 
 $(OBJDST_DIR)%.d: $(DIRSRC)%.cpp
 	@mkdir -p $(OBJDST_DIR)
-	@printf "$(BLUE)\rCreating Dependencies $*.d: $(notdir $<).                   $(RESET)"
+	@printf "$(BLUE)\rCreating Dependencies $*.d: $(notdir $<). with flag $(SYSTEM)                       $(RESET)"
 	@set -e; rm -f $@; \
 	$(CC) -M $(FLAGS) $< > $@.$$$$; \
 	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
@@ -67,6 +75,7 @@ print:
 	@echo OBJDST_DIR: $(OBJDST_DIR)
 	@echo DIRSRC: $(DIRSRC)
 	@echo DIRINC: $(DIRINC)
+	@echo FLAG SISTEMA: $(SYSTEM)
 
 clean:
 	@printf "$(RED)Removing objects folder $(OBJDST_DIR).$(RESET)\n"
@@ -78,7 +87,11 @@ fclean: clean
 
 re: fclean all
 
-PHONY: all clean fclean re print
+print_system:
+	@printf "\n$(YELLOW)System compiles $(NAME) with $(shell uname -s)$(RESET)\n"
+
+
+PHONY: all clean fclean re print lnx print_system
 
 .SILENT:
 
@@ -87,3 +100,6 @@ ifeq (,$(findstring re,$(MAKECMDGOALS)))
 -include $(DSTS)
 endif
 endif
+
+
+

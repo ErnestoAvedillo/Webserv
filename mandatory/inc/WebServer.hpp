@@ -37,19 +37,18 @@ class WebServer {
 		/* Socket Configuration */
 		std::vector<int>	serverSocket;
 		std::vector<int>	serverAccepted;
-		// struct kevent		eventSet;
+		std::vector<Server *>	servers;
 		int kq;
-		int client_events[MAX_CLIENTS];// {0};
+		int client_events[MAX_CLIENTS];
+		void	processConfigFile();
 
 	public:
-		std::vector<Server>	servers;
 		WebServer();
 		~WebServer();
 		WebServer(WebServer const &copy);
 		WebServer &operator=(WebServer const &copy);
 
 		void	loadConfigFile(std::string configFile);
-		void	processConfigFile(std::string fileContent);
 		
 		
 		void	launchServers();
@@ -67,4 +66,3 @@ class WebServer {
 		void removeFilter(struct kevent eventList, int type);
 		void addFilter(struct kevent eventList, int type);
 };
-

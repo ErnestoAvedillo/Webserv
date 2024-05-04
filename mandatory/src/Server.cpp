@@ -1,145 +1,258 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Server.cpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/04/27 14:24:35 by eavedill          #+#    #+#             */
+/*   Updated: 2024/05/04 14:18:39 by eavedill         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../inc/Server.hpp"
 
-Server::Server()
+std::map<std::string, int> var_names_server()
 {
-	std::cout << "Server created" << std::endl;
+	std::map<std::string, int> varnames;
+	varnames[VAR_PORT] = 0;
+	varnames[VAR_HOST] = 0;
+	varnames[VAR_SERVER_NAME] = 0;
+	varnames[VAR_ERROR_PAGE] = 0;
+	varnames[VAR_ROOT] = 0;
+	varnames[VAR_INDEX] = 0;
+	varnames[VAR_CLIENT_MAX_BODY_SIZE] = 0;
+	return varnames;
 }
 
-Server::~Server()
+std::map<std::string, void (Server::*)(const std::string &)> getServerMethods()
 {
-	std::cout << "Server destroyed" << std::endl;
+	std::map<std::string, void (Server::*)(const std::string &)> serverMethods;
+
+	serverMethods[VAR_PORT] = &Server::setPort;
+	serverMethods[VAR_HOST] = &Server::setHost;
+	serverMethods[VAR_SERVER_NAME] = &Server::setServerName;
+	serverMethods[VAR_ERROR_PAGE] = &Server::setErrorPage;
+	serverMethods[VAR_ROOT] = &Server::setRoot;
+	serverMethods[VAR_INDEX] = &Server::setIndex;
+	serverMethods[VAR_CLIENT_MAX_BODY_SIZE] = &Server::setClientMaxBodySize;
+	return serverMethods;
 }
 
-Server::Server(Server const &copy)
+void	Server::setDefaultData()
 {
+	this->isDefault = false;
+	this->port[443] = new ListeningSocket(443);
+	this->maxClientBodySize = 1024;
+	this->Host = "DefaultHost";
+	this->serverName = "DefaultServer";
+	this->errorPage = "/Error";
+	this->root = "/";
+	this->index = "index.html";
+}
+
+
+Server::Server() {
+	this->setDefaultData();
+	std::map<size_t, ListeningSocket*>::iterator itb = this->port.begin();
+	std::map<size_t, ListeningSocket*>::iterator ite = this->port.end();
+	while (itb != ite) {
+		if (itb->second->startListening()) {
+			itb->second->handleEvents();
+		}
+		itb->second->stopListening();
+		itb++;
+	}
+}
+
+Server::Server(std::string const &str) 
+{
+	this->setDefaultData();
+	if(this->loadData(str) == -1)
+	{
+		std::cerr << "Error: No se ha podido cargar la configuración del servidor. Parámetros por defecto establecidos." << std::endl;
+	}
+	std::map<size_t, ListeningSocket*>::iterator itb = this->port.begin();
+	std::map<size_t, ListeningSocket*>::iterator ite = this->port.end();
+	while (itb != ite) {
+		if (itb->second->startListening()){
+			itb->second->handleEvents();
+		}
+		itb->second->stopListening();
+		itb++;
+	}
+}
+
+Server::~Server() {}
+
+Server::Server(Server const &copy) {
 	*this = copy;
 }
 
-Server &Server::operator=(Server const &copy)
-{
-	if (this != &copy)
-	{
+Server &Server::operator=(Server const &copy) {
+	if (this != &copy) {
 		this->isDefault = copy.isDefault;
 		this->port = copy.port;
-		this->clientBodySize = copy.clientBodySize;
-		this->host = copy.host;
+		this->maxClientBodySize = copy.maxClientBodySize;
+		this->Host = copy.Host;
 		this->serverName = copy.serverName;
 		this->errorPage = copy.errorPage;
 		this->root = copy.root;
 		this->index = copy.index;
-		this->locations = copy.locations;
+		//this->locations = copy.locations;
 	}
 	return *this;
 }
 
-int Server::getPort()
-{
-	return this->port;
+int Server::loadData(std::string const &content) {
+	std::string line;
+	std::string straux;
+	std::map<std::string, int> varnames = var_names_server();
+	if (std::count(content.begin(), content.end(), '{') - std::count(content.begin(), content.end(), '}') != 0)
+	{
+		std::cerr << "Error: Llaves no balanceadas" << std::endl;
+		return -1;
+	}
+	if(content.find("server:{") != 0)
+	{
+		std::cerr << "Error: La configuración del servidor debe empezar con \"server:{\"" << std::endl;
+		return -1;
+	}
+	
+	std::istringstream fileContentStream(content.substr(8, content.length() - 1));
+	while (std::getline(fileContentStream, line,';'))
+	{
+		if(line == "}")
+			continue;
+		std::map<std::string, int>::iterator it = varnames.begin();
+		while (it != varnames.end())
+		{
+			if (line.find(it->first) != std::string::npos)
+			{
+				if (it->second == 1)
+					std::cout << "Error: " << it->first << " ha sido ya asignado." << std::endl;
+				it->second = 1;
+				break;
+			}
+			it++;
+		}
+		if (it == varnames.end())
+			std::cout << "Error: Variable no reconocida: " << line.substr(0, line.find(":")) << std::endl;
+		else
+		{
+			straux = line.substr(line.find(":") + 1, line.size());
+			(this->*getServerMethods()[it->first])(straux);
+		}
+	}
+	return 0;
 }
 
-std::string Server::getHost()
+void Server::setPort(std::string const &port)
 {
-	return this->host;
+	std::string aux;
+	std::istringstream portStream(port);
+	if(this->port.size() != 0)
+		this->port.clear();
+	while (std::getline(portStream, aux, ','))
+	{	
+		if(aux.find(":") != std::string::npos)
+		{
+			std::vector<std::string>  aux2 = splitString(aux, ':');
+			if (aux2.size() != 2)
+			{
+				std::cout << "Error: Puerto mal definido." << std::endl;
+				exit(1);
+			}
+			for(size_t i = stringToSizeT(aux2[0]); i <= stringToSizeT(aux2[1]); i++)
+				this->port[i] = new ListeningSocket(i);
+		}
+		else
+			this->port[stringToSizeT(aux)] = new ListeningSocket(stringToSizeT(aux));
+	}
 }
 
-std::string Server::getServerName()
+void Server::setHost(std::string const &host)
 {
-	return this->serverName;
+	this->Host = host;
 }
 
-std::string Server::getErrorPage()
+void Server::setServerName(std::string const &server_name)
 {
-	return this->errorPage;
+	this->serverName = server_name;
 }
 
-std::string Server::getRoot()
+void Server::setErrorPage(std::string const &error_page)
 {
-	return this->root;
+	this->errorPage = error_page;
 }
 
-std::string Server::getIndex()
+void Server::setClientMaxBodySize(std::string const &max_client_body_size)
 {
-	return this->index;
+	this->maxClientBodySize = stringToSizeT(max_client_body_size);
 }
 
-// std::vector<class Location> Server::getLocations()
-// {
-// 	return this->locations;
-// }
-
-int Server::getClientBodySize()
-{
-	return this->clientBodySize;
-}
-
-bool Server::getIsDefault()
-{
-	return this->isDefault;
-}
-
-void Server::setIsDefault(bool isDefault)
-{
-	this->isDefault = isDefault;
-}
-
-void Server::setClientBodySize(int clientBodySize)
-{
-	this->clientBodySize = clientBodySize;
-}
-
-void Server::setPort(int port)
-{
-	this->port = port;
-}
-
-void Server::setHost(std::string host)
-{
-	this->host = host;
-}
-
-void Server::setServerName(std::string serverName)
-{
-	this->serverName = serverName;
-}
-
-void Server::setErrorPage(std::string errorPage)
-{
-	this->errorPage = errorPage;
-}
-
-void Server::setRoot(std::string root)
+void Server::setRoot(std::string const &root)
 {
 	this->root = root;
 }
 
-void Server::setIndex(std::string index)
+void Server::setIndex(std::string const &index)
 {
 	this->index = index;
 }
 
-// void Server::setLocations(std::map<std::string, Location> locations)
-// {
-// 	this->locations = locations;
-// }
-
-// void Server::addLocation(std::string path, Location location)
-// {
-// 	this->locations[path] = location;
-// }
-
-void Server::printServer()
-{
-	std::cout << "---------------------------------------"  << std::endl;
-	std::cout << "Port: " << this->port << std::endl;
-	std::cout << "Host: " << this->host << std::endl;
-	std::cout << "ServerName: " << this->serverName << std::endl;
-	std::cout << "ErrorPage: " << this->errorPage << std::endl;
-	std::cout << "Root: " << this->root << std::endl;
-	std::cout << "Index: " << this->index << std::endl;
-	// std::cout << "Locations: " << std::endl;
-	// for (std::map<std::string, Location>::iterator it = this->locations.begin(); it != this->locations.end(); it++)
-	// {
-	// 	std::cout << "Path: " << it->first << std::endl;
-	// 	it->second.printLocation();
-	// }
+void Server::addLocation(std::string const &content) {
+	this->locations.push_back(new Location(content));
 }
+
+void Server::setIsDefault(std::string const &is_default)
+{
+	if (is_default == "true")
+		this->isDefault = true;
+	else if (is_default == "false")
+		this->isDefault = false;
+	else
+	{
+		std::cerr << "Error: Valor de is_default no reconocido." << std::endl;
+		exit(1);
+	}
+}
+
+ListeningSocket *Server::getPort(int i) {
+	std::map<size_t, ListeningSocket *>::iterator it = this->port.find(i);
+	if (it == this->port.end())
+	{
+		std::cerr << "Error: Puerto no encontrado." << std::endl;
+		exit(1);
+	}
+	return this->port[i];
+}
+
+size_t Server::getClientBodySize() {
+	return this->maxClientBodySize;
+}
+
+bool Server::getIsDefault() {
+	return this->isDefault;
+}
+
+std::string Server::getHost() {
+	return this->Host;
+}
+
+std::string Server::getServerName() {
+	return this->serverName;
+}
+
+std::string Server::getErrorPage() {
+	return this->errorPage;
+}
+
+std::string Server::getRoot() {
+	return this->root;
+}
+
+std::string Server::getIndex() {
+	return this->index;
+}
+

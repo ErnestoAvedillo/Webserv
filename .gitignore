@@ -7,8 +7,11 @@ Websrv
 *.log
 *.json
 Unix Network *.pdf
-
+Resources/Filetypes/oldfiles/
+mandatory/objdst_dir/
+manuals
 .DS_Store
+Resources/Filetypes/Makefile
 # Prerequisites
 *.d
 
