@@ -4,23 +4,22 @@
 # include <sstream>
 # include <fstream>
 # include <iostream>
+
 # include "Server.hpp"
 # include "Location.hpp"
-# include <sys/socket.h>
-# include <arpa/inet.h>
-# include <netinet/in.h>
-# include <arpa/inet.h>
-# include <sys/event.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <unistd.h>
 # include "Request.hpp"
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netdb.h>
-  #include <arpa/inet.h>
+
+# include <sys/socket.h>
+# include <netinet/in.h>
+# include <sys/event.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <unistd.h>
+# include <fcntl.h>
+# include <sys/types.h>
+# include <netdb.h>
+# include <arpa/inet.h>
+
 #define BACKLOG 10
 #define MAX_EVENTS 100
 #define MAX_CLIENTS 100
