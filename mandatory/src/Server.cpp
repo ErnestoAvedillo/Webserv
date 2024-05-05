@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/27 14:24:35 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/04 14:18:39 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/05 14:08:38 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,50 +51,24 @@ void	Server::setDefaultData()
 	this->index = "index.html";
 }
 
-
 Server::Server() {
-	this->setDefaultData();
-	std::map<int, ListeningSocket*>::iterator itb = this->port.begin();
-	std::map<int, ListeningSocket*>::iterator ite = this->port.end();
-	while (itb != ite) {
-		if (itb->second->startListening()) {
-			itb->second->handleEvents();
-		}
-		itb->second->stopListening();
-		itb++;
-	}
-}
-
-std::vector<int>	Server::getServerFds()
-{
-	std::vector<int> fd;
-	std::map<int, ListeningSocket*>::iterator itb = this->port.begin();
-	std::map<int, ListeningSocket*>::iterator ite = this->port.end();
-	while (itb != ite) {
-		fd.push_back(itb->second->getFd());
-		itb++;
-	}
-	return fd;
-}
-
-Server::Server(std::string const &str) 
-{
 	bool ret;
 	this->setDefaultData();
-	if(this->loadData(str) == -1)
-	{
-		std::cerr << "Error: No se ha podido cargar la configuración del servidor. Parámetros por defecto establecidos." << std::endl;
-	}
 	std::map<int, ListeningSocket*>::iterator itb = this->port.begin();
 	std::map<int, ListeningSocket*>::iterator ite = this->port.end();
 	while (itb != ite) {
 		ret  = itb->second->startListening();
 		std::cout << "Listening on port " << itb->first << "  " << ret << std::endl;
-		//std::cin.get();
+		itb++;
+	}
+}
 
-		// 		itb->second->handleEvents();
-	// 	itb->second->stopListening();
-	 	itb++;
+Server::Server(std::string const &str) 
+{
+	if(this->loadData(str) == -1)
+	{
+		std::cerr << "Error: No se ha podido cargar la configuración del servidor." << std::endl;
+		exit(1);
 	}
 }
 
@@ -179,6 +153,11 @@ void Server::setPort(std::string const &port)
 				std::cout << "Error: Puerto mal definido." << std::endl;
 				exit(1);
 			}
+			if(stringToSizeT(aux2[0]) >= stringToSizeT(aux2[1]))
+			{
+				std::cout << "Error: puerto " << aux2[0] << "<" << aux[1] << "Definicion de puertos incorrecta." << std::endl;
+			}
+
 			for(size_t i = stringToSizeT(aux2[0]); i <= stringToSizeT(aux2[1]); i++)
 			{
 				ls = new ListeningSocket(i, this);
@@ -286,4 +265,16 @@ ListeningSocket *Server::getListening(int i) {
 		exit(1);
 	}
 	return this->port[i];
+}
+
+std::vector<int>	Server::getServerFds()
+{
+	std::vector<int> fd;
+	std::map<int, ListeningSocket*>::iterator itb = this->port.begin();
+	std::map<int, ListeningSocket*>::iterator ite = this->port.end();
+	while (itb != ite) {
+		fd.push_back(itb->second->getFd());
+		itb++;
+	}
+	return fd;
 }

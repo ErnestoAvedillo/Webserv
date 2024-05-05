@@ -36,6 +36,7 @@ class WebServer {
 		std::string 		fileContent;
 		/* Socket Configuration */
 		std::map<int, ListeningSocket *>	serverSocket;
+		std::map<int, ListeningSocket *>	acceptedSocket;
 		
 		std::vector<Server *>	servers;
 		

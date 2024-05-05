@@ -97,6 +97,7 @@ void WebServer::launchServers()
 	this->kq = kqueue();
 	//this->createSocket();
 	this->addEventSet();
+	std::cout << "Nr. of Servers launched " << this->servers.size() << std::endl;
 	for (size_t i = 0; i < this->servers.size(); i++)
 	{
 		std::vector<int> serverFds = this->servers[i]->getServerFds();
@@ -104,10 +105,10 @@ void WebServer::launchServers()
 			std::cout << "Server " << i << " listening on " << serverFds[j] << std::endl;
 			//erverSocket[serverFds[j]] = this->servers[i]->getListening(serverFds[j]);
 	}
-	
-	for (size_t i = 1; i < this->servers.size(); i++)
+	for (size_t i = 0; i < this->servers.size(); i++)
 	{
 		sk = this->servers[i]->getServerFds();
+		std::cout << "Server " << i << " listening on " << sk.size() << " ports" << std::endl;
 		for(size_t j = 0; j < sk.size(); j++)
 		{
 			serverSocket[sk[j]] = this->servers[i]->getListening(sk[j]);
@@ -299,7 +300,23 @@ void	WebServer::eventLoop()
 	
 	while (1)
 	{
+		std::cout << "Waiting for events" << std::endl;
+		// std::map<int, ListeningSocket*>::iterator itb = this->serverSocket.begin();
+		// std::map<int, ListeningSocket*>::iterator ite = this->serverSocket.end();
+		// while (itb != ite)
+		// {
+		// 	std::cout << "Server socket in list " << itb->first << " correspondng to port " << itb->second->getPort() << std::endl;
+		// 	itb++;
+		// }
+
 		int num_events = kevent(kq, NULL, 0, evList, MAX_EVENTS, NULL);
+		if (num_events == -1)
+		{
+			std::cerr << "Error: could not wait for events" << std::endl;
+			exit(1);
+		}
+		else
+			std::cout << "Events received " << num_events << std::endl;
 		for (int i = 0; i < num_events; i++)
 		{
 			std::cout << "Event ident " << evList[i].ident << std::endl;
@@ -307,16 +324,19 @@ void	WebServer::eventLoop()
 			{
 				struct sockaddr_storage addr;
 				socklen_t socklen = sizeof(addr);
-				char ip[INET6_ADDRSTRLEN];
+				// char ip[INET6_ADDRSTRLEN];
 				int fd = accept(evList[i].ident, (struct sockaddr *) &addr, &socklen);
 				if (fd < 0)
 				{
 					std::cerr << "Error accepting connection" << std::endl;
 					continue; // Continue to the next event
 				}
-				this->serverSocket[fd] = this->servers[i]->getListening(evList[i].ident);
-				inet_ntop(addr.ss_family, &((struct sockaddr_in *)&addr)->sin_addr, ip, sizeof(ip));
-				std::cout << "Connection from " << ip << std::endl;
+				else
+					std::cout << "Connection accepted " << fd << std::endl;
+				acceptedSocket.insert(std::pair<int, ListeningSocket *>(fd, serverSocket[evList[i].ident]->clone()));
+				// this->serverSocket[fd] = this->servers[i]->getListening(evList[i].ident);
+				// inet_ntop(addr.ss_family, &((struct sockaddr_in *)&addr)->sin_addr, ip, sizeof(ip));
+				// std::cout << "Connection from " << ip << std::endl;
 				if (addConnection(fd) == 0)
 				{
 					std::cout << "Connection accepted " << fd << std::endl;
@@ -333,12 +353,13 @@ void	WebServer::eventLoop()
 				}
 				else
 				{
-					int fd = evList[i].ident;
 					char buf[MAX_MSG_SIZE] = {0};
 				
-					if (recv(fd, buf, sizeof(buf) * MAX_MSG_SIZE, 0) > 0)
-						std::cout << buf << std::endl;
-					// this->serverSocket[fd]->buffer = buf;
+					recv(evList[i].ident, buf, sizeof(buf) * MAX_MSG_SIZE, 0);
+					// if (recv(evList[i].ident, buf, sizeof(buf) * MAX_MSG_SIZE, 0) > 0)
+						// std::cout << buf << std::endl;
+					
+					this->acceptedSocket[evList[i].ident]->setBuffer(buf);
 					// std::string tmp = buf;
 					//Request request(tmp);
 					addFilter(evList[i], EVFILT_WRITE);
@@ -354,12 +375,12 @@ void	WebServer::eventLoop()
 				}
 				else
 				{
-					std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello, World!</h1></body></html>\r\n";
-					int fd = evList[i].ident;
-					send(fd, response.c_str(), response.length(), 0);
+					acceptedSocket[evList[i].ident]->sendData(evList[i].ident);
+					// std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello, World!</h1></body></html>\r\n";
+					// send(evList[i].ident, response.c_str(), response.length(), 0);
 					// std::cout << "Response sent " << this->serverSocket[fd]->buffer <<  std::endl;
 					removeFilter(evList[i], EVFILT_WRITE);
-					removeConnection(fd);
+					removeConnection(evList[i].ident);
 				}
 			}
 		}

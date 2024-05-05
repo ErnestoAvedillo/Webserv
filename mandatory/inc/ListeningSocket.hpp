@@ -37,25 +37,29 @@ class Server;
 // #define MAX_EVENTS 10
 	class ListeningSocket
 	{
+	private:
+		Server *server;
+		int port;
+		int socketFd;
+		#ifdef LNX
+			int epollFd;
+		#else
+			int kq;
+		#endif
+		int n;
+		char *buffer;
+		
+		void handleConnection(int clientSocketFd);
+
 	public:
 		ListeningSocket(int port, Server *srv);
+		~ListeningSocket();
 		bool startListening();
 		void stopListening();
 		void handleEvents();
 		int	getPort();
 		int getFd() ;
-		char *buffer;
-
-	private:
-		Server *server;
-		int port;
-		int socketFd;
-	#ifdef LNX
-		int epollFd;
-	#else
-		int kq;
-	#endif
-	int n;
-
-	void handleConnection(int clientSocketFd);
+		void sendData(int);
+		ListeningSocket * clone();
+		void setBuffer(char *buff);
 };

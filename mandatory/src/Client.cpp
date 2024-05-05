@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 12:49:08 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/04 13:18:49 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/05 15:09:08 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,23 +85,13 @@ void Client::loadCompleteClient( std::string const &str)
 		this->addKeyReq(REQ_VER, parts[2]);
 	}
 	for (size_t i = 1; i < lines.size(); i++)
-	{
-		std::vector<std::string> parts = splitString(lines[i], ':');
-		if (parts.size() == 2)
-			this->addKeyReq(parts[0], parts[1]);
-	}
+			this->addKeyReq(lines[i].substr(0, lines[i].find(":")), lines[i].substr(lines[i].find(":") + 1, lines.size()));
 }
 std::string Client::getAnswerToSend()
 {
 	std::string answer = this->Request[REQ_VER] + " 200 OK\n";
 	
-	std::map<std::string, std::string>::iterator itb = this->Request.begin();
-	std::map<std::string, std::string>::iterator ite = this->Request.end();
-	while(itb != ite)
-	{
-		if (itb->first != REQ_VER)
-			answer += itb->first + ": " + itb->second + "\n";
-		itb++;
-	}
+
 	return (answer);
 }
+// std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello, World!</h1></body></html>\r\n";

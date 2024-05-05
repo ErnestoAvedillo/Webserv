@@ -1,11 +1,14 @@
 #include "../inc/ListeningSocket.hpp"
 
 #ifdef LNX
-ListeningSocket::ListeningSocket(int port) : port(port), socketFd(-1), epollFd(-1) 
+ListeningSocket::ListeningSocket(int myPort, Server *srv)
 {
-	std::cout << "ListeningSocket constructor for port " << port << " created." << std::endl;
+	port = myPort ;
+	server= srv;
+	socketFd = -1;
+	epollFd = -1;
+	this->startListening();
 }
-
 
 
 bool ListeningSocket::startListening()
@@ -119,7 +122,18 @@ void ListeningSocket::handleEvents()
 
 #else
 
-	ListeningSocket::ListeningSocket(int port, Server *srv) : port(port), server(srv), socketFd(-1), kq(-1) {}
+	ListeningSocket::ListeningSocket(int myPort, Server *srv)
+	{
+		port = myPort ;
+		server= srv;
+		socketFd = -1;
+		kq = -1;
+		this->startListening();
+	}
+
+	ListeningSocket::~ListeningSocket() {
+		stopListening();
+	}
 
 	bool ListeningSocket::startListening() {
 		// Create a socket
@@ -128,7 +142,7 @@ void ListeningSocket::handleEvents()
 			std::cerr << "Failed to create socket" << std::endl;
 			return false;
 		}
-		std::cout << "socketFdNNN " << socketFd << std::endl;
+		std::cout << "created socket nr:" << socketFd << std::endl;
 
 		if (fcntl(socketFd, F_SETFL, O_NONBLOCK) < 0)
 		{
@@ -147,18 +161,18 @@ void ListeningSocket::handleEvents()
 
 		// Bind the socket to the server address
 		if (bind(socketFd, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0) {
-			std::cerr << "Failed to bind socket to address" << std::endl;
+			std::cerr << "Failed to bind socket to address of port " << port << std::endl;
 			return false;
 		}
 
 		// Start listening for incoming connections
 		if (listen(socketFd, 5) < 0) {
-			std::cerr << "Failed to start listening" << std::endl;
+			std::cerr << "Failed to start listening of port " << port << std::endl;
 			return false;
 		}
 
 		// Add the socket file descriptor to the kqueue
-		std::cout << "Listening on port " << port << std::endl;
+		std::cout << "Listening of port " << port << std::endl;
 		return true;
 	}
 
@@ -175,6 +189,7 @@ void ListeningSocket::handleEvents()
 
 	void ListeningSocket::handleEvents() {
 		struct kevent events[10];
+		std::cout << "Start handling events." << std::endl;
 		while (true) {
 			int numEvents = kevent(kq, NULL, 0, events, 10, NULL);
 			if (numEvents == -1) {
@@ -194,6 +209,7 @@ void ListeningSocket::handleEvents()
 					}
 
 					// Handle the connection
+					std::cout << "Accepted connection. Handling with socket " << clientSocketFd << std::endl;
 					handleConnection(clientSocketFd);
 				}
 			}
@@ -214,8 +230,9 @@ void ListeningSocket::handleConnection(int clientSocketFd)
 	else
 	{
 		std::cout << "Received " << n << "\n bytes: " << buffer << std::endl;
-		std::string buffer = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello, World!</h1></body></html>\r\n";
-		send(clientSocketFd, buffer.c_str(), buffer.size(), 0);
+		//std::string buffer = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello, World!</h1></body></html>\r\n";
+		sendData(clientSocketFd);
+		//send(clientSocketFd, buffer.c_str(), buffer.size(), 0);
 	}
 	// Remember to close the client socket when done
 	if (close(clientSocketFd) == -1)
@@ -230,12 +247,42 @@ void ListeningSocket::handleConnection(int clientSocketFd)
 
 int	ListeningSocket::getPort()
 {
-	std::cout << "port " << this->port << std::endl;
 	return (this->port);
 }
 
 int ListeningSocket::getFd()
 {
-	std::cout << "socketFd " << this->socketFd << std::endl;
 	return socketFd;
 }
+
+void ListeningSocket::sendData(int clientSocketFd)
+{
+	std::cout << "sendData " << std::endl;
+	// std::string buffer = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello, MY World!</h1></body></html>\r\n";
+	n = send(clientSocketFd, this->buffer, strlen(this->buffer), 0);
+	if (n < 0)
+	{
+		std::cerr << "Failed to write to client" << std::endl;
+	}
+	else
+	{
+		std::cout << "Sent " << n << " bytes: " << buffer << std::endl;
+
+	}
+}
+
+ListeningSocket *ListeningSocket::clone()
+{
+	ListeningSocket *newSocket = new ListeningSocket(this->port, this->server);
+	newSocket->socketFd = this->socketFd;
+	newSocket->kq = this->kq;
+	newSocket->n = this->n;
+	newSocket->buffer = this->buffer;
+	return newSocket;
+}
+
+void ListeningSocket::setBuffer(char *buff)
+{
+	this->buffer = buff;
+}
+
