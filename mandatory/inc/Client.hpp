@@ -22,9 +22,9 @@ class Client
 {
 private:
 	std::map<std::string, std::string> Request;
-	Client();
 
 public:
+	Client();
 	Client(std::string const &);
 	Client &operator=(Client const &);
 	~Client();

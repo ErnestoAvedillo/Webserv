@@ -78,8 +78,10 @@ void Client::loadCompleteClient( std::string const &str)
 {
 	std::vector<std::string> lines = splitString(str, '\n');
 	std::vector<std::string> parts = splitString(lines[0], ' ');
-	if (lines.size() == 3)
+	//std::cout << "Lines: " << lines[0] << std::endl;
+	if (parts.size() == 3)
 	{
+		std::cout << "Parts: " << parts[0] << " " << parts[1] << " " << parts[2] << std::endl;
 		this->addKeyReq(REQ_TYPE, parts[0]);
 		this->addKeyReq(REQ_FILE, parts[1]);
 		this->addKeyReq(REQ_VER, parts[2]);
@@ -89,9 +91,32 @@ void Client::loadCompleteClient( std::string const &str)
 }
 std::string Client::getAnswerToSend()
 {
-	std::string answer = this->Request[REQ_VER] + " 200 OK\n";
 	
+	//std::string answer = this->Request[REQ_VER] + " 200 OK\n";
+	// std::string answer = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello, World!</h1></body></html>\r\n";
+	std::string answer = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n";
+	
+	// Get File path
+	// Get File Content
+	std::string filePath = this->Request[REQ_FILE];
+	std::cout << "File Path: " << filePath << "$" << std::endl;
+	std::ifstream file;
+	std::string file_content;
+	filePath = "." + filePath;
+	file.open(filePath, std::ios::in);
+	if (!file)
+	{
+		std::cerr << "File not found" << std::endl;
+		return ("HTTP/1.1 404 Not Found\r\nContent-Type: text/html\r\n\r\n<html><body><h1>404 Not Found</h1></body></html>\r\n");
+	}
+	std::string line;
+	while (std::getline(file, line))
+		file_content += line;
+	file.close();
 
+	answer += file_content;
+	// std::cout << "File Content: " << file_content << std::endl;
+	// std::cout << "Answer: " << answer << std::endl;
+	// answer += file_content.size()
 	return (answer);
 }
-// std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello, World!</h1></body></html>\r\n";

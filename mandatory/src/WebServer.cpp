@@ -359,7 +359,7 @@ void	WebServer::eventLoop()
 					// if (recv(evList[i].ident, buf, sizeof(buf) * MAX_MSG_SIZE, 0) > 0)
 						// std::cout << buf << std::endl;
 					
-					this->acceptedSocket[evList[i].ident]->setBuffer(buf);
+					this->acceptedSocket[evList[i].ident]->loadRequest(buf);
 					// std::string tmp = buf;
 					//Request request(tmp);
 					addFilter(evList[i], EVFILT_WRITE);
@@ -375,6 +375,7 @@ void	WebServer::eventLoop()
 				}
 				else
 				{
+					
 					acceptedSocket[evList[i].ident]->sendData(evList[i].ident);
 					// std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello, World!</h1></body></html>\r\n";
 					// send(evList[i].ident, response.c_str(), response.length(), 0);

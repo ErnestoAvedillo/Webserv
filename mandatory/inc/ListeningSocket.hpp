@@ -34,6 +34,9 @@
 #define MAX_CONNECTIONS 10
 class Server;
 #include "Server.hpp"
+
+class Client;
+#include "Client.hpp"
 // #define MAX_EVENTS 10
 	class ListeningSocket
 	{
@@ -47,19 +50,20 @@ class Server;
 			int kq;
 		#endif
 		int n;
-		char *buffer;
-		
+		//char *buffer;
+		Client client;
 		void handleConnection(int clientSocketFd);
 
 	public:
 		ListeningSocket(int port, Server *srv);
 		~ListeningSocket();
+		
 		bool startListening();
 		void stopListening();
-		void handleEvents();
 		int	getPort();
 		int getFd() ;
 		void sendData(int);
+		void loadRequest(char *buff);
+		
 		ListeningSocket * clone();
-		void setBuffer(char *buff);
 };
