@@ -56,6 +56,7 @@ class Client;
 
 	public:
 		ListeningSocket(int port, Server *srv);
+		ListeningSocket(Server *srv);
 		~ListeningSocket();
 		
 		bool startListening();
@@ -64,6 +65,6 @@ class Client;
 		int getFd() ;
 		void sendData(int);
 		void loadRequest(char *buff);
-		
+
 		ListeningSocket * clone();
 };

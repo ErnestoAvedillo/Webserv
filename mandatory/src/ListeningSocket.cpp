@@ -130,6 +130,10 @@ void ListeningSocket::handleEvents()
 		kq = -1;
 		this->startListening();
 	}
+	ListeningSocket::ListeningSocket(Server *srv)
+	{
+		this->server = srv;
+	}
 
 	ListeningSocket::~ListeningSocket() {
 		stopListening();
@@ -222,7 +226,7 @@ void ListeningSocket::sendData(int clientSocketFd)
 
 ListeningSocket *ListeningSocket::clone()
 {
-	ListeningSocket *newSocket = new ListeningSocket(this->port, this->server);
+	ListeningSocket *newSocket = new ListeningSocket(this->server);
 	newSocket->socketFd = this->socketFd;
 	newSocket->kq = this->kq;
 	newSocket->n = this->n;
