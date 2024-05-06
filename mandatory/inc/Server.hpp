@@ -9,7 +9,6 @@
 # include <string>
 # include <algorithm>
 # include "commonFunctions.hpp"
-# include "ListeningSocket.hpp"
 # include "Location.hpp"
 
 #define VAR_PORT	"port"
@@ -20,10 +19,13 @@
 #define VAR_INDEX	"index"
 #define VAR_CLIENT_MAX_BODY_SIZE	"client_max_body_size"
 
+class ListeningSocket;
+#include "ListeningSocket.hpp"
+
 class Server {
 	protected:
 		bool		isDefault;
-		std::map <size_t,ListeningSocket *>	port;
+		std::map <int,ListeningSocket *>	port;
 		size_t			maxClientBodySize;
 		std::string	Host;
 		std::string	serverName;
@@ -49,8 +51,10 @@ class Server {
 		void	setIndex(std::string const &);
 		void	addLocation(std::string const &);
 		void	setIsDefault(std::string const &);
+		ListeningSocket *	getListening(int i);
+		std::vector<int>	getServerFds();
 
-		ListeningSocket *		getPort(int i);
+		ListeningSocket *		getPort(int i); 
 		size_t			getClientBodySize();
 		bool getIsDefault();
 		std::string	getHost();

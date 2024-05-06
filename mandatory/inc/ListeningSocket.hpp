@@ -32,25 +32,39 @@
 #include <string.h>
 
 #define MAX_CONNECTIONS 10
-#define MAX_EVENTS 10
+class Server;
+#include "Server.hpp"
+
+class Client;
+#include "Client.hpp"
+// #define MAX_EVENTS 10
 	class ListeningSocket
 	{
-	public:
-		ListeningSocket(int port);
-		bool startListening();
-		void stopListening();
-		void handleEvents();
-
 	private:
+		Server *server;
 		int port;
 		int socketFd;
-	#ifdef LNX
-		int epollFd;
-	#else
-		int kq;
-	#endif
-	char buffer[1024];
-	int n;
+		#ifdef LNX
+			int epollFd;
+		#else
+			int kq;
+		#endif
+		int n;
+		//char *buffer;
+		Client client;
+		void handleConnection(int clientSocketFd);
 
-	void handleConnection(int clientSocketFd);
+	public:
+		ListeningSocket(int port, Server *srv);
+		ListeningSocket(Server *srv);
+		~ListeningSocket();
+		
+		bool startListening();
+		void stopListening();
+		int	getPort();
+		int getFd() ;
+		void sendData(int);
+		void loadRequest(char *buff);
+
+		ListeningSocket * clone();
 };

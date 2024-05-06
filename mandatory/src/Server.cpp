@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/27 14:24:35 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/04 14:18:39 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/05 14:08:38 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ std::map<std::string, void (Server::*)(const std::string &)> getServerMethods()
 void	Server::setDefaultData()
 {
 	this->isDefault = false;
-	this->port[443] = new ListeningSocket(443);
+	this->port[443] = new ListeningSocket(443, this);
 	this->maxClientBodySize = 1024;
 	this->Host = "DefaultHost";
 	this->serverName = "DefaultServer";
@@ -51,35 +51,24 @@ void	Server::setDefaultData()
 	this->index = "index.html";
 }
 
-
 Server::Server() {
+	bool ret;
 	this->setDefaultData();
-	std::map<size_t, ListeningSocket*>::iterator itb = this->port.begin();
-	std::map<size_t, ListeningSocket*>::iterator ite = this->port.end();
+	std::map<int, ListeningSocket*>::iterator itb = this->port.begin();
+	std::map<int, ListeningSocket*>::iterator ite = this->port.end();
 	while (itb != ite) {
-		if (itb->second->startListening()) {
-			itb->second->handleEvents();
-		}
-		itb->second->stopListening();
+		ret  = itb->second->startListening();
+		std::cout << "Listening on port " << itb->first << "  " << ret << std::endl;
 		itb++;
 	}
 }
 
 Server::Server(std::string const &str) 
 {
-	this->setDefaultData();
 	if(this->loadData(str) == -1)
 	{
-		std::cerr << "Error: No se ha podido cargar la configuración del servidor. Parámetros por defecto establecidos." << std::endl;
-	}
-	std::map<size_t, ListeningSocket*>::iterator itb = this->port.begin();
-	std::map<size_t, ListeningSocket*>::iterator ite = this->port.end();
-	while (itb != ite) {
-		if (itb->second->startListening()){
-			itb->second->handleEvents();
-		}
-		itb->second->stopListening();
-		itb++;
+		std::cerr << "Error: No se ha podido cargar la configuración del servidor." << std::endl;
+		exit(1);
 	}
 }
 
@@ -149,6 +138,7 @@ int Server::loadData(std::string const &content) {
 
 void Server::setPort(std::string const &port)
 {
+	ListeningSocket *ls;
 	std::string aux;
 	std::istringstream portStream(port);
 	if(this->port.size() != 0)
@@ -163,11 +153,22 @@ void Server::setPort(std::string const &port)
 				std::cout << "Error: Puerto mal definido." << std::endl;
 				exit(1);
 			}
+			if(stringToSizeT(aux2[0]) >= stringToSizeT(aux2[1]))
+			{
+				std::cout << "Error: puerto " << aux2[0] << "<" << aux[1] << "Definicion de puertos incorrecta." << std::endl;
+			}
+
 			for(size_t i = stringToSizeT(aux2[0]); i <= stringToSizeT(aux2[1]); i++)
-				this->port[i] = new ListeningSocket(i);
+			{
+				ls = new ListeningSocket(i, this);
+				this->port[ls->getFd()] = ls;
+			}
 		}
 		else
-			this->port[stringToSizeT(aux)] = new ListeningSocket(stringToSizeT(aux));
+		{
+			ls = new ListeningSocket(stringToSizeT(aux), this);
+			this->port[ls->getFd()] = ls;
+		}
 	}
 }
 
@@ -219,7 +220,7 @@ void Server::setIsDefault(std::string const &is_default)
 }
 
 ListeningSocket *Server::getPort(int i) {
-	std::map<size_t, ListeningSocket *>::iterator it = this->port.find(i);
+	std::map<int, ListeningSocket *>::iterator it = this->port.find(i);
 	if (it == this->port.end())
 	{
 		std::cerr << "Error: Puerto no encontrado." << std::endl;
@@ -256,3 +257,24 @@ std::string Server::getIndex() {
 	return this->index;
 }
 
+ListeningSocket *Server::getListening(int i) {
+	std::map<int, ListeningSocket *>::iterator it = this->port.find(i);
+	if (it == this->port.end())
+	{
+		std::cerr << "Error: Puerto no encontrado." << std::endl;
+		exit(1);
+	}
+	return this->port[i];
+}
+
+std::vector<int>	Server::getServerFds()
+{
+	std::vector<int> fd;
+	std::map<int, ListeningSocket*>::iterator itb = this->port.begin();
+	std::map<int, ListeningSocket*>::iterator ite = this->port.end();
+	while (itb != ite) {
+		fd.push_back(itb->second->getFd());
+		itb++;
+	}
+	return fd;
+}

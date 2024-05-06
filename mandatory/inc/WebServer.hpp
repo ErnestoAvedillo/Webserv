@@ -7,7 +7,7 @@
 
 # include "Server.hpp"
 # include "Location.hpp"
-# include "Request.hpp"
+# include "ListeningSocket.hpp"
 
 # include <sys/socket.h>
 # include <netinet/in.h>
@@ -35,9 +35,12 @@ class WebServer {
 		std::string			configFilename;
 		std::string 		fileContent;
 		/* Socket Configuration */
-		std::vector<int>	serverSocket;
-		std::vector<int>	serverAccepted;
+		std::map<int, ListeningSocket *>	serverSocket;
+		std::map<int, ListeningSocket *>	acceptedSocket;
+		
 		std::vector<Server *>	servers;
+		
+		
 		int kq;
 		int client_events[MAX_CLIENTS];
 		void	processConfigFile();

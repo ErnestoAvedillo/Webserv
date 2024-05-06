@@ -6,7 +6,7 @@
 #    By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/01 15:03:29 by eavedill          #+#    #+#              #
-#    Updated: 2024/05/04 11:48:12 by eavedill         ###   ########.fr        #
+#    Updated: 2024/05/05 14:41:11 by eavedill         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -45,7 +45,7 @@ ifeq (,$(findstring "Darwin",$(shell uname -s)))
 	SYSTEM := -DMAC
 endif
 
-FLAGS := -Wall -Werror -Wextra -pedantic -g -std=c++98 $(SYSTEM) -fsanitize=address 
+FLAGS := -Wall -Werror -Wextra -std=c++98 $(SYSTEM) -g #-fsanitize=address -pedantic 
 
 all:	print_system $(NAME) Makefile 
 
