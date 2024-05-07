@@ -67,7 +67,7 @@ class WebServer {
 		int	removeConnection(int fd);
 		struct sockaddr_in convertHost(std::string hostname, int port);
 
-		void removeFilter(struct kevent eventList, int type);
-		void addFilter(struct kevent eventList, int type);
+		void removeFilter(struct epoll_event eventList, int type);
+		void addFilter(struct epoll_event eventList, int type);
 };
 #endif

@@ -1,5 +1,5 @@
 #ifdef MAC
-#include "../inc/WebServer.hpp"
+#include "../inc/WebServerMAC.hpp"
 
 WebServer::WebServer()
 {

@@ -1,5 +1,5 @@
 #ifdef LNX
-#include "../inc/WebServer.hpp"
+#include "../inc/WebServerLNX.hpp"
 
 WebServer::WebServer()
 {
@@ -95,8 +95,9 @@ void WebServer::launchServers()
     	client_events[i] = 0; // Initialize all elements to zero
 	}
 
-	//this->kq = kqueue();
-	//this->createSocket();
+	this->kq = epoll_create1();
+	// this->kq = kqueue();
+	// this->createSocket();
 	this->addEventSet();
 	std::cout << "Nr. of Servers launched " << this->servers.size() << std::endl;
 	for (size_t i = 0; i < this->servers.size(); i++)
@@ -127,10 +128,10 @@ void	WebServer::addEventSet()
 		std::vector<int> serverFds = this->servers[i]->getServerFds();
 		for (size_t j = 0; j < serverFds.size(); j++)
 		{
-			struct kevent evSet;
-			
-			EV_SET(&evSet, serverFds[j], EVFILT_READ, EV_ADD | EV_CLEAR, NOTE_WRITE, 0, NULL);
-			if (kevent(this->kq, &evSet, 1, NULL, 0, NULL) == -1)
+			struct epoll_event event;
+			event.events = EPOLLIN | EPOLLET; // Edge-triggered mode
+			event.data.fd = serverFds[j];
+			if (epoll_ctl(this->kq, EPOLL_CTL_ADD, serverFds[j], &event) == -1)
 			{
 				std::cerr << "Error: could not add event to kqueue" << std::endl;
 				exit(1);
@@ -139,10 +140,39 @@ void	WebServer::addEventSet()
 	}
 }
 
+void WebServer::addFilter(struct epoll_event eventList, int type)
+{
+	struct epoll_event evSet;
+	//EV_SET(&evSet, eventList.ident, type, EV_ADD, 0, 0, NULL);
+	//if (kevent(this->kq, &evSet, 1, NULL, 0, NULL) == -1)
+	std::cout << "Connection filter add " << eventList.data.fd << std::endl;
+	evSet.events = EPOLLONESHOT; // Edge-triggered mode
+	if (epoll_ctl(this->kq, EPOLL_CTL_ADD, eventList.data.fd, &evSet) == -1)
+	{
+		std::cerr << "Error: could not add event" << std::endl;
+		exit(1);
+	}
+}
+
+void WebServer::removeFilter(struct epoll_event eventList, int type)
+{
+	struct epoll_event evSet;
+
+	//	EV_SET(&evSet, eventList.ident, type, EV_DELETE, 0, 0, NULL);
+	//if (kevent(this->kq, &evSet, 1, NULL, 0, NULL) == -1)
+	std::cout << "Connection removed " << eventList.data.fd << std::endl;
+	evSet.events = EPOLLONESHOT; // Edge-triggered mode
+	if (epoll_ctl(this->kq, EPOLL_CTL_DEL, eventList.data.fd, &evSet) == -1)
+	{
+		std::cerr << "Error: could not delete event" << std::endl;
+		exit(1);
+	}
+}
+
 void	WebServer::eventLoop()
 {
-	struct kevent evList[MAX_EVENTS];
-	
+	struct epoll_event evList[MAX_EVENTS];
+
 	while (1)
 	{
 		std::cout << "Waiting for events" << std::endl;
@@ -154,7 +184,7 @@ void	WebServer::eventLoop()
 		// 	itb++;
 		// }
 
-		int num_events = kevent(kq, NULL, 0, evList, MAX_EVENTS, NULL);
+		int num_events = epoll_wait(this->kq, evList, MAX_EVENTS, -1);
 		if (num_events == -1)
 		{
 			std::cerr << "Error: could not wait for events" << std::endl;
@@ -164,13 +194,13 @@ void	WebServer::eventLoop()
 			std::cout << "Events received " << num_events << std::endl;
 		for (int i = 0; i < num_events; i++)
 		{
-			std::cout << "Event ident " << evList[i].ident << std::endl;
-			if (serverSocket.find(evList[i].ident) != serverSocket.end())
+			std::cout << "Event ident " << evList[i].data.fd << std::endl;
+			if (serverSocket.find(evList[i].data.fd) != serverSocket.end())
 			{
 				struct sockaddr_storage addr;
 				socklen_t socklen = sizeof(addr);
 				// char ip[INET6_ADDRSTRLEN];
-				int fd = accept(evList[i].ident, (struct sockaddr *) &addr, &socklen);
+				int fd = accept(evList[i].data.fd, (struct sockaddr *) &addr, &socklen);
 				if (fd < 0)
 				{
 					std::cerr << "Error accepting connection" << std::endl;
@@ -178,23 +208,25 @@ void	WebServer::eventLoop()
 				}
 				else
 					std::cout << "Connection accepted " << fd << std::endl;
-				acceptedSocket.insert(std::pair<int, ListeningSocket *>(fd, serverSocket[evList[i].ident]->clone()));
+				acceptedSocket.insert(std::pair<int, ListeningSocket *>(fd, serverSocket[evList[i].data.fd]->clone()));
 				// this->serverSocket[fd] = this->servers[i]->getListening(evList[i].ident);
 				// inet_ntop(addr.ss_family, &((struct sockaddr_in *)&addr)->sin_addr, ip, sizeof(ip));
 				// std::cout << "Connection from " << ip << std::endl;
 				if (addConnection(fd) == 0)
 				{
 					std::cout << "Connection accepted " << fd << std::endl;
-					EV_SET(evList, fd, EVFILT_READ, EV_ADD, 0, 0, NULL);
-					kevent(kq, evList, 1, NULL, 0, NULL);
+					evList[i].events = EPOLLOUT | EPOLLET; // Edge-triggered mode
+					epoll_ctl(this->kq, EPOLL_CTL_ADD, serverFds[j], &evList)
+					// EV_SET(evList, fd, EVFILT_READ, EV_ADD, 0, 0, NULL);
+					// kevent(kq, evList, 1, NULL, 0, NULL);
 				}
 			}
-			else if (evList[i].filter == EVFILT_READ)
+			else if (evList[i].events == EPOLLOUT | EPOLLET)
 			{
-				if (evList[i].flags & EV_EOF)
+				if (evList[i].events & EV_EOF)
 				{
 					removeFilter(evList[i], EVFILT_READ);
-					removeConnection(evList[i].ident);
+					removeConnection(evList[i].data.fd);
 				}
 				else
 				{
@@ -221,7 +253,8 @@ void	WebServer::eventLoop()
 				else
 				{
 					
-					acceptedSocket[evList[i].ident]->sendData(evList[i].ident);
+					acceptedSocket[evList[i].ide
+					nt]->sendData(evList[i].ident);
 					// std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello, World!</h1></body></html>\r\n";
 					// send(evList[i].ident, response.c_str(), response.length(), 0);
 					// std::cout << "Response sent " << this->serverSocket[fd]->buffer <<  std::endl;
