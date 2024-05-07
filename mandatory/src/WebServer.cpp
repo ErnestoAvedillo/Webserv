@@ -218,22 +218,6 @@ void	WebServer::addEventSet()
 	}
 }
 
-
-// void	WebServer::addEventSet()
-// {
-// 	for (size_t i = 0; i < this->serverSocket.size() ; i++)
-// 	{
-// 		struct kevent evSet;
-// 		std::cout << "Adding event for server socketnbr " << this->serverSocket[i] << std::endl;
-// 		EV_SET(&evSet, this->serverSocket[i], EVFILT_READ, EV_ADD | EV_CLEAR, NOTE_WRITE, 0, NULL);
-// 		if (kevent(this->kq, &evSet, 1, NULL, 0, NULL) == -1)
-// 		{
-// 			std::cerr << "Error: could not add event to kqueue" << std::endl;
-// 			exit(1);
-// 		}
-// 	}
-// }
-
 int WebServer::addConnection(int fd)
 {
 

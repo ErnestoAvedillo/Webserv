@@ -89,17 +89,61 @@ void Client::loadCompleteClient( std::string const &str)
 	for (size_t i = 1; i < lines.size(); i++)
 			this->addKeyReq(lines[i].substr(0, lines[i].find(":")), lines[i].substr(lines[i].find(":") + 1, lines.size()));
 }
-std::string Client::getAnswerToSend()
+
+std::string Client::getFilePath(Server *server)
+{
+	(void)server;
+	
+	
+	
+	std::string filePath = "./"  + server->getRoot() +  this->Request[REQ_FILE];
+
+
+	return (filePath);
+
+	// std::string filePath = this->Request[REQ_FILE];
+	// if (filePath.find("?") != std::string::npos)
+	// {
+	// 	filePath = filePath.substr(0, filePath.find("?"));
+	// 	// this->Request[REQ_FILE] = filePath;
+	// }
+	
+	// return (filePath);
+
+}
+
+std::string Client::getFileContent(std::string filename)
+{
+	std::ifstream file;
+	std::string file_content;
+	file.open(filename, std::ios::in);
+	if (!file)
+	{
+		std::cerr << "File not found" << std::endl;
+		return ("HTTP/1.1 404 Not Found\r\n\r\n");
+	}
+	std::string line;
+	while (std::getline(file, line))
+		file_content += line;
+	file.close();
+	return (file_content);
+
+}
+
+std::string Client::getAnswerToSend(Server *server)
 {
 	
+	(void)server;
 	//std::string answer = this->Request[REQ_VER] + " 200 OK\n";
 	// std::string answer = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello, World!</h1></body></html>\r\n";
 
 	
 	std::string answer;
-	// Get File path
+	std::string filePath = getFilePath(server);
+	std::string file_content = getFileContent(filePath);
 	// Get File Content
-	std::string filePath = this->Request[REQ_FILE];
+	// std::string filePath = this->Request[REQ_FILE];
+	// std::cout << 
 	if (filePath.find(".jpg") != std::string::npos)
 		answer = "HTTP/1.1 200 OK\r\nContent-Type: image/jpg\r\n\r\n";
 	else	
@@ -108,7 +152,8 @@ std::string Client::getAnswerToSend()
 	std::cout << "File Path: " << filePath << "$" << std::endl;
 	std::ifstream file;
 	std::string file_content;
-	filePath = "." + filePath;
+	// filePath = "." + filePath;
+	std::cout << "File Path: " << filePath << std::endl;
 	file.open(filePath, std::ios::in);
 	if (!file)
 	{
