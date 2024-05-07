@@ -89,18 +89,32 @@ void WebServer::processConfigFile() // WebServer processConfigFile
 
 void WebServer::launchServers()
 {
+	std::vector<int> sk ;
 	for (size_t i = 0; i < MAX_EVENTS; i++) {
     	client_events[i] = 0; // Initialize all elements to zero
 	}
-	std::cout << this->servers.size() << std::endl;
-	std::cout << client_events[0] << std::endl;
-	std::cout << client_events[1] << std::endl;
-	std::cout << client_events[2] << std::endl;
 
 	this->kq = kqueue();
-	this->createSocket();
+	//this->createSocket();
 	this->addEventSet();
-
+	std::cout << "Nr. of Servers launched " << this->servers.size() << std::endl;
+	for (size_t i = 0; i < this->servers.size(); i++)
+	{
+		std::vector<int> serverFds = this->servers[i]->getServerFds();
+		for (size_t j = 0; j < serverFds.size(); j++)
+			std::cout << "Server " << i << " listening on " << serverFds[j] << std::endl;
+			//erverSocket[serverFds[j]] = this->servers[i]->getListening(serverFds[j]);
+	}
+	for (size_t i = 0; i < this->servers.size(); i++)
+	{
+		sk = this->servers[i]->getServerFds();
+		std::cout << "Server " << i << " listening on " << sk.size() << " ports" << std::endl;
+		for(size_t j = 0; j < sk.size(); j++)
+		{
+			serverSocket[sk[j]] = this->servers[i]->getListening(sk[j]);
+		}
+		// serverSocket.insert(serverSocket.end(), this->servers[i]->getServerFds().begin(), this->servers[i]->getServerFds().end());
+	}
 	std::cout << "Server launched" << std::endl;
 	this->eventLoop();
 }
@@ -130,7 +144,7 @@ void WebServer::createSocket()
 {
 	for (size_t i = 0; i < this->servers.size(); i++)
 	{
-		std::cout << "Creating socket for server " << servers[i].getPort() << std::endl;
+		//std::cout << "Creating socket for server " << servers[i]->getPort()->getPort() << std::endl;
 		int socket_fd = socket(AF_INET, SOCK_STREAM, 0);
 		if (socket_fd < 0)
 		{
@@ -138,11 +152,7 @@ void WebServer::createSocket()
 			exit(1);
 		}
 
-		if (fcntl(socket_fd, F_SETFL, O_NONBLOCK) < 0)
-		{
-			std::cerr << "Error" << std::endl;
-			exit(1);
-		}
+		
 
 		int enable = 1;
 		setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int));
@@ -150,16 +160,16 @@ void WebServer::createSocket()
 		struct sockaddr_in serverAddr;
 		memset(&serverAddr, 0, sizeof(serverAddr));
 		serverAddr.sin_family = AF_INET;
-		serverAddr.sin_port = htons(this->servers[i].getPort());
+		serverAddr.sin_port = htons(servers[i]->getPort(i)->getPort());
 		// serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
 		
-		// if (this->servers[i].getHost().find_first_of(".") == std::string::npos)
+		// if (this->servers[i]->getHost().find_first_of(".") == std::string::npos)
 		// 	serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
 		// else 
 		// {
 		struct addrinfo hints, *res;
 		std::memset(&hints, 0, sizeof(hints));
-		if (getaddrinfo(this->servers[i].getHost().c_str(), nullptr, &hints, &res) == 0)
+		if (getaddrinfo(this->servers[i]->getHost().c_str(), nullptr, &hints, &res) == 0)
 		{
 			if (res != nullptr)
 			{
@@ -184,25 +194,45 @@ void WebServer::createSocket()
 			exit(1);
 		}
 		// fcntl(socket_fd, F_SETFL, O_NONBLOCK);
-		this->serverSocket.push_back(socket_fd);
+		// this->serverSocket.push_back(socket_fd);
 		std::cout << "Socket created " << socket_fd << std::endl;
 	}
 }
 
 void	WebServer::addEventSet()
 {
-	for (size_t i = 0; i < this->serverSocket.size() ; i++)
+	for (size_t i = 0; i < this->servers.size() ; i++)
 	{
-		struct kevent evSet;
-		std::cout << "Adding event for server socketnbr " << this->serverSocket[i] << std::endl;
-		EV_SET(&evSet, this->serverSocket[i], EVFILT_READ, EV_ADD | EV_CLEAR, NOTE_WRITE, 0, NULL);
-		if (kevent(this->kq, &evSet, 1, NULL, 0, NULL) == -1)
+		std::vector<int> serverFds = this->servers[i]->getServerFds();
+		for (size_t j = 0; j < serverFds.size(); j++)
 		{
-			std::cerr << "Error: could not add event to kqueue" << std::endl;
-			exit(1);
+			struct kevent evSet;
+			
+			EV_SET(&evSet, serverFds[j], EVFILT_READ, EV_ADD | EV_CLEAR, NOTE_WRITE, 0, NULL);
+			if (kevent(this->kq, &evSet, 1, NULL, 0, NULL) == -1)
+			{
+				std::cerr << "Error: could not add event to kqueue" << std::endl;
+				exit(1);
+			}
 		}
 	}
 }
+
+
+// void	WebServer::addEventSet()
+// {
+// 	for (size_t i = 0; i < this->serverSocket.size() ; i++)
+// 	{
+// 		struct kevent evSet;
+// 		std::cout << "Adding event for server socketnbr " << this->serverSocket[i] << std::endl;
+// 		EV_SET(&evSet, this->serverSocket[i], EVFILT_READ, EV_ADD | EV_CLEAR, NOTE_WRITE, 0, NULL);
+// 		if (kevent(this->kq, &evSet, 1, NULL, 0, NULL) == -1)
+// 		{
+// 			std::cerr << "Error: could not add event to kqueue" << std::endl;
+// 			exit(1);
+// 		}
+// 	}
+// }
 
 int WebServer::addConnection(int fd)
 {
@@ -270,23 +300,43 @@ void	WebServer::eventLoop()
 	
 	while (1)
 	{
+		std::cout << "Waiting for events" << std::endl;
+		// std::map<int, ListeningSocket*>::iterator itb = this->serverSocket.begin();
+		// std::map<int, ListeningSocket*>::iterator ite = this->serverSocket.end();
+		// while (itb != ite)
+		// {
+		// 	std::cout << "Server socket in list " << itb->first << " correspondng to port " << itb->second->getPort() << std::endl;
+		// 	itb++;
+		// }
+
 		int num_events = kevent(kq, NULL, 0, evList, MAX_EVENTS, NULL);
+		if (num_events == -1)
+		{
+			std::cerr << "Error: could not wait for events" << std::endl;
+			exit(1);
+		}
+		else
+			std::cout << "Events received " << num_events << std::endl;
 		for (int i = 0; i < num_events; i++)
 		{
 			std::cout << "Event ident " << evList[i].ident << std::endl;
-			if (std::find(this->serverSocket.begin(), this->serverSocket.end(), (int)evList[i].ident) != this->serverSocket.end())
+			if (serverSocket.find(evList[i].ident) != serverSocket.end())
 			{
 				struct sockaddr_storage addr;
 				socklen_t socklen = sizeof(addr);
-				char ip[INET6_ADDRSTRLEN];
+				// char ip[INET6_ADDRSTRLEN];
 				int fd = accept(evList[i].ident, (struct sockaddr *) &addr, &socklen);
-				 if (fd < 0)
+				if (fd < 0)
 				{
 					std::cerr << "Error accepting connection" << std::endl;
 					continue; // Continue to the next event
 				}
-				inet_ntop(addr.ss_family, &((struct sockaddr_in *)&addr)->sin_addr, ip, sizeof(ip));
-				std::cout << "Connection from " << ip << std::endl;
+				else
+					std::cout << "Connection accepted " << fd << std::endl;
+				acceptedSocket.insert(std::pair<int, ListeningSocket *>(fd, serverSocket[evList[i].ident]->clone()));
+				// this->serverSocket[fd] = this->servers[i]->getListening(evList[i].ident);
+				// inet_ntop(addr.ss_family, &((struct sockaddr_in *)&addr)->sin_addr, ip, sizeof(ip));
+				// std::cout << "Connection from " << ip << std::endl;
 				if (addConnection(fd) == 0)
 				{
 					std::cout << "Connection accepted " << fd << std::endl;
@@ -303,12 +353,14 @@ void	WebServer::eventLoop()
 				}
 				else
 				{
-					int fd = evList[i].ident;
 					char buf[MAX_MSG_SIZE] = {0};
 				
-					if (recv(fd, buf, sizeof(buf) * MAX_MSG_SIZE, 0) > 0)
-						std::cout << buf << std::endl;
-					std::string tmp = buf;
+					recv(evList[i].ident, buf, sizeof(buf) * MAX_MSG_SIZE, 0);
+					// if (recv(evList[i].ident, buf, sizeof(buf) * MAX_MSG_SIZE, 0) > 0)
+						// std::cout << buf << std::endl;
+					
+					this->acceptedSocket[evList[i].ident]->loadRequest(buf);
+					// std::string tmp = buf;
 					//Request request(tmp);
 					addFilter(evList[i], EVFILT_WRITE);
 					removeFilter(evList[i], EVFILT_READ);
@@ -323,11 +375,13 @@ void	WebServer::eventLoop()
 				}
 				else
 				{
-					std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello, World!</h1></body></html>\r\n";
-					int fd = evList[i].ident;
-					send(fd, response.c_str(), response.length(), 0);
+					
+					acceptedSocket[evList[i].ident]->sendData(evList[i].ident);
+					// std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello, World!</h1></body></html>\r\n";
+					// send(evList[i].ident, response.c_str(), response.length(), 0);
+					// std::cout << "Response sent " << this->serverSocket[fd]->buffer <<  std::endl;
 					removeFilter(evList[i], EVFILT_WRITE);
-					removeConnection(fd);
+					removeConnection(evList[i].ident);
 				}
 			}
 		}

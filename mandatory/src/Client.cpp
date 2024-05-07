@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 12:49:08 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/04 13:18:49 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/05 15:09:08 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,30 +78,52 @@ void Client::loadCompleteClient( std::string const &str)
 {
 	std::vector<std::string> lines = splitString(str, '\n');
 	std::vector<std::string> parts = splitString(lines[0], ' ');
-	if (lines.size() == 3)
+	//std::cout << "Lines: " << lines[0] << std::endl;
+	if (parts.size() == 3)
 	{
+		std::cout << "Parts: " << parts[0] << " " << parts[1] << " " << parts[2] << std::endl;
 		this->addKeyReq(REQ_TYPE, parts[0]);
 		this->addKeyReq(REQ_FILE, parts[1]);
 		this->addKeyReq(REQ_VER, parts[2]);
 	}
 	for (size_t i = 1; i < lines.size(); i++)
-	{
-		std::vector<std::string> parts = splitString(lines[i], ':');
-		if (parts.size() == 2)
-			this->addKeyReq(parts[0], parts[1]);
-	}
+			this->addKeyReq(lines[i].substr(0, lines[i].find(":")), lines[i].substr(lines[i].find(":") + 1, lines.size()));
 }
 std::string Client::getAnswerToSend()
 {
-	std::string answer = this->Request[REQ_VER] + " 200 OK\n";
 	
-	std::map<std::string, std::string>::iterator itb = this->Request.begin();
-	std::map<std::string, std::string>::iterator ite = this->Request.end();
-	while(itb != ite)
+	//std::string answer = this->Request[REQ_VER] + " 200 OK\n";
+	// std::string answer = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello, World!</h1></body></html>\r\n";
+
+	
+	std::string answer;
+	// Get File path
+	// Get File Content
+	std::string filePath = this->Request[REQ_FILE];
+	if (filePath.find(".jpg") != std::string::npos)
+		answer = "HTTP/1.1 200 OK\r\nContent-Type: image/jpg\r\n\r\n";
+	else	
+		answer = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n";
+	
+	std::cout << "File Path: " << filePath << "$" << std::endl;
+	std::ifstream file;
+	std::string file_content;
+	filePath = "." + filePath;
+	file.open(filePath, std::ios::in);
+	if (!file)
 	{
-		if (itb->first != REQ_VER)
-			answer += itb->first + ": " + itb->second + "\n";
-		itb++;
+		std::cerr << "File not found" << std::endl;
+		return ("HTTP/1.1 404 Not Found\r\n\r\n");
 	}
+	std::string line;
+	while (std::getline(file, line))
+		file_content += line;
+	file.close();
+
+	answer += file_content;
+	//std::cout << "answer: " << answer << std::endl;
+	// std::cout << "File Content: " << file_content << std::endl;
+	// std::cout << "Answer: " << answer << std::endl;
+	// answer += file_content.size()
 	return (answer);
 }
