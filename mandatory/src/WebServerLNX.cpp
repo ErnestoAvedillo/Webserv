@@ -95,7 +95,7 @@ void WebServer::launchServers()
     	client_events[i] = 0; // Initialize all elements to zero
 	}
 
-	this->kq = kqueue();
+	//this->kq = kqueue();
 	//this->createSocket();
 	this->addEventSet();
 	std::cout << "Nr. of Servers launched " << this->servers.size() << std::endl;
@@ -120,86 +120,6 @@ void WebServer::launchServers()
 	this->eventLoop();
 }
 
-struct sockaddr_in WebServer::convertHost(std::string hostname, int port)
-{
-	 struct addrinfo hints, *res;
-	 struct sockaddr_in serverAddr;
-	 memset(&hints, 0, sizeof(hints));
-	 memset(&serverAddr, 0, sizeof(serverAddr));
-	 hints.ai_family = AF_INET;
-	 hints.ai_socktype = SOCK_STREAM;
-
-	 if (getaddrinfo(hostname.c_str(), NULL, &hints, &res) != 0)
-	 {
-		 std::cerr << "Error: could not get address info" << std::endl;
-		 exit(1);
-	 }
-	 serverAddr.sin_family = AF_INET;
-	 serverAddr.sin_port = htons(port);
-	 serverAddr.sin_addr = ((struct sockaddr_in *)res->ai_addr)->sin_addr;
-	// freeaddrinfo(res);
-	 return serverAddr;
-}
-
-void WebServer::createSocket()
-{
-	for (size_t i = 0; i < this->servers.size(); i++)
-	{
-		//std::cout << "Creating socket for server " << servers[i]->getPort()->getPort() << std::endl;
-		int socket_fd = socket(AF_INET, SOCK_STREAM, 0);
-		if (socket_fd < 0)
-		{
-			std::cerr << "Error: could not create socket" << std::endl;
-			exit(1);
-		}
-
-		
-
-		int enable = 1;
-		setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int));
-		
-		struct sockaddr_in serverAddr;
-		memset(&serverAddr, 0, sizeof(serverAddr));
-		serverAddr.sin_family = AF_INET;
-		serverAddr.sin_port = htons(servers[i]->getPort(i)->getPort());
-		// serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
-		
-		// if (this->servers[i]->getHost().find_first_of(".") == std::string::npos)
-		// 	serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
-		// else 
-		// {
-		struct addrinfo hints, *res;
-		std::memset(&hints, 0, sizeof(hints));
-		if (getaddrinfo(this->servers[i]->getHost().c_str(), nullptr, &hints, &res) == 0)
-		{
-			if (res != nullptr)
-			{
-				struct sockaddr_in *addr_in = (struct sockaddr_in*)res->ai_addr;
-				serverAddr.sin_addr.s_addr = addr_in->sin_addr.s_addr;
-				freeaddrinfo(res);
-			}
-		}
-		else
-		{
-			std::cerr << "Error: could not get address info" << std::endl;
-			exit(1);
-		}
-		if (bind(socket_fd, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) < 0)
-		{
-			std::cerr << "Error: could not bind socket" << std::endl;
-			exit(1);
-		}
-		if (listen(socket_fd, BACKLOG) < 0)
-		{
-			std::cerr << "Error: could not listen on socket" << std::endl;
-			exit(1);
-		}
-		// fcntl(socket_fd, F_SETFL, O_NONBLOCK);
-		// this->serverSocket.push_back(socket_fd);
-		std::cout << "Socket created " << socket_fd << std::endl;
-	}
-}
-
 void	WebServer::addEventSet()
 {
 	for (size_t i = 0; i < this->servers.size() ; i++)
@@ -216,82 +136,6 @@ void	WebServer::addEventSet()
 				exit(1);
 			}
 		}
-	}
-}
-
-
-// void	WebServer::addEventSet()
-// {
-// 	for (size_t i = 0; i < this->serverSocket.size() ; i++)
-// 	{
-// 		struct kevent evSet;
-// 		std::cout << "Adding event for server socketnbr " << this->serverSocket[i] << std::endl;
-// 		EV_SET(&evSet, this->serverSocket[i], EVFILT_READ, EV_ADD | EV_CLEAR, NOTE_WRITE, 0, NULL);
-// 		if (kevent(this->kq, &evSet, 1, NULL, 0, NULL) == -1)
-// 		{
-// 			std::cerr << "Error: could not add event to kqueue" << std::endl;
-// 			exit(1);
-// 		}
-// 	}
-// }
-
-int WebServer::addConnection(int fd)
-{
-
-	std::cerr << "addConnection " << fd << std::endl;
-	if (fd < 1)
-		return -1;
-	int i = this->getConnection(0);
-	if (i == -1)
-		return -1;
-	else
-	{
-		this->client_events[i] = fd;
-		return 0;
-	}
-
-}
-
-int WebServer::removeConnection(int fd)
-{
-	if (fd < 1)
-		return -1;
-    int i = getConnection(fd);
-    if (i == -1)
-		return -1;
-    this->client_events[i] = 0;
-    return close(fd);
-}
-
-int WebServer::getConnection(int fd)
-{
-	for (size_t i = 0; i < this->servers.size(); i++)
-	{
-		if (this->client_events[i] == fd)
-			return i;
-	}
-	return -1;
-}
-
-void WebServer::addFilter(struct kevent eventList, int type)
-{
-	struct kevent evSet;
-	EV_SET(&evSet, eventList.ident, type, EV_ADD, 0, 0, NULL);
-	if (kevent(this->kq, &evSet, 1, NULL, 0, NULL) == -1)
-	{
-		std::cerr << "Error: could not add event" << std::endl;
-		exit(1);
-	}
-}
-
-void WebServer::removeFilter(struct kevent eventList, int type)
-{
-	struct kevent evSet;
-	EV_SET(&evSet, eventList.ident, type, EV_DELETE, 0, 0, NULL);
-	if (kevent(this->kq, &evSet, 1, NULL, 0, NULL) == -1)
-	{
-		std::cerr << "Error: could not delete event" << std::endl;
-		exit(1);
 	}
 }
 
