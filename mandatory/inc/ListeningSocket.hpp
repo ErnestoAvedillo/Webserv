@@ -30,16 +30,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#define MAX_CONNECTIONS 10
-class Server;
+#include "Client.hpp"
 #include "Server.hpp"
 
+
+#define MAX_CONNECTIONS 10
+
+class Server;
+
 class Client;
-#include "Client.hpp"
+
 // #define MAX_EVENTS 10
-	class ListeningSocket
-	{
+class ListeningSocket
+{
 	private:
 		Server *server;
 		int port;
@@ -51,7 +54,7 @@ class Client;
 		#endif
 		int n;
 		//char *buffer;
-		Client client;
+		Client *client;
 		void handleConnection(int clientSocketFd);
 
 	public:

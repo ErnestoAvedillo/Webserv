@@ -211,7 +211,7 @@ void ListeningSocket::sendData(int clientSocketFd)
 {
 	std::cout << "sendData " << std::endl;
 	// std::string buffer = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello, MY World!</h1></body></html>\r\n";
-	std::string answer = this->client.getAnswerToSend();
+	std::string answer = this->client->getAnswerToSend(this->server);
 	n = send(clientSocketFd, answer.c_str(), answer.size(), 0);
 	if (n < 0)
 	{
@@ -236,5 +236,6 @@ ListeningSocket *ListeningSocket::clone()
 
 void ListeningSocket::loadRequest(char *buff)
 {
-	this->client.loadCompleteClient(buff);
+	this->client = new Client();
+	this->client->loadCompleteClient(buff);
 }

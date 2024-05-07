@@ -18,6 +18,10 @@
 #include <fstream>
 #include <sstream>
 #include "../inc/commonFunctions.hpp"
+
+class Server;
+#include "../inc/Server.hpp"
+
 class Client
 {
 private:
@@ -39,6 +43,8 @@ public:
 	void deleteClient(std::string const &);
 	void updateClient(std::string const &, std::string const &);
 	void loadCompleteClient(const std::string &);
-	std::string getAnswerToSend();
+	std::string getAnswerToSend(Server *server);
+	std::string getFilePath(Server *server);
+	std::string getFileContent(std::string filename);
 };
 
