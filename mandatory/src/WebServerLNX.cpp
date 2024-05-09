@@ -44,8 +44,9 @@ void WebServer::loadConfigFile(std::string configFile) // WebServer loadConfigFi
 void WebServer::processConfigFile() // WebServer processConfigFile
 {
 	std::string 		line;
+	std::string 		serverContentConfig;
 	std::string 		aux;
-	std::string 		serverContentConfig = "";
+	std::string serverConEPOLL_CTL_ADDtentConfig = "";
 	std::istringstream	fileContentStream(fileContent);
 	size_t				pos;
 
@@ -95,11 +96,12 @@ void WebServer::launchServers()
     	client_events[i] = 0; // Initialize all elements to zero
 	}
 
-	this->kq = epoll_create1();
+	this->kq = epoll_create1(MAX_EVENTS);
 	// this->kq = kqueue();
 	// this->createSocket();
 	this->addEventSet();
 	std::cout << "Nr. of Servers launched " << this->servers.size() << std::endl;
+	//solo a efectos informativos
 	for (size_t i = 0; i < this->servers.size(); i++)
 	{
 		std::vector<int> serverFds = this->servers[i]->getServerFds();
@@ -107,6 +109,7 @@ void WebServer::launchServers()
 			std::cout << "Server " << i << " listening on " << serverFds[j] << std::endl;
 			//erverSocket[serverFds[j]] = this->servers[i]->getListening(serverFds[j]);
 	}
+	//
 	for (size_t i = 0; i < this->servers.size(); i++)
 	{
 		sk = this->servers[i]->getServerFds();
@@ -142,31 +145,67 @@ void	WebServer::addEventSet()
 
 void WebServer::addFilter(struct epoll_event eventList, int type)
 {
-	struct epoll_event evSet;
-	//EV_SET(&evSet, eventList.ident, type, EV_ADD, 0, 0, NULL);
-	//if (kevent(this->kq, &evSet, 1, NULL, 0, NULL) == -1)
+	//struct epoll_event evSet;
+	
 	std::cout << "Connection filter add " << eventList.data.fd << std::endl;
-	evSet.events = EPOLLONESHOT; // Edge-triggered mode
-	if (epoll_ctl(this->kq, EPOLL_CTL_ADD, eventList.data.fd, &evSet) == -1)
+	eventList.events = type; // Edge-triggered mode
+	if (epoll_ctl(this->kq, EPOLL_CTL_ADD, eventList.data.fd, &eventList) == -1)
 	{
 		std::cerr << "Error: could not add event" << std::endl;
 		exit(1);
 	}
 }
 
-void WebServer::removeFilter(struct epoll_event eventList, int type)
+void WebServer::removeFilter(struct epoll_event eventList)
 {
-	struct epoll_event evSet;
+	//struct epoll_event evSet;
 
 	//	EV_SET(&evSet, eventList.ident, type, EV_DELETE, 0, 0, NULL);
 	//if (kevent(this->kq, &evSet, 1, NULL, 0, NULL) == -1)
 	std::cout << "Connection removed " << eventList.data.fd << std::endl;
-	evSet.events = EPOLLONESHOT; // Edge-triggered mode
-	if (epoll_ctl(this->kq, EPOLL_CTL_DEL, eventList.data.fd, &evSet) == -1)
+	eventList.events = EPOLLONESHOT; // Edge-triggered mode
+	if (epoll_ctl(this->kq, EPOLL_CTL_DEL, eventList.data.fd, &eventList) == -1)
 	{
 		std::cerr << "Error: could not delete event" << std::endl;
 		exit(1);
 	}
+}
+
+int WebServer::addConnection(int fd)
+{
+
+	std::cerr << "addConnection " << fd << std::endl;
+	if (fd < 1)
+		return -1;
+	int i = this->getConnection(0);
+	if (i == -1)
+		return -1;
+	else
+	{
+		this->client_events[i] = fd;
+		return 0;
+	}
+}
+	
+int WebServer::removeConnection(int fd)
+{
+	if (fd < 1)
+		return -1;
+	int i = getConnection(fd);
+	if (i == -1)
+		return -1;
+	this->client_events[i] = 0;
+	return close(fd);
+}
+
+int WebServer::getConnection(int fd)
+{
+	for (size_t i = 0; i < this->servers.size(); i++)
+	{
+		if (this->client_events[i] == fd)
+			return i;
+	}
+	return -1;
 }
 
 void	WebServer::eventLoop()
@@ -176,13 +215,6 @@ void	WebServer::eventLoop()
 	while (1)
 	{
 		std::cout << "Waiting for events" << std::endl;
-		// std::map<int, ListeningSocket*>::iterator itb = this->serverSocket.begin();
-		// std::map<int, ListeningSocket*>::iterator ite = this->serverSocket.end();
-		// while (itb != ite)
-		// {
-		// 	std::cout << "Server socket in list " << itb->first << " correspondng to port " << itb->second->getPort() << std::endl;
-		// 	itb++;
-		// }
 
 		int num_events = epoll_wait(this->kq, evList, MAX_EVENTS, -1);
 		if (num_events == -1)
@@ -216,50 +248,49 @@ void	WebServer::eventLoop()
 				{
 					std::cout << "Connection accepted " << fd << std::endl;
 					evList[i].events = EPOLLOUT | EPOLLET; // Edge-triggered mode
-					epoll_ctl(this->kq, EPOLL_CTL_ADD, serverFds[j], &evList)
+					epoll_ctl(this->kq, EPOLL_CTL_ADD, fd, evList);
 					// EV_SET(evList, fd, EVFILT_READ, EV_ADD, 0, 0, NULL);
 					// kevent(kq, evList, 1, NULL, 0, NULL);
 				}
 			}
-			else if (evList[i].events == EPOLLOUT | EPOLLET)
+			else if (evList[i].events == (EPOLLOUT | EPOLLET))
 			{
-				if (evList[i].events & EV_EOF)
+				if (evList[i].events & EPOLLHUP)
 				{
-					removeFilter(evList[i], EVFILT_READ);
+					removeFilter(evList[i]);
 					removeConnection(evList[i].data.fd);
 				}
 				else
 				{
 					char buf[MAX_MSG_SIZE] = {0};
 				
-					recv(evList[i].ident, buf, sizeof(buf) * MAX_MSG_SIZE, 0);
+					recv(evList[i].data.fd, buf, sizeof(buf) * MAX_MSG_SIZE, 0);
 					// if (recv(evList[i].ident, buf, sizeof(buf) * MAX_MSG_SIZE, 0) > 0)
 						// std::cout << buf << std::endl;
 					
-					this->acceptedSocket[evList[i].ident]->loadRequest(buf);
+					this->acceptedSocket[evList[i].data.fd]->loadRequest(buf);
 					// std::string tmp = buf;
 					//Request request(tmp);
-					addFilter(evList[i], EVFILT_WRITE);
-					removeFilter(evList[i], EVFILT_READ);
+					addFilter(evList[i], EPOLLOUT | EPOLLET);
+					removeFilter(evList[i]);
 				}
 			}
-			else if (evList[i].filter == EVFILT_WRITE)
+			else if (evList[i].events == (EPOLLOUT | EPOLLET))
 			{
-				if (evList[i].flags & EV_EOF)
+				if (evList[i].events & EPOLLHUP)
 				{
 					std::cout <<  "client closed connection before response" << std::endl;
-					removeFilter(evList[i], EVFILT_WRITE);
+					removeFilter(evList[i]);
 				}
 				else
 				{
 					
-					acceptedSocket[evList[i].ide
-					nt]->sendData(evList[i].ident);
+					acceptedSocket[evList[i].data.fd]->sendData(evList[i].data.fd);
 					// std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello, World!</h1></body></html>\r\n";
 					// send(evList[i].ident, response.c_str(), response.length(), 0);
 					// std::cout << "Response sent " << this->serverSocket[fd]->buffer <<  std::endl;
-					removeFilter(evList[i], EVFILT_WRITE);
-					removeConnection(evList[i].ident);
+					removeFilter(evList[i]);
+					removeConnection(evList[i].data.fd);
 				}
 			}
 		}

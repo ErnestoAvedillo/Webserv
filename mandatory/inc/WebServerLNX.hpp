@@ -12,7 +12,7 @@
 
 # include <sys/socket.h>
 # include <netinet/in.h>
-# include <sys/event.h>
+# include <sys/epoll.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
@@ -22,9 +22,9 @@
 # include <arpa/inet.h>
 
 #define BACKLOG 10
-#define MAX_EVENTS 100
 #define MAX_CLIENTS 100
 #define MAX_MSG_SIZE 1024
+#define MAX_EVENTS 200
 //  The backlog parameter defines the maximum length for the queue of pending
 //      connections.  If a connection request arrives with the queue full, the
 //      client may receive an error with an indication of ECONNREFUSED
@@ -67,7 +67,7 @@ class WebServer {
 		int	removeConnection(int fd);
 		struct sockaddr_in convertHost(std::string hostname, int port);
 
-		void removeFilter(struct epoll_event eventList, int type);
+		void removeFilter(struct epoll_event eventList);
 		void addFilter(struct epoll_event eventList, int type);
 };
 #endif

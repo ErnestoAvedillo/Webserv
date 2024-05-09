@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/07 11:23:40 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/01 19:01:16 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/09 08:12:49 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,12 @@
 #include "SendFile.hpp"
 #include "commonFunctions.hpp"
 #include "itos.hpp"
-#include "WebServer.hpp"
+#ifdef LNX
+#include "WebServerLNX.hpp"
+#endif
+#ifdef MAC
+#include "WebServerMAC.hpp"
+#endif
 
 
 
