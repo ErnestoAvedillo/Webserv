@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 12:49:08 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/05 15:09:08 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/10 23:21:42 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,8 @@ std::string Client::getFilePath(Server *server)
 	
 	
 	std::string filePath = "./"  + server->getRoot() +  this->Request[REQ_FILE];
-
+	filePath = filePath.substr(0, filePath.find("?"));
+	std::cout << "MY File Path: " << filePath << std::endl;
 
 	return (filePath);
 
@@ -130,40 +131,56 @@ std::string Client::getFileContent(std::string filename)
 
 }
 
-std::string Client::getAnswerToSend(Server *server)
+std::string getExtension(std::string filePath)
 {
-	
-	(void)server;
-	//std::string answer = this->Request[REQ_VER] + " 200 OK\n";
-	// std::string answer = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello, World!</h1></body></html>\r\n";
+	size_t point = filePath.find_last_of(".");
+	std::string extension = filePath.substr(point + 1, filePath.size());
 
-	
+	std::map<std::string, std::string> Mimetype = create_filetypes();
+
+	if (Mimetype.find(extension) != Mimetype.end())
+		return(Mimetype[extension]);
+	else
+		return("text/html"); 
+}
+
+std::string Client::getAnswerToSend(Server *server)
+{	
 	std::string answer;
 	std::string filePath = getFilePath(server);
 	std::string file_content = getFileContent(filePath);
 	// Get File Content
 	// std::string filePath = this->Request[REQ_FILE];
 	// std::cout << 
-	if (filePath.find(".jpg") != std::string::npos)
-		answer = "HTTP/1.1 200 OK\r\nContent-Type: image/jpg\r\n\r\n";
-	else	
-		answer = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n";
+
+	answer += "HTTP/1.1 200 OK\r\nContent-Type: " + getExtension(filePath) + "\r\n\r\n";
+	// getExtension(filePath);
+	
+
+	// if (filePath.find(".jpg") != std::string::npos)
+	// 	answer = "HTTP/1.1 200 OK\r\nContent-Type: image/jpg\r\n\r\n";
+	// else if (filePath.find(".js") != std::string::npos)
+	// 	answer = "HTTP/1.1 200 OK\r\nContent-Type: application/javascript\r\n\r\n";
+	// else if (filePath.find(".css") != std::string::npos)
+	// 	answer = "HTTP/1.1 200 OK\r\nContent-Type: text/css\r\n\r\n";
+	// else	
+	// 	answer = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n";
 	
 	std::cout << "File Path: " << filePath << "$" << std::endl;
 	std::ifstream file;
-	std::string file_content;
+	// std::string file_content;
 	// filePath = "." + filePath;
 	std::cout << "File Path: " << filePath << std::endl;
-	file.open(filePath, std::ios::in);
-	if (!file)
-	{
-		std::cerr << "File not found" << std::endl;
-		return ("HTTP/1.1 404 Not Found\r\n\r\n");
-	}
-	std::string line;
-	while (std::getline(file, line))
-		file_content += line;
-	file.close();
+	// file.open(filePath, std::ios::in);
+	// if (!file)
+	// {
+	// 	std::cerr << "File not found" << std::endl;
+	// 	return ("HTTP/1.1 404 Not Found\r\n\r\n");
+	// }
+	// std::string line;
+	// while (std::getline(file, line))
+	// 	file_content += line;
+	// file.close();
 
 	answer += file_content;
 	//std::cout << "answer: " << answer << std::endl;
