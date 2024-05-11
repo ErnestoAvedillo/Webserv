@@ -21,7 +21,7 @@ ListeningSocket::~ListeningSocket()
 bool ListeningSocket::startListening()
 {
 	// Create a socket
-	socketFd = socket(AF_INET, SOCK_STREAM, 0);
+	socketFd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
 	if (socketFd == -1)
 	{
 		std::cerr << "Failed to create socket" << std::endl;
@@ -36,7 +36,7 @@ bool ListeningSocket::startListening()
 	// Bind the socket to the server address
 	if (bind(socketFd, (struct sockaddr *)&serverAddress, sizeof(serverAddress)) < 0)
 	{
-		std::cerr << "Failed to bind socket to address" << std::endl;
+		std::cerr << "Failed to bind socket to address " << port << std::endl;
 		return false;
 	}
 
@@ -151,8 +151,8 @@ int ListeningSocket::getFd()
 void ListeningSocket::sendData(int clientSocketFd)
 {
 	std::cout << "sendData " << std::endl;
-	// std::string buffer = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello, MY World!</h1></body></html>\r\n";
-	std::string answer = this->client.getAnswerToSend();
+	std::string answer = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello, MY World!</h1></body></html>\r\n";
+	//std::string answer = this->client.getAnswerToSend();
 	n = send(clientSocketFd, answer.c_str(), answer.size(), 0);
 	if (n < 0)
 	{

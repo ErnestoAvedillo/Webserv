@@ -92,11 +92,16 @@ void WebServer::processConfigFile() // WebServer processConfigFile
 void WebServer::launchServers()
 {
 	std::vector<int> sk ;
-	for (size_t i = 0; i < MAX_EVENTS; i++) {
+	for (size_t i = 0; i < MAX_CLIENTS; i++) {
     	client_events[i] = 0; // Initialize all elements to zero
 	}
 
-	this->kq = epoll_create1(MAX_EVENTS);
+	this->kq = epoll_create(MAX_EVENTS);
+	if (this->kq == -1)
+	{
+		std::cerr << "Error: could not create epoll" << std::endl;
+		exit(1);
+	}
 	// this->kq = kqueue();
 	// this->createSocket();
 	this->addEventSet();
@@ -116,7 +121,8 @@ void WebServer::launchServers()
 		std::cout << "Server " << i << " listening on " << sk.size() << " ports" << std::endl;
 		for(size_t j = 0; j < sk.size(); j++)
 		{
-			serverSocket[sk[j]] = this->servers[i]->getListening(sk[j]);
+			ListeningSocket *tmp = this->servers[i]->getListening(sk[j]);
+			serverSocket[sk[j]] = tmp;
 		}
 		// serverSocket.insert(serverSocket.end(), this->servers[i]->getServerFds().begin(), this->servers[i]->getServerFds().end());
 	}
@@ -140,6 +146,19 @@ void	WebServer::addEventSet()
 				exit(1);
 			}
 		}
+	}
+}
+
+void WebServer::modifFilter(struct epoll_event eventList, int type)
+{
+	// struct epoll_event evSet;
+
+	std::cout << "Connection filter add " << eventList.data.fd << std::endl;
+	eventList.events = type; // Edge-triggered mode
+	if (epoll_ctl(this->kq, EPOLL_CTL_MOD, eventList.data.fd, &eventList) == -1)
+	{
+		std::cerr << "Error: could not modify event" << std::endl;
+		exit(1);
 	}
 }
 
@@ -211,10 +230,11 @@ int WebServer::getConnection(int fd)
 void	WebServer::eventLoop()
 {
 	struct epoll_event evList[MAX_EVENTS];
+	char buf[MAX_MSG_SIZE] = {0};
 
 	while (1)
 	{
-		std::cout << "Waiting for events" << std::endl;
+		//std::cout << "Waiting for events" << std::endl;
 
 		int num_events = epoll_wait(this->kq, evList, MAX_EVENTS, -1);
 		if (num_events == -1)
@@ -224,9 +244,15 @@ void	WebServer::eventLoop()
 		}
 		else
 			std::cout << "Events received " << num_events << std::endl;
+
 		for (int i = 0; i < num_events; i++)
 		{
 			std::cout << "Event ident " << evList[i].data.fd << std::endl;
+			printf(" fd=%d; events: %s%s%s%s\n", evList[i].data.fd,
+				   (evList[i].events & EPOLLIN) ? "EPOLLIN ": "",
+				   (evList[i].events & EPOLLOUT) ? "EPOLLOUT " : "",
+				   (evList[i].events & EPOLLHUP) ? "EPOLLHUP " : "",
+				   (evList[i].events & EPOLLERR) ? "EPOLLERR " : "");
 			if (serverSocket.find(evList[i].data.fd) != serverSocket.end())
 			{
 				struct sockaddr_storage addr;
@@ -247,23 +273,29 @@ void	WebServer::eventLoop()
 				if (addConnection(fd) == 0)
 				{
 					std::cout << "Connection accepted " << fd << std::endl;
-					evList[i].events = EPOLLOUT | EPOLLET; // Edge-triggered mode
+					evList[i].events = EPOLLIN | EPOLLET; // Edge-triggered mode
 					epoll_ctl(this->kq, EPOLL_CTL_ADD, fd, evList);
 					// EV_SET(evList, fd, EVFILT_READ, EV_ADD, 0, 0, NULL);
 					// kevent(kq, evList, 1, NULL, 0, NULL);
+//					recv(fd, buf, sizeof(buf) * MAX_MSG_SIZE, 0);
+//					std::cout << "Para el fd: " << fd << " el buffer es: "<< buf << std::endl;
+//					this->acceptedSocket[fd]->loadRequest(buf);
+//					modifFilter(evList[i], EPOLLOUT | EPOLLET);
+//					acceptedSocket[fd]->sendData(fd);
+//					removeFilter(evList[i]);
+//					delete acceptedSocket[fd];
+//					removeConnection(fd);
 				}
 			}
-			else if (evList[i].events == (EPOLLOUT | EPOLLET))
+			else if (evList[i].events == (EPOLLIN | EPOLLET))
 			{
-				if (evList[i].events & EPOLLHUP)
+				if (evList[i].events & EPOLLHUP || evList[i].events & EPOLLERR)
 				{
 					removeFilter(evList[i]);
 					removeConnection(evList[i].data.fd);
 				}
 				else
 				{
-					char buf[MAX_MSG_SIZE] = {0};
-				
 					recv(evList[i].data.fd, buf, sizeof(buf) * MAX_MSG_SIZE, 0);
 					// if (recv(evList[i].ident, buf, sizeof(buf) * MAX_MSG_SIZE, 0) > 0)
 						// std::cout << buf << std::endl;
@@ -277,7 +309,7 @@ void	WebServer::eventLoop()
 			}
 			else if (evList[i].events == (EPOLLOUT | EPOLLET))
 			{
-				if (evList[i].events & EPOLLHUP)
+				if (evList[i].events & EPOLLHUP || evList[i].events & EPOLLERR)
 				{
 					std::cout <<  "client closed connection before response" << std::endl;
 					removeFilter(evList[i]);

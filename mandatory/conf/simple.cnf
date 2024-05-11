@@ -10,7 +10,7 @@ server:{
 }
 */
 server:{
-	port:8080,8081;                			# listening port, mandatory parameter
+	port:8082,8083;                			# listening port, mandatory parameter
 	host:127.0.0.1;                     # host or 127.0.0.1 by default
 	server_name:test;                   # specify server_name, need to be added into /etc/hosts to work
 	error_page:/error/;    			    # default error page

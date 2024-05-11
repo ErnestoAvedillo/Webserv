@@ -69,5 +69,6 @@ class WebServer {
 
 		void removeFilter(struct epoll_event eventList);
 		void addFilter(struct epoll_event eventList, int type);
+		void modifFilter(struct epoll_event eventList, int type);
 };
 #endif

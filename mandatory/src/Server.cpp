@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/27 14:24:35 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/09 13:32:49 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/11 11:35:04 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,17 +64,18 @@ Server::Server() {
 
 Server::Server(std::string const &str) 
 {
-	this->setDefaultData();
+	//this->setDefaultData();
 	if(this->loadData(str) == -1)
 	{
 		std::cerr << "Error: No se ha podido cargar la configuración del servidor. Parámetros por defecto establecidos." << std::endl;
+		exit(1);
 	}
-	std::map<int, ListeningSocket*>::iterator itb = this->port.begin();
-	std::map<int, ListeningSocket*>::iterator ite = this->port.end();
-	while (itb != ite) {
-		itb->second->startListening();
-		itb++;
-	}
+//	std::map<int, ListeningSocket*>::iterator itb = this->port.begin();
+//	std::map<int, ListeningSocket*>::iterator ite = this->port.end();
+//	while (itb != ite) {
+//		itb->second->startListening();
+//		itb++;
+//	}
 }
 
 Server::~Server() {}
@@ -156,10 +157,16 @@ void Server::setPort(std::string const &port)
 				exit(1);
 			}
 			for(size_t i = stringToSizeT(aux2[0]); i <= stringToSizeT(aux2[1]); i++)
-				this->port[i] = new ListeningSocket(i, this);
+			{
+				ListeningSocket *ls = new ListeningSocket(i, this);
+				this->port[ls->getFd()] = ls;
+			}
 		}
 		else
-			this->port[stringToSizeT(aux)] = new ListeningSocket(stringToSizeT(aux), this);
+		{
+			ListeningSocket *ls = new ListeningSocket(stringToSizeT(aux), this);
+			this->port[ls->getFd()] = ls;
+		}
 	}
 }
 
