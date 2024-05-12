@@ -6,19 +6,14 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
-
-#ifdef LNX
-#include </usr/include/sys/socket.h>
-#include </usr/include/sys/epoll.h>
-#include </usr/include/sys/time.h>
-#include </usr/include/sys/types.h>
-// #include </usr/include/sys/event2/event-config.h>
-#else
-#include <sys/socket.h>
-#include <sys/types.h>
-
-#include <sys/event.h>
 #include <sys/time.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+
+#ifdef __APPLE__
+#include <sys/event.h>
+#else
+#include <sys/epoll.h>
 #endif
 
 #include <unistd.h>

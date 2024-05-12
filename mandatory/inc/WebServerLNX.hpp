@@ -1,5 +1,5 @@
 #pragma once
-#ifdef LNX
+#ifdef __linux__
 # include <string>
 # include <vector>
 # include <sstream>

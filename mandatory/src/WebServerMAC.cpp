@@ -1,4 +1,4 @@
-#ifdef MAC
+#ifdef __APPLE__
 #include "../inc/WebServerMAC.hpp"
 
 WebServer::WebServer()

@@ -1,4 +1,4 @@
-#ifdef LNX
+#ifdef __linux__
 #include "../inc/WebServerLNX.hpp"
 
 WebServer::WebServer()
@@ -303,8 +303,8 @@ void	WebServer::eventLoop()
 					this->acceptedSocket[evList[i].data.fd]->loadRequest(buf);
 					// std::string tmp = buf;
 					//Request request(tmp);
-					addFilter(evList[i], EPOLLOUT | EPOLLET);
-					removeFilter(evList[i]);
+					modifFilter(evList[i], EPOLLOUT | EPOLLET);
+					//removeFilter(evList[i]);
 				}
 			}
 			else if (evList[i].events == (EPOLLOUT | EPOLLET))

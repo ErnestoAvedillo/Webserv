@@ -1,65 +1,6 @@
 #include "../inc/ListeningSocket.hpp"
 
-#ifdef LNX
-ListeningSocket::ListeningSocket(int myPort, Server *srv)
-{
-	port = myPort;
-	server = srv;
-	socketFd = -1;
-	this->startListening();
-}
-ListeningSocket::ListeningSocket(Server *srv)
-{
-	this->server = srv;
-}
-
-ListeningSocket::~ListeningSocket()
-{
-	stopListening();
-}
-
-bool ListeningSocket::startListening()
-{
-	// Create a socket
-	socketFd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
-	if (socketFd == -1)
-	{
-		std::cerr << "Failed to create socket" << std::endl;
-		return false;
-	}
-
-	// Set up the server address
-	sockaddr_in serverAddress;
-	serverAddress.sin_family = AF_INET;
-	serverAddress.sin_addr.s_addr = INADDR_ANY;
-	serverAddress.sin_port = htons(port);
-	// Bind the socket to the server address
-	if (bind(socketFd, (struct sockaddr *)&serverAddress, sizeof(serverAddress)) < 0)
-	{
-		std::cerr << "Failed to bind socket to address " << port << std::endl;
-		return false;
-	}
-
-	// Start listening for incoming connections
-	if (listen(socketFd, MAX_CONNECTIONS) < 0)
-	{
-		std::cerr << "Failed to start listening" << std::endl;
-		return false;
-	}
-	std::cout << "Listening on port " << port << std::endl;
-	return true;
-}
-void ListeningSocket::stopListening()
-{
-	if (socketFd != -1)
-	{
-		close(socketFd);
-		socketFd = -1;
-	}
-
-}
-
-#else
+#ifdef __APPLE__
 
 ListeningSocket::ListeningSocket(int myPort, Server *srv)
 {
@@ -134,6 +75,66 @@ void ListeningSocket::stopListening()
 		close(socketFd);
 		socketFd = -1;
 	}
+}
+
+#else
+
+ListeningSocket::ListeningSocket(int myPort, Server *srv)
+{
+	port = myPort;
+	server = srv;
+	socketFd = -1;
+	this->startListening();
+}
+ListeningSocket::ListeningSocket(Server *srv)
+{
+	this->server = srv;
+}
+
+ListeningSocket::~ListeningSocket()
+{
+	stopListening();
+}
+
+bool ListeningSocket::startListening()
+{
+	// Create a socket
+	socketFd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
+	if (socketFd == -1)
+	{
+		std::cerr << "Failed to create socket" << std::endl;
+		return false;
+	}
+
+	// Set up the server address
+	sockaddr_in serverAddress;
+	serverAddress.sin_family = AF_INET;
+	serverAddress.sin_addr.s_addr = INADDR_ANY;
+	serverAddress.sin_port = htons(port);
+	// Bind the socket to the server address
+	if (bind(socketFd, (struct sockaddr *)&serverAddress, sizeof(serverAddress)) < 0)
+	{
+		std::cerr << "Failed to bind socket to address " << port << std::endl;
+		return false;
+	}
+
+	// Start listening for incoming connections
+	if (listen(socketFd, MAX_CONNECTIONS) < 0)
+	{
+		std::cerr << "Failed to start listening" << std::endl;
+		return false;
+	}
+	std::cout << "Listening on port " << port << std::endl;
+	return true;
+}
+void ListeningSocket::stopListening()
+{
+	if (socketFd != -1)
+	{
+		close(socketFd);
+		socketFd = -1;
+	}
+
 }
 
 #endif

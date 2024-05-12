@@ -1,5 +1,5 @@
 #pragma once
-# ifdef MAC
+# ifdef __APPLE__
 # include <string>
 # include <vector>
 # include <sstream>
