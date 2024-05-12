@@ -231,10 +231,19 @@ void	WebServer::eventLoop()
 	struct epoll_event evList[MAX_EVENTS];
 	char buf[MAX_MSG_SIZE] = {0};
 	int fd;
+	int num_events = 0;
 	while (1)
 	{
-		//std::cout << "Waiting for events" << std::endl;
-		int num_events = epoll_wait(this->kq, evList, MAX_EVENTS, -1);
+		// std::cout << "Waiting for events" << std::endl;		
+		for (int i = 0; i < num_events; i++)
+		{
+			std::cout << "Events detected prior " << evList[i].data.fd << std::endl;
+		}
+		num_events = epoll_wait(this->kq, evList, MAX_EVENTS, -1);
+		for (int i = 0; i < num_events; i++)
+		{
+			std::cout << "Events detected after " << evList[i].data.fd << std::endl;
+		}
 		if (num_events == -1)
 		{
 			std::cerr << "Error: could not wait for events" << std::endl;
@@ -242,10 +251,7 @@ void	WebServer::eventLoop()
 		}
 		else
 			std::cout << "Events received " << num_events << std::endl;
-		for (int i = 0; i < num_events; i++)
-		{
-			std::cout << "Events detected " << evList[i].data.fd << std::endl;
-		}
+
 		for (int i = 0; i < num_events; i++)
 		{
 			std::cout << "Event ident " << evList[i].data.fd << std::endl;
@@ -266,6 +272,11 @@ void	WebServer::eventLoop()
 				}
 				while (1)
 				{
+					if (listen(evList[i].data.fd, SOMAXCONN) < 0)
+					{
+						std::cerr << "Error listening" << fd << std::endl;
+						exit(1);
+					}
 					fd = accept(evList[i].data.fd, (struct sockaddr *) &addr, &socklen);
 					if (fd < 0)
 					{
@@ -278,59 +289,63 @@ void	WebServer::eventLoop()
 						}
 					}
 					std::cout << "Connection accepted " << fd << std::endl;
-					fcntl(fd, F_SETFL, O_NONBLOCK, FD_CLOEXEC);
+
+					fcntl(fd, F_SETFL, O_NONBLOCK);
 					acceptedSocket.insert(std::pair<int, ListeningSocket *>(fd, serverSocket[evList[i].data.fd]->clone()));
 					if (addConnection(fd) == 0)
 					{
 						std::cout << "Connection added " << fd << std::endl;
-						evList[i].events = EPOLLIN | EPOLLET; // Edge-triggered mode
-						epoll_ctl(this->kq, EPOLL_CTL_ADD, fd, evList);
+						//evList[i].events = EPOLLIN | EPOLLET; // Edge-triggered mode
+						struct epoll_event ev;
+						ev.events = EPOLLIN | EPOLLET;
+						ev.data.fd = fd;
+						if(epoll_ctl(this->kq, EPOLL_CTL_ADD, fd, &ev) == -1)
+						{
+							std::cerr << "Error: could not add event to queue " << std::endl;
+							exit(1);
+						}
+						else
+							std::cout << "Connection added to queue " << fd << std::endl;
 					}
 				}
 			}
-			else if (evList[i].events == (EPOLLIN | EPOLLET))
+			else if (evList[i].events == (EPOLLIN))
 			{
-				if (evList[i].events & EPOLLHUP || evList[i].events & EPOLLERR)
+
+				recv(evList[i].data.fd, buf, sizeof(buf) * MAX_MSG_SIZE, 0);
+				// if (recv(evList[i].ident, buf, sizeof(buf) * MAX_MSG_SIZE, 0) > 0)
+					// std::cout << buf << std::endl;
+				
+				this->acceptedSocket[evList[i].data.fd]->loadRequest(buf);
+				// std::string tmp = buf;
+				//Request request(tmp);
+				struct epoll_event ev;
+				ev.events = EPOLLOUT | EPOLLET;
+				ev.data.fd = evList[i].data.fd;
+				if (epoll_ctl(this->kq, EPOLL_CTL_MOD, evList[i].data.fd, &ev) == -1)
 				{
-					removeFilter(evList[i]);
-					removeConnection(evList[i].data.fd);
+					std::cerr << "Error: could not add event to queue " << evList[i].data.fd  << std::endl;
+					exit(1);
 				}
-				else
-				{
-					recv(evList[i].data.fd, buf, sizeof(buf) * MAX_MSG_SIZE, 0);
-					// if (recv(evList[i].ident, buf, sizeof(buf) * MAX_MSG_SIZE, 0) > 0)
-						// std::cout << buf << std::endl;
-					
-					this->acceptedSocket[evList[i].data.fd]->loadRequest(buf);
-					// std::string tmp = buf;
-					//Request request(tmp);
-					modifFilter(evList[i], EPOLLOUT | EPOLLET);
-					//removeFilter(evList[i]);
-				}
+				//removeFilter(evList[i]);
 			}
-			else if (evList[i].events == (EPOLLOUT | EPOLLET))
+			else if (evList[i].events == (EPOLLOUT))
 			{
-				if (evList[i].events & EPOLLHUP || evList[i].events & EPOLLERR)
-				{
-					std::cout <<  "client closed connection before response" << std::endl;
-					removeFilter(evList[i]);
-				}
-				else
-				{
-					
-					acceptedSocket[evList[i].data.fd]->sendData(evList[i].data.fd);
-					// std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello, World!</h1></body></html>\r\n";
-					// send(evList[i].ident, response.c_str(), response.length(), 0);
-					// std::cout << "Response sent " << this->serverSocket[fd]->buffer <<  std::endl;
-					removeFilter(evList[i]);
-					removeConnection(evList[i].data.fd);
-				}
+				acceptedSocket[evList[i].data.fd]->sendData(evList[i].data.fd);
+				// std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello, World!</h1></body></html>\r\n";
+				// send(evList[i].ident, response.c_str(), response.length(), 0);
+				// std::cout << "Response sent " << this->serverSocket[fd]->buffer <<  std::endl;
+				//removeFilter(evList[i]);
+
+				removeConnection(evList[i].data.fd);
+				close(evList[i].data.fd);
 			}
-		}
-		for (int i = 0; i < num_events; i++)
-		{
-			epoll_ctl(this->kq, EPOLL_CTL_DEL, evList[i].data.fd, evList);
-			std::cout << "Events deleted " << evList[i].data.fd << std::endl;
+			else if (evList[i].events & EPOLLHUP || evList[i].events & EPOLLERR)
+			{
+				// removeFilter(evList[i]);
+				removeConnection(evList[i].data.fd);
+				close(evList[i].data.fd);
+			}
 		}
 	}
 }

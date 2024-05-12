@@ -162,8 +162,8 @@ int ListeningSocket::getFd()
 void ListeningSocket::sendData(int clientSocketFd)
 {
 	std::cout << "sendData " << std::endl;
-	std::string answer = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello, MY World!</h1></body></html>\r\n";
-	//std::string answer = this->client.getAnswerToSend();
+	//std::string answer = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello, MY World!</h1></body></html>\r\n";
+	std::string answer = this->client.getAnswerToSend();
 	n = send(clientSocketFd, answer.c_str(), answer.size(), 0);
 	if (n < 0)
 	{
