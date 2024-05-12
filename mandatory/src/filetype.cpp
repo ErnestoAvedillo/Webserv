@@ -396,7 +396,7 @@ std::map<std::string, std::string> create_filetypes()
 	filetypes["its+xml"] = "application/its+xml";
 	filetypes["j2c"] = "image/j2c";
 	filetypes["java-archive"] = "application/java-archive";
-	filetypes["javascript"] = "text/javascript";
+	filetypes["js"] = "text/javascript";
 	filetypes["javascript (OBSOLETED in favor of text/javascript)"] = "application/javascript";
 	filetypes["jcr-cnd"] = "text/jcr-cnd";
 	filetypes["jf2feed+json"] = "application/jf2feed+json";
@@ -1826,7 +1826,7 @@ std::map<std::string, std::string> create_filetypes()
 	filetypes["vnd.sealed.xls"] = "application/vnd.sealed.xls";
 	filetypes["vnd.sealedmedia.softseal.gif"] = "image/vnd.sealedmedia.softseal.gif";
 	filetypes["vnd.sealedmedia.softseal.html"] = "application/vnd.sealedmedia.softseal.html";
-	filetypes["vnd.sealedmedia.softseal.jpg"] = "image/vnd.sealedmedia.softseal.jpg";
+	filetypes["jpg"] = "image/jpg";
 	filetypes["vnd.sealedmedia.softseal.mov"] = "video/vnd.sealedmedia.softseal.mov";
 	filetypes["vnd.sealedmedia.softseal.mpeg"] = "audio/vnd.sealedmedia.softseal.mpeg";
 	filetypes["vnd.sealedmedia.softseal.pdf"] = "application/vnd.sealedmedia.softseal.pdf";
