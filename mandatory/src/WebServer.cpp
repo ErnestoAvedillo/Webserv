@@ -78,7 +78,7 @@ void WebServer::processConfigFile() // WebServer processConfigFile
 			aux = serverContentConfig.substr(0, pos);
 		else
 			aux = serverContentConfig.substr(0, pos - 1);
-		std::cout << "Server to open: " << aux << std::endl;
+		// std::cout << "Server to open: " << aux << std::endl;
 		servers.push_back(new Server(aux));
 		if(serverContentConfig.find("server:{", 8) == std::string::npos)
 			break;
@@ -281,7 +281,6 @@ void WebServer::removeFilter(struct kevent eventList, int type)
 void	WebServer::eventLoop()
 {
 	struct kevent evList[MAX_EVENTS];
-	
 	while (1)
 	{
 		std::cout << "Waiting for events" << std::endl;
@@ -303,7 +302,7 @@ void	WebServer::eventLoop()
 			std::cout << "Events received " << num_events << std::endl;
 		for (int i = 0; i < num_events; i++)
 		{
-			std::cout << "Event ident " << evList[i].ident << std::endl;
+			// std::cout << "Event ident " << evList[i].ident << std::endl;
 			if (serverSocket.find(evList[i].ident) != serverSocket.end())
 			{
 				struct sockaddr_storage addr;
@@ -317,56 +316,42 @@ void	WebServer::eventLoop()
 				}
 				else
 					std::cout << "Connection accepted " << fd << std::endl;
+				fcntl(fd, F_SETFL, O_NONBLOCK, FD_CLOEXEC);
+				int enable = 1;
+				setsockopt(fd, SOL_SOCKET, SO_NOSIGPIPE, &enable, sizeof(enable));
+				// setsockopt(socketFd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(enable))
 				acceptedSocket.insert(std::pair<int, ListeningSocket *>(fd, serverSocket[evList[i].ident]->clone()));
 				// this->serverSocket[fd] = this->servers[i]->getListening(evList[i].ident);
 				// inet_ntop(addr.ss_family, &((struct sockaddr_in *)&addr)->sin_addr, ip, sizeof(ip));
 				// std::cout << "Connection from " << ip << std::endl;
 				if (addConnection(fd) == 0)
 				{
-					std::cout << "Connection accepted " << fd << std::endl;
-					EV_SET(evList, fd, EVFILT_READ, EV_ADD, 0, 0, NULL);
-					kevent(kq, evList, 1, NULL, 0, NULL);
+					struct kevent ev;
+					// std::cout << "Connection accepted " << fd << std::endl;
+					EV_SET(&ev, fd, EVFILT_READ, EV_ADD, 0, 0, NULL);
+					kevent(kq, &ev, 1, NULL, 0, NULL);
 				}
 			}
 			else if (evList[i].filter == EVFILT_READ)
 			{
-				if (evList[i].flags & EV_EOF)
-				{
-					removeFilter(evList[i], EVFILT_READ);
-					removeConnection(evList[i].ident);
-				}
-				else
-				{
-					char buf[MAX_MSG_SIZE] = {0};
+		
+				char buf[MAX_MSG_SIZE] = {0};
+			
+				recv(evList[i].ident, buf, sizeof(buf), 0);
 				
-					recv(evList[i].ident, buf, sizeof(buf) * MAX_MSG_SIZE, 0);
-					// if (recv(evList[i].ident, buf, sizeof(buf) * MAX_MSG_SIZE, 0) > 0)
-						// std::cout << buf << std::endl;
-					
-					this->acceptedSocket[evList[i].ident]->loadRequest(buf);
-					// std::string tmp = buf;
-					//Request request(tmp);
-					addFilter(evList[i], EVFILT_WRITE);
-					removeFilter(evList[i], EVFILT_READ);
-				}
+	
+				this->acceptedSocket[evList[i].ident]->loadRequest(buf);
+				removeFilter(evList[i], EVFILT_READ);
+				addFilter(evList[i], EVFILT_WRITE);
 			}
 			else if (evList[i].filter == EVFILT_WRITE)
 			{
-				if (evList[i].flags & EV_EOF)
-				{
-					std::cout <<  "client closed connection before response" << std::endl;
-					removeFilter(evList[i], EVFILT_WRITE);
-				}
-				else
-				{
-					
-					acceptedSocket[evList[i].ident]->sendData(evList[i].ident);
-					// std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello, World!</h1></body></html>\r\n";
-					// send(evList[i].ident, response.c_str(), response.length(), 0);
-					// std::cout << "Response sent " << this->serverSocket[fd]->buffer <<  std::endl;
-					removeFilter(evList[i], EVFILT_WRITE);
-					removeConnection(evList[i].ident);
-				}
+				acceptedSocket[evList[i].ident]->sendData(evList[i].ident);
+				// delete acceptedSocket[evList[i].ident];
+				acceptedSocket.erase(evList[i].ident);
+
+				removeFilter(evList[i], EVFILT_WRITE);
+				removeConnection(evList[i].ident);
 			}
 		}
 	}
