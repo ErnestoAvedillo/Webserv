@@ -106,6 +106,16 @@ bool ListeningSocket::startListening()
 		return false;
 	}
 
+	if (fcntl(socketFd, F_SETFL, O_NONBLOCK,FD_CLOEXEC) < 0)
+	{
+		std::cerr << "Error" << std::endl;
+		exit(1);
+	}
+
+	int enable = 1;
+	setsockopt(socketFd, SOL_SOCKET, SO_KEEPALIVE, &enable, sizeof(enable));
+	setsockopt(socketFd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(enable));
+
 	// Set up the server address
 	sockaddr_in serverAddress;
 	serverAddress.sin_family = AF_INET;
@@ -119,7 +129,7 @@ bool ListeningSocket::startListening()
 	}
 
 	// Start listening for incoming connections
-	if (listen(socketFd, MAX_CONNECTIONS) < 0)
+	if (listen(socketFd, SOMAXCONN) < 0)
 	{
 		std::cerr << "Failed to start listening" << std::endl;
 		return false;

@@ -96,14 +96,12 @@ void WebServer::launchServers()
     	client_events[i] = 0; // Initialize all elements to zero
 	}
 
-	this->kq = epoll_create(MAX_EVENTS);
+	this->kq = epoll_create(1);
 	if (this->kq == -1)
 	{
 		std::cerr << "Error: could not create epoll" << std::endl;
 		exit(1);
 	}
-	// this->kq = kqueue();
-	// this->createSocket();
 	this->addEventSet();
 	std::cout << "Nr. of Servers launched " << this->servers.size() << std::endl;
 	//solo a efectos informativos
@@ -219,7 +217,8 @@ int WebServer::removeConnection(int fd)
 
 int WebServer::getConnection(int fd)
 {
-	for (size_t i = 0; i < this->servers.size(); i++)
+	size_t len = this->servers.size();
+	for (size_t i = 0; i < len; i++)
 	{
 		if (this->client_events[i] == fd)
 			return i;
@@ -231,11 +230,10 @@ void	WebServer::eventLoop()
 {
 	struct epoll_event evList[MAX_EVENTS];
 	char buf[MAX_MSG_SIZE] = {0};
-
+	int fd;
 	while (1)
 	{
 		//std::cout << "Waiting for events" << std::endl;
-
 		int num_events = epoll_wait(this->kq, evList, MAX_EVENTS, -1);
 		if (num_events == -1)
 		{
@@ -244,7 +242,10 @@ void	WebServer::eventLoop()
 		}
 		else
 			std::cout << "Events received " << num_events << std::endl;
-
+		for (int i = 0; i < num_events; i++)
+		{
+			std::cout << "Events detected " << evList[i].data.fd << std::endl;
+		}
 		for (int i = 0; i < num_events; i++)
 		{
 			std::cout << "Event ident " << evList[i].data.fd << std::endl;
@@ -258,33 +259,33 @@ void	WebServer::eventLoop()
 				struct sockaddr_storage addr;
 				socklen_t socklen = sizeof(addr);
 				// char ip[INET6_ADDRSTRLEN];
-				int fd = accept(evList[i].data.fd, (struct sockaddr *) &addr, &socklen);
-				if (fd < 0)
+				if(listen(serverSocket[evList[i].data.fd]->getFd(), SOMAXCONN) < 0)
 				{
-					std::cerr << "Error accepting connection" << std::endl;
-					continue; // Continue to the next event
+					std::cerr << "Error listening" << std::endl;
+					exit(1);
 				}
-				else
-					std::cout << "Connection accepted " << fd << std::endl;
-				acceptedSocket.insert(std::pair<int, ListeningSocket *>(fd, serverSocket[evList[i].data.fd]->clone()));
-				// this->serverSocket[fd] = this->servers[i]->getListening(evList[i].ident);
-				// inet_ntop(addr.ss_family, &((struct sockaddr_in *)&addr)->sin_addr, ip, sizeof(ip));
-				// std::cout << "Connection from " << ip << std::endl;
-				if (addConnection(fd) == 0)
+				while (1)
 				{
+					fd = accept(evList[i].data.fd, (struct sockaddr *) &addr, &socklen);
+					if (fd < 0)
+					{
+						if (errno == EAGAIN || errno == EWOULDBLOCK)
+							break;
+						else
+						{
+							std::cerr << "Error accepting connection" << std::endl;
+							exit (1); // Continue to the next event
+						}
+					}
 					std::cout << "Connection accepted " << fd << std::endl;
-					evList[i].events = EPOLLIN | EPOLLET; // Edge-triggered mode
-					epoll_ctl(this->kq, EPOLL_CTL_ADD, fd, evList);
-					// EV_SET(evList, fd, EVFILT_READ, EV_ADD, 0, 0, NULL);
-					// kevent(kq, evList, 1, NULL, 0, NULL);
-//					recv(fd, buf, sizeof(buf) * MAX_MSG_SIZE, 0);
-//					std::cout << "Para el fd: " << fd << " el buffer es: "<< buf << std::endl;
-//					this->acceptedSocket[fd]->loadRequest(buf);
-//					modifFilter(evList[i], EPOLLOUT | EPOLLET);
-//					acceptedSocket[fd]->sendData(fd);
-//					removeFilter(evList[i]);
-//					delete acceptedSocket[fd];
-//					removeConnection(fd);
+					fcntl(fd, F_SETFL, O_NONBLOCK, FD_CLOEXEC);
+					acceptedSocket.insert(std::pair<int, ListeningSocket *>(fd, serverSocket[evList[i].data.fd]->clone()));
+					if (addConnection(fd) == 0)
+					{
+						std::cout << "Connection added " << fd << std::endl;
+						evList[i].events = EPOLLIN | EPOLLET; // Edge-triggered mode
+						epoll_ctl(this->kq, EPOLL_CTL_ADD, fd, evList);
+					}
 				}
 			}
 			else if (evList[i].events == (EPOLLIN | EPOLLET))
@@ -325,6 +326,11 @@ void	WebServer::eventLoop()
 					removeConnection(evList[i].data.fd);
 				}
 			}
+		}
+		for (int i = 0; i < num_events; i++)
+		{
+			epoll_ctl(this->kq, EPOLL_CTL_DEL, evList[i].data.fd, evList);
+			std::cout << "Events deleted " << evList[i].data.fd << std::endl;
 		}
 	}
 }
