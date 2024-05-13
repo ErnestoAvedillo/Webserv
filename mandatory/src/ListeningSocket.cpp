@@ -148,13 +148,14 @@ void ListeningSocket::handleEvents()
 		}
 		std::cout << "created socket nr:" << socketFd << std::endl;
 
-		if (fcntl(socketFd, F_SETFL, O_NONBLOCK) < 0)
+		if (fcntl(socketFd, F_SETFL, O_NONBLOCK, FD_CLOEXEC) < 0)
 		{
 			std::cerr << "Error" << std::endl;
 			exit(1);
 		}
 
 		int enable = 1;
+		setsockopt(socketFd, SOL_SOCKET, SO_KEEPALIVE, &enable, sizeof(enable));
 		if (setsockopt(socketFd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0)
 		{
 			std::cerr << "setsockopt(SO_REUSEADDR) failed" << std::endl;
@@ -209,19 +210,11 @@ int ListeningSocket::getFd()
 
 void ListeningSocket::sendData(int clientSocketFd)
 {
-	std::cout << "sendData " << std::endl;
+	// std::cout << "sendData " << std::endl;
 	// std::string buffer = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello, MY World!</h1></body></html>\r\n";
 	std::string answer = this->client->getAnswerToSend(this->server);
 	n = send(clientSocketFd, answer.c_str(), answer.size(), 0);
-	if (n < 0)
-	{
-		std::cerr << "Failed to write to client" << std::endl;
-	}
-	else
-	{
-		//std::cout << "Sent " << n << " bytes: " << answer << std::endl;
-
-	}
+	std::cout << "send" << std::endl;
 }
 
 ListeningSocket *ListeningSocket::clone()

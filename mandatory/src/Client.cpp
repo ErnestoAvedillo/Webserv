@@ -138,6 +138,7 @@ std::string getExtension(std::string filePath)
 
 	std::map<std::string, std::string> Mimetype = create_filetypes();
 
+	std::cout << "found extension " << extension << std::endl;
 	if (Mimetype.find(extension) != Mimetype.end())
 		return(Mimetype[extension]);
 	else
@@ -152,9 +153,10 @@ std::string Client::getAnswerToSend(Server *server)
 	// Get File Content
 	// std::string filePath = this->Request[REQ_FILE];
 	// std::cout << 
+	if (file_content.find("HTTP/1.1 404"))
 
-	answer += "HTTP/1.1 200 OK\r\nContent-Type: " + getExtension(filePath) + "\r\n\r\n";
-	// getExtension(filePath);
+	answer += "HTTP/1.1 200 OK\r\nContent-Type: " + getExtension(filePath) + "\r\nContent-Lenght: " + std::to_string(file_content.size())  + "\r\n\r\n";
+	std::cout << getExtension(filePath) << std::endl;
 	
 
 	// if (filePath.find(".jpg") != std::string::npos)
