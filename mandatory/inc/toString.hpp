@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   itos.hpp                                           :+:      :+:    :+:   */
+/*   toString.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/21 13:55:21 by eavedill          #+#    #+#             */
-/*   Updated: 2024/04/27 18:23:58 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/13 19:01:36 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include <sstream>
 
 template <typename T>
-std::string itos (T n)
+std::string toString (T n)
 {
 	std::string str;
 	std::stringstream ss;

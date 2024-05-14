@@ -270,6 +270,7 @@ void	WebServer::eventLoop()
 					std::cerr << "Error listening" << std::endl;
 					exit(1);
 				}
+
 				while (1)
 				{
 					if (listen(evList[i].data.fd, SOMAXCONN) < 0)
@@ -290,8 +291,9 @@ void	WebServer::eventLoop()
 					}
 					std::cout << "Connection accepted " << fd << std::endl;
 
-					fcntl(fd, F_SETFL, O_NONBLOCK);
-					acceptedSocket.insert(std::pair<int, ListeningSocket *>(fd, serverSocket[evList[i].data.fd]->clone()));
+					fcntl(fd, F_SETFL, O_NONBLOCK, O_CLOEXEC);
+					acceptedSocket[fd] = serverSocket[evList[i].data.fd]->clone();
+					std::cout << "Connection accepted " << serverSocket[evList[i].data.fd]->getServerName() << std::endl;
 					if (addConnection(fd) == 0)
 					{
 						std::cout << "Connection added " << fd << std::endl;
@@ -332,10 +334,6 @@ void	WebServer::eventLoop()
 			else if (evList[i].events == (EPOLLOUT))
 			{
 				acceptedSocket[evList[i].data.fd]->sendData(evList[i].data.fd);
-				// std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello, World!</h1></body></html>\r\n";
-				// send(evList[i].ident, response.c_str(), response.length(), 0);
-				// std::cout << "Response sent " << this->serverSocket[fd]->buffer <<  std::endl;
-				//removeFilter(evList[i]);
 
 				removeConnection(evList[i].data.fd);
 				close(evList[i].data.fd);
@@ -343,6 +341,7 @@ void	WebServer::eventLoop()
 			else if (evList[i].events & EPOLLHUP || evList[i].events & EPOLLERR)
 			{
 				// removeFilter(evList[i]);
+				std::cout << "Connection closed " << evList[i].data.fd << std::endl;
 				removeConnection(evList[i].data.fd);
 				close(evList[i].data.fd);
 			}

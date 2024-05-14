@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 18:38:35 by eavedill          #+#    #+#             */
-/*   Updated: 2024/04/27 21:21:11 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/13 19:05:21 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ void str_echo (int sockfd)
 	if (mimeTypes[line.substr(j, line.length() - j)] == "image/png")
 		;//header = header + "Content-Length: " + std::to_string(fileinfo->st_size) + "\n\n";
 	else 
-		header = header + "Content-Length: " + itos(complete.length()) + " \n\n" + complete;
+		header = header + "Content-Length: " + toString(complete.length()) + " \n\n" + complete;
 	
 	//size_t y = header.length();
 

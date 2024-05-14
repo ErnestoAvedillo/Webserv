@@ -39,7 +39,7 @@ private:
 	int socketFd;
 	int n;
 	// char *buffer;
-	Client client;
+	Client *client;
 	//void handleConnection(int clientSocketFd);
 
 public:
@@ -53,6 +53,7 @@ public:
 	int getFd();
 	void sendData(int);
 	void loadRequest(char *buff);
+	std::string getServerName();
 
 	ListeningSocket *clone();
 };

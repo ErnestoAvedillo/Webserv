@@ -94,6 +94,7 @@ ListeningSocket::ListeningSocket(Server *srv)
 ListeningSocket::~ListeningSocket()
 {
 	stopListening();
+	delete client;
 }
 
 bool ListeningSocket::startListening()
@@ -163,7 +164,7 @@ void ListeningSocket::sendData(int clientSocketFd)
 {
 	std::cout << "sendData " << std::endl;
 	//std::string answer = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello, MY World!</h1></body></html>\r\n";
-	std::string answer = this->client.getAnswerToSend();
+	std::string answer = this->client->getAnswerToSend();
 	n = send(clientSocketFd, answer.c_str(), answer.size(), 0);
 	if (n < 0)
 	{
@@ -171,7 +172,7 @@ void ListeningSocket::sendData(int clientSocketFd)
 	}
 	else
 	{
-		// std::cout << "Sent " << n << " bytes: " << answer << std::endl;
+		std::cout << "Sent " << n << " bytes: " << answer << std::endl;
 	}
 }
 
@@ -186,5 +187,11 @@ ListeningSocket *ListeningSocket::clone()
 
 void ListeningSocket::loadRequest(char *buff)
 {
-	this->client.loadCompleteClient(buff);
+	this->client = new Client((std::string)buff, server);
+	this->client->loadCompleteClient(buff);
+}
+
+std::string ListeningSocket::getServerName()
+{
+	return server->getServerName();
 }

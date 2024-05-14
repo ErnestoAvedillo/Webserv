@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/22 19:10:51 by eavedill          #+#    #+#             */
-/*   Updated: 2024/04/30 09:44:35 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/13 19:05:32 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ void Header::setHeader(std::string header)
 
 std::string Header::getHeader()
 {
-	std::string header = HTTPvers + " " + itos(this->filename.getErrCode()) + " " + this->filename.getErrDesc() + " " + filename.getErrDesc() + "\nContent-Type: " + this->Type + "\nContent-Length: ";
+	std::string header = HTTPvers + " " + toString(this->filename.getErrCode()) + " " + this->filename.getErrDesc() + " " + filename.getErrDesc() + "\nContent-Type: " + this->Type + "\nContent-Length: ";
 	return (header);
 }
 
