@@ -122,79 +122,84 @@ void ListeningSocket::handleEvents()
 
 #else
 
-	ListeningSocket::ListeningSocket(int myPort, Server *srv)
+ListeningSocket::ListeningSocket(int myPort, Server *srv)
+{
+	port = myPort ;
+	server= srv;
+	socketFd = -1;
+	kq = -1;
+	if (this->startListening() == true)
 	{
-		port = myPort ;
-		server= srv;
+		std::cout << "Listening on port " << port ;//<< std::endl;
+		std::cout << " => " << srv->getRoot() << std::endl;
+	}
+}
+
+ListeningSocket::ListeningSocket(Server *srv)
+{
+	this->server = srv;
+}
+
+ListeningSocket::~ListeningSocket() {
+	stopListening();
+}
+
+bool ListeningSocket::startListening() {
+	// Create a socket
+	socketFd = socket(AF_INET, SOCK_STREAM, 0);
+	if (socketFd == -1) {
+		std::cerr << "Failed to create socket" << std::endl;
+		return false;
+	}
+	// std::cout << "created socket nr:" << socketFd << std::endl;
+
+	if (fcntl(socketFd, F_SETFL, O_NONBLOCK, FD_CLOEXEC) < 0)
+	{
+		std::cerr << "Error" << std::endl;
+		exit(1);
+	}
+
+	int enable = 1;
+	setsockopt(socketFd, SOL_SOCKET, SO_KEEPALIVE, &enable, sizeof(enable));
+	if (setsockopt(socketFd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0)
+	{
+		std::cerr << "setsockopt(SO_REUSEADDR) failed" << std::endl;
+		exit(1);
+	}
+	
+	// Set up the server address
+	sockaddr_in serverAddress;
+	serverAddress.sin_family = AF_INET;
+	serverAddress.sin_addr.s_addr = INADDR_ANY;
+	serverAddress.sin_port = htons(port);
+
+	// Bind the socket to the server address
+	if (bind(socketFd, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0) {
+		std::cerr << "Failed to bind socket to address of port " << port << std::endl;
+		return false;
+	}
+
+	// Start listening for incoming connections
+	if (listen(socketFd, 5) < 0) {
+		std::cerr << "Failed to start listening of port " << port << std::endl;
+		return false;
+	}
+
+	// Add the socket file descriptor to the kqueue
+	// std::cout << "Listening of port " << port << std::endl;
+	return true;
+}
+
+void ListeningSocket::stopListening() {
+	if (socketFd != -1) {
+		close(socketFd);
 		socketFd = -1;
+	}
+	if (kq != -1) {
+		close(kq);
 		kq = -1;
-		this->startListening();
 	}
-	ListeningSocket::ListeningSocket(Server *srv)
-	{
-		this->server = srv;
-	}
-
-	ListeningSocket::~ListeningSocket() {
-		stopListening();
-	}
-
-	bool ListeningSocket::startListening() {
-		// Create a socket
-		socketFd = socket(AF_INET, SOCK_STREAM, 0);
-		if (socketFd == -1) {
-			std::cerr << "Failed to create socket" << std::endl;
-			return false;
-		}
-		std::cout << "created socket nr:" << socketFd << std::endl;
-
-		if (fcntl(socketFd, F_SETFL, O_NONBLOCK, FD_CLOEXEC) < 0)
-		{
-			std::cerr << "Error" << std::endl;
-			exit(1);
-		}
-
-		int enable = 1;
-		setsockopt(socketFd, SOL_SOCKET, SO_KEEPALIVE, &enable, sizeof(enable));
-		if (setsockopt(socketFd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0)
-		{
-			std::cerr << "setsockopt(SO_REUSEADDR) failed" << std::endl;
-			exit(1);
-		}
-		
-		// Set up the server address
-		sockaddr_in serverAddress;
-		serverAddress.sin_family = AF_INET;
-		serverAddress.sin_addr.s_addr = INADDR_ANY;
-		serverAddress.sin_port = htons(port);
-
-		// Bind the socket to the server address
-		if (bind(socketFd, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0) {
-			std::cerr << "Failed to bind socket to address of port " << port << std::endl;
-			return false;
-		}
-
-		// Start listening for incoming connections
-		if (listen(socketFd, 5) < 0) {
-			std::cerr << "Failed to start listening of port " << port << std::endl;
-			return false;
-		}
-
-		// Add the socket file descriptor to the kqueue
-		std::cout << "Listening of port " << port << std::endl;
-		return true;
-	}
-
-	void ListeningSocket::stopListening() {
-		if (socketFd != -1) {
-			close(socketFd);
-			socketFd = -1;
-		}
-		if (kq != -1) {
-			close(kq);
-			kq = -1;
-		}
-	}
+}
 
 #endif
 
@@ -214,6 +219,11 @@ void ListeningSocket::sendData(int clientSocketFd)
 	// std::string buffer = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello, MY World!</h1></body></html>\r\n";
 	std::string answer = this->client->getAnswerToSend(this->server);
 	n = send(clientSocketFd, answer.c_str(), answer.size(), 0);
+	if (n < 0)
+	{
+		std::cerr << "Failed to send data" << std::endl;
+		// close (clientSocketFd);
+	}
 	std::cout << "send" << std::endl;
 }
 

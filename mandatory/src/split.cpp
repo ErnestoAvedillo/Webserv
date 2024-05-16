@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   split.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/24 17:43:57 by eavedill          #+#    #+#             */
-/*   Updated: 2024/04/27 18:34:57 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/15 19:19:00 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,8 @@ std::vector<std::string> splitString(const std::string& str, char delimiter) {
 	std::istringstream tokenStream(str);
 
 	while (std::getline(tokenStream, token, delimiter)) {
-		result.push_back(token);
+		if (token != "")
+			result.push_back(token);
 	}
 
 	return result;
