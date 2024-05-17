@@ -10,7 +10,7 @@ void WebServer::createQueue()
 	}
 }
 
-void	WebServer::Set()
+void	WebServer::addEventSet()
 {
 	for (size_t i = 0; i < this->servers.size() ; i++)
 	{
@@ -28,7 +28,7 @@ void	WebServer::Set()
 	}
 }
 
-int waitEvent()
+int waitEvent(struct epoll_event *evList)
 {
 		int num_events = kevent(kq, NULL, 0, evList, MAX_EVENTS, NULL);
 		if (num_events == -1)
@@ -37,9 +37,20 @@ int waitEvent()
 		}
 		else
 			std::cout << "Events received " << num_events << std::endl;
-
+	return num_events;
 }
 
+
+void WebServer::modifEvent(struct kevent event, int type)
+{
+	struct kevent evSet;
+	EV_SET(&evSet, event.ident, type, EV_ADD, 0, 0, NULL);
+	if (kevent(this->kq, &evSet, 1, NULL, 0, NULL) == -1)
+	{
+		std::cerr << "Error: could not add event" << std::endl;
+		exit(1);
+	}
+}
 
 void WebServer::addEvent(int fd, int type)
 {
@@ -104,7 +115,12 @@ void	WebServer::eventLoop()
 			if (serverSocket.find(evList[i].ident) != serverSocket.end())
 			{
 				fd = this->acceptNewEvent(evList[i].ident)
-			}
+				acceptedSocket.insert(std::pair<int, ListeningSocket *>(fd, serverSocket[evList[i].data.fd]->clone()));
+				if (addConnection(fd) == 0)
+				{
+					std::cout << "Connection accepted " << fd << std::endl;
+					this->addEvent(fd, EPOLLIN | EPOLLET);
+				}
 			}
 			else if (evList[i].filter == EVFILT_READ)
 			{

@@ -40,7 +40,6 @@ int WebServer::waitEvent(struct epoll_event *evList)
 	return num_events;
 }
 
-
 void WebServer::modifEvent(struct epoll_event eventList, int type)
 {
 	// struct epoll_event evSet;
@@ -73,7 +72,6 @@ void WebServer::removeEventFd(int fd)
 {
 	struct epoll_event ev;
 
-	std::cout << "Connection removed " << fd << std::endl;
 	ev.data.fd = fd;
 	ev.events = EPOLLONESHOT; // Edge-triggered mode
 	if (epoll_ctl(this->kq, EPOLL_CTL_DEL, fd, &ev) == -1)
