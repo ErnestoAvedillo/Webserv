@@ -8,7 +8,7 @@
 # include <stdlib.h>
 # include <string>
 # include <algorithm>
-# include "commonFunctions.hpp"
+# include "utils.hpp"
 # include "Location.hpp"
 
 #define VAR_PORT	"port"

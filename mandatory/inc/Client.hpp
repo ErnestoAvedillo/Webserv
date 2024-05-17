@@ -6,7 +6,7 @@
 /*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 12:46:28 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/15 18:52:13 by jcheel-n         ###   ########.fr       */
+/*   Updated: 2024/05/16 21:29:37 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 #include <string>
 #include <fstream>
 #include <sstream>
-#include "../inc/commonFunctions.hpp"
+#include "../inc/utils.hpp"
 
 class Server;
 #include "../inc/Server.hpp"

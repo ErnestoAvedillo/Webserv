@@ -1,4 +1,3 @@
-#include "../inc/utils.hpp"
 #include <iostream>
 #include <netinet/in.h>
 #include <cstdlib>
@@ -49,7 +48,8 @@ bool validIPAddress(std::string ip)
 	return count == 3;
 }
 
-bool isPathValid(std::string path, int mode)
+
+bool isDirPermissions(std::string path, int mode)
 {
 	if (path.empty())
 		return false;
@@ -63,13 +63,29 @@ bool isPathValid(std::string path, int mode)
 	return true;
 }
 
-int main()
+bool isFilePermissions(std::string path, int mode)
 {
-    std::string nbr = "+29020";
-  
-    std::cout << std::boolalpha << isNumber(nbr) << std::endl;
-	std::cout << std::boolalpha << isrange(1000, IPPORT_RESERVED, 46555) << std::endl ;
-	std::cout << std::boolalpha << validIPAddress(".128.255.10.1") << std::endl;
-	std::cout << std::boolalpha << isPathValid("~/INTRA", R_OK) << std::endl;
-	return 0;
+	if (path.empty())
+		return false;
+	struct stat buffer;
+	if (stat(path.c_str(), &buffer) == -1)
+		return false;
+	if (!S_ISREG(buffer.st_mode))
+		return false;
+	if (access(path.c_str(), mode) != 0)
+		return false;
+	return true;
 }
+
+
+// int main()
+// {
+//     std::string nbr = "+29020";
+  
+//     std::cout << std::boolalpha << isNumber(nbr) << std::endl;
+// 	std::cout << std::boolalpha << isrange(1000, IPPORT_RESERVED, 46555) << std::endl ;
+// 	std::cout << std::boolalpha << validIPAddress(".128.255.10.1") << std::endl;
+// 	std::cout << std::boolalpha << isDirPermissions("./dir", R_OK | W_OK) << std::endl;
+// 	std::cout << std::boolalpha << isFilePermissions("./file_not_read", R_OK | W_OK) << std::endl;
+// 	return 0;
+// }
