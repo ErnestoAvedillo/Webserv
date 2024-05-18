@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 12:46:28 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/14 10:28:40 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/18 17:00:43 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 #include "../inc/commonFunctions.hpp"
 #include "../inc/FileContent.hpp"
 #include "../inc/toString.hpp"
+#include "../inc/colors.h"
 
 #define REQ_TYPE "Type"
 #define REQ_FILE "File"

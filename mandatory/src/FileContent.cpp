@@ -4,8 +4,9 @@ FileContent::FileContent()
 {
 	fileName = "";
 }
-FileContent::FileContent(const std::string &MyfileName) : fileName(MyfileName)
+FileContent::FileContent(const std::string &MyfileName) 
 {
+	this->setFileName(MyfileName);
 	openFile();
 }
 
@@ -38,14 +39,22 @@ int FileContent::openFile()
 
 std::string FileContent::getContent() 
 {
+	std::string errorReturn = "Error: " + fileName + " File not found";
 	if (!this->openFile())
-		return ("Error: " + fileName + " File not found");	
+	{
+		std::cout << CHR_RED + errorReturn + RESET << std::endl;
+		return ( errorReturn );	
+	}
 	return content;
 }
 
 void FileContent::setFileName(const std::string &file_name)
 {
-	this->fileName = file_name;
+	if (file_name.find("?") != std::string::npos)
+		fileName = file_name.substr(0, file_name.find("?"));
+	else
+		fileName = file_name;
+	std::cout << "File name set to: " << fileName << std::endl;
 }
 
 std::string FileContent::getFileName()

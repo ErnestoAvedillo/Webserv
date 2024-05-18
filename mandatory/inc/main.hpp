@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/07 11:23:40 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/13 19:00:04 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/18 16:37:51 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,11 +27,7 @@
 #include "Request.hpp"
 #include "SendFile.hpp"
 #include "commonFunctions.hpp"
-#ifdef __APPLE__
-#include "WebServerMAC.hpp"
-#else
-#include "WebServerLNX.hpp"
-#endif
+#include "../inc/WebServer.hpp"
 
 
 

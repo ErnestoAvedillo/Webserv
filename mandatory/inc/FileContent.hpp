@@ -2,7 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-
+#include "../inc/colors.h"
 class FileContent
 {
 private:

@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/21 12:32:16 by eavedill          #+#    #+#             */
-/*   Updated: 2024/04/21 12:32:57 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/18 18:08:46 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ std::map<std::string, std::string> create_filetypes()
 {
 	std::map<std::string, std::string> filetypes ;
 
+	filetypes["js"] = "application/js";
 	filetypes["1d-interleaved-parityfec"] = "text/1d-interleaved-parityfec";
 	filetypes["32kadpcm"] = "audio/32kadpcm";
 	filetypes["3gpdash-qoe-report+xml"] = "application/3gpdash-qoe-report+xml";
@@ -280,6 +281,7 @@ std::map<std::string, std::string> create_filetypes()
 	filetypes["delivery-status"] = "message/delivery-status";
 	filetypes["dialog-info+xml"] = "application/dialog-info+xml";
 	filetypes["dicom"] = "application/dicom";
+	filetypes["ico"] = "image/ico";
 	filetypes["dicom+json"] = "application/dicom+json";
 	filetypes["dicom+xml"] = "application/dicom+xml";
 	filetypes["dicom-rle"] = "image/dicom-rle";
@@ -1827,6 +1829,7 @@ std::map<std::string, std::string> create_filetypes()
 	filetypes["vnd.sealedmedia.softseal.gif"] = "image/vnd.sealedmedia.softseal.gif";
 	filetypes["vnd.sealedmedia.softseal.html"] = "application/vnd.sealedmedia.softseal.html";
 	filetypes["vnd.sealedmedia.softseal.jpg"] = "image/vnd.sealedmedia.softseal.jpg";
+	filetypes["jpg"] = "image/jpg";
 	filetypes["vnd.sealedmedia.softseal.mov"] = "video/vnd.sealedmedia.softseal.mov";
 	filetypes["vnd.sealedmedia.softseal.mpeg"] = "audio/vnd.sealedmedia.softseal.mpeg";
 	filetypes["vnd.sealedmedia.softseal.pdf"] = "application/vnd.sealedmedia.softseal.pdf";

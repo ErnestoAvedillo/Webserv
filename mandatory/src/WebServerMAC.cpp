@@ -19,7 +19,8 @@ void	WebServer::addEventSet()
 		{
 			struct kevent evSet;
 			
-			EV_SET(&evSet, serverFds[j], EVFILT_READ, EV_ADD | EV_CLEAR, NOTE_WRITE, 0, NULL);
+			// EV_SET(&evSet, serverFds[j], EVFILT_READ, EV_ADD | EV_CLEAR, NOTE_WRITE, 0, NULL);
+			EV_SET(&evSet, serverFds[j], EVFILT_READ, EV_ADD | EV_CLEAR, 0, 0, NULL);
 			if (kevent(this->kq, &evSet, 1, NULL, 0, NULL) == -1)
 			{
 				throw("Error: could not add event to kqueue");
@@ -38,8 +39,9 @@ int WebServer::waitEvent(struct kevent *evList)
 void WebServer::modifEvent(struct kevent event, int typeRem, int typeAdd)
 {
 	struct kevent evSet;
+	(void) typeRem;
 	EV_SET(&evSet, event.ident, typeAdd, EV_ADD, 0, 0, NULL);
-	removeEventFd(event.ident, typeRem);
+	//removeEventFd(event.ident, typeRem);
 	if (kevent(this->kq, &evSet, 1, NULL, 0, NULL) == -1)
 	{
 		std::cerr << "Error: could not add event" << std::endl;
@@ -56,6 +58,8 @@ void WebServer::addEvent(int fd, int type)
 		std::cerr << "Error: could not add event" << std::endl;
 		exit(1);
 	}
+	else
+		std::cout << CHR_GREEN << "Event added " << RESET << fd << std::endl;	
 }
 
 void WebServer::removeEventFd(int fd, int type)
@@ -81,11 +85,12 @@ int WebServer::acceptNewEvent(int curfd)
 	else
 		std::cout << "Connection accepted " << fd << std::endl;
 	acceptedSocket.insert(std::pair<int, ListeningSocket *>(fd, serverSocket[curfd]->clone()));
-	if (addConnection(fd) == 0)
-	{
-		std::cout << "New socket created " << fd << std::endl;
-		this->addEvent(fd, EVFILT_READ);
-	}	
+	this->addEvent(fd, EVFILT_READ);
+	// if (addConnection(fd) == 0)
+	// {
+	// 	std::cout << "New socket created " << fd << std::endl;
+	// 	this->addEvent(fd, EVFILT_READ);
+	// }	
 	return fd;
 }
 

@@ -71,9 +71,9 @@ class WebServer {
 //		void	Set();
 		void	eventLoop();
 		
-		int getConnection(int fd);
-		int	addConnection(int fd);
-		int	removeConnection(int fd);
+		// int getConnection(int fd);
+		// int	addConnection(int fd);
+		// int	removeConnection(int fd);
 		struct sockaddr_in convertHost(std::string hostname, int port);
 
 		void removeEventFd(int fd, int type);

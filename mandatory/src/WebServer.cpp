@@ -132,7 +132,7 @@ void WebServer::launchServers()
 }
 
 
-
+/*
 int WebServer::addConnection(int fd)
 {
 
@@ -170,6 +170,7 @@ int WebServer::getConnection(int fd)
 	}
 	return -1;
 }
+*/
 void	WebServer::eventLoop()
 {
 	#ifdef __APPLE__
@@ -185,6 +186,7 @@ void	WebServer::eventLoop()
 	while (1)
 	{
 		std::cout << CHR_YELLOW << "Waiting Events" << RESET << std::endl;
+		std::cout << " Last Error found: " << strerror(errno) << std::endl;
 		num_events = waitEvent(evList);
 		if (num_events == -1)
 		{
@@ -222,8 +224,8 @@ void	WebServer::eventLoop()
 			else if (type_event == (WRITE_EVENT))
 			{
 				acceptedSocket[currfd]->sendData(currfd);
-				//removeEventFd(currfd, WRITE_EVENT);	
-				removeConnection(currfd);
+				removeEventFd(currfd, WRITE_EVENT);	
+				// removeConnection(currfd);
 				std::cout << CHR_RED << "Data sent Connection closed " << RESET << currfd << std::endl;
 				close(currfd);
 			}
@@ -231,7 +233,7 @@ void	WebServer::eventLoop()
 			{
 				removeEventFd(currfd, READ_EVENT);
 				std::cout << CHR_RED << "Connection closed " << RESET << currfd << std::endl;
-				removeConnection(currfd);
+				// removeConnection(currfd);
 				close(currfd);
 			}
 		}

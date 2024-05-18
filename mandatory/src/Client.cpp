@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 12:49:08 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/18 15:40:13 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/18 17:32:51 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,11 +118,16 @@ std::string getExtension(std::string filePath)
 
 	std::map<std::string, std::string> Mimetype = create_filetypes();
 
-	std::cout << "found extension " << extension << std::endl;
 	if (Mimetype.find(extension) != Mimetype.end())
+	{
+		std::cout << CHR_BLUE << "found extension " << extension << ": " << Mimetype[extension] << RESET << std::endl;
 		return(Mimetype[extension]);
+	}
 	else
+	{
+		std::cout << CHR_MGENTA << "NOT found extension " << extension << RESET << std::endl;
 		return("text/html"); 
+	}
 }
 
 std::string Client::getAnswerToSend()
