@@ -201,7 +201,7 @@ void	WebServer::eventLoop()
 				currfd = evList[i].data.fd;
 				type_event = evList[i].events;
 			#endif
-			std::cout << "Event ident " << evList[i].ident << std::endl;
+			std::cout << "Event ident " << currfd << std::endl;
 			if (serverSocket.find(currfd) != serverSocket.end())
 			{
 				fd = acceptNewEvent(currfd);
@@ -213,13 +213,18 @@ void	WebServer::eventLoop()
 				recv(currfd, buf, sizeof(buf) * MAX_MSG_SIZE, 0);
 				this->acceptedSocket[currfd]->loadRequest(buf);
 				//removeEventFd(currfd,READ_EVENT);
-				modifEvent(evList[i], READ_EVENT, WRITE_EVENT);
+				#ifdef __APPLE__
+					modifEvent(evList[i], READ_EVENT, WRITE_EVENT);
+				#elif __linux__
+					modifEvent(evList[i], WRITE_EVENT);
+				#endif
 			}
 			else if (type_event == (WRITE_EVENT))
 			{
 				acceptedSocket[currfd]->sendData(currfd);
-				removeEventFd(currfd, WRITE_EVENT);	
+				//removeEventFd(currfd, WRITE_EVENT);	
 				removeConnection(currfd);
+				std::cout << CHR_RED << "Data sent Connection closed " << RESET << currfd << std::endl;
 				close(currfd);
 			}
 			else if (type_event & END_EVENT || type_event & ERR_EVENT)

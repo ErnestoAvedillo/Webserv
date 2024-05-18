@@ -62,10 +62,10 @@ void WebServer::addEvent(int fd, int type)
 
 }
 
-void WebServer::removeEventFd(int fd)
+void WebServer::removeEventFd(int fd, int type)
 {
 	struct epoll_event ev;
-
+	(void) type;
 	ev.data.fd = fd;
 	ev.events = EPOLLONESHOT; // Edge-triggered mode
 	if (epoll_ctl(this->kq, EPOLL_CTL_DEL, fd, &ev) == -1)
