@@ -29,6 +29,7 @@
 # include <sys/types.h>
 # include <netdb.h>
 # include <arpa/inet.h>
+# include "colors.h"
 
 #define BACKLOG 10
 #define MAX_CLIENTS 100
@@ -75,12 +76,17 @@ class WebServer {
 		int	removeConnection(int fd);
 		struct sockaddr_in convertHost(std::string hostname, int port);
 
-		void removeEventFd(int df);
+		void removeEventFd(int fd, int type);
 		void addEvent(int fd, int type);
 		void addEventSet();
-		void modifEvent(struct epoll_event eventList, int type);
 		//Functions changing with Operating sistem.
 		void createQueue ();
 		int acceptNewEvent(int curfd);
-		int waitEvent(struct epoll_event *evList);
+		#ifdef __APPLE__
+			int waitEvent(struct kevent *evList);
+			void modifEvent(struct kevent eventList, int typeRem, int typeAdd);
+		#elif __linux__
+			int waitEvent(struct epoll_event *evList);
+			void modifEvent(struct epoll_event eventList, int type);
+		#endif
 };

@@ -170,10 +170,10 @@ void ListeningSocket::sendData(int clientSocketFd)
 	{
 		std::cerr << "Failed to write to client" << std::endl;
 	}
-	else
-	{
-		std::cout << "Sent " << n << " bytes: " << answer << std::endl;
-	}
+	// else
+	// {
+	// 	std::cout << "Sent " << n << " bytes: " << answer << std::endl;
+	// }
 }
 
 ListeningSocket *ListeningSocket::clone()

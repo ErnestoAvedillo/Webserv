@@ -96,8 +96,8 @@ void WebServer::launchServers()
 	}
     try
     {
-		this->createQueue();
-		this->addEventSet();
+	    this->createQueue();
+	    this->addEventSet();
     }
     catch(const std::exception& e)
     {
@@ -170,4 +170,65 @@ int WebServer::getConnection(int fd)
 	}
 	return -1;
 }
-
+void	WebServer::eventLoop()
+{
+	#ifdef __APPLE__
+		struct kevent evList[MAX_EVENTS];
+	#elif __linux__
+		struct epoll_event evList[MAX_EVENTS];
+	#endif
+	char buf[MAX_MSG_SIZE] = {0};
+	int currfd = 0;
+	int fd;
+	int type_event;
+	int num_events = 0;
+	while (1)
+	{
+		std::cout << CHR_YELLOW << "Waiting Events" << RESET << std::endl;
+		num_events = waitEvent(evList);
+		if (num_events == -1)
+		{
+			throw("Error: could not wait for events");
+		}
+		else
+			std::cout << "Events received " << num_events << std::endl;
+		for (int i = 0; i < num_events; i++)
+		{
+			#ifdef __APPLE__
+				currfd = evList[i].ident;
+				type_event = evList[i].filter;
+			#elif __linux__
+				currfd = evList[i].data.fd;
+				type_event = evList[i].events;
+			#endif
+			std::cout << "Event ident " << evList[i].ident << std::endl;
+			if (serverSocket.find(currfd) != serverSocket.end())
+			{
+				fd = acceptNewEvent(currfd);
+				if (fd == -1)
+					continue;
+			}
+			else if (type_event == (READ_EVENT))
+			{
+				recv(currfd, buf, sizeof(buf) * MAX_MSG_SIZE, 0);
+				this->acceptedSocket[currfd]->loadRequest(buf);
+				//removeEventFd(currfd,READ_EVENT);
+				modifEvent(evList[i], READ_EVENT, WRITE_EVENT);
+			}
+			else if (type_event == (WRITE_EVENT))
+			{
+				acceptedSocket[currfd]->sendData(currfd);
+				removeEventFd(currfd, WRITE_EVENT);	
+				removeConnection(currfd);
+				close(currfd);
+			}
+			else if (type_event & END_EVENT || type_event & ERR_EVENT)
+			{
+				removeEventFd(currfd, READ_EVENT);
+				std::cout << CHR_RED << "Connection closed " << RESET << currfd << std::endl;
+				removeConnection(currfd);
+				close(currfd);
+			}
+		}
+	}
+}

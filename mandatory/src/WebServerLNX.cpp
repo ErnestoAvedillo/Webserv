@@ -31,12 +31,6 @@ void	WebServer::addEventSet()
 int WebServer::waitEvent(struct epoll_event *evList)
 {
 	int num_events = epoll_wait(this->kq, evList, MAX_EVENTS, -1);
-	if (num_events == -1)
-	{
-		throw("Error: could not wait for events");
-	}
-	else
-		std::cout << "Events received " << num_events << std::endl;
 	return num_events;
 }
 
@@ -123,62 +117,6 @@ int WebServer::acceptNewEvent(int curfd)
 		}
 	}
 	return fd;
-}
-
-void	WebServer::eventLoop()
-{
-	struct epoll_event evList[MAX_EVENTS];
-	char buf[MAX_MSG_SIZE] = {0};
-	int fd;
-	int num_events = 0;
-	while (1)
-	{
- 		try
-		{
-			num_events = this->waitEvent(evList);
-		}
-		catch (std::exception &e)
-		{
-			std::cerr << e.what() << std::endl;
-			exit(1);
-		}
-		for (int i = 0; i < num_events; i++)
-			if (serverSocket.find(evList[i].data.fd) != serverSocket.end())
-			{
-				fd = acceptNewEvent(evList[i].data.fd);
-				if(fd < 0)
-				{
-					std::cout << "Error in accepted socket" << std::endl;
-					exit(1);
-				}
-				acceptedSocket.insert(std::pair<int, ListeningSocket *>(fd, serverSocket[evList[i].data.fd]->clone()));
-				if (addConnection(fd) == 0)
-				{
-					std::cout << "Connection accepted " << fd << std::endl;
-					this->addEvent(fd, EPOLLIN | EPOLLET);
-				}
-			}
-			else if (evList[i].events == (EPOLLIN))
-			{
-
-				recv(evList[i].data.fd, buf, sizeof(buf) * MAX_MSG_SIZE, 0);
-				this->acceptedSocket[evList[i].data.fd]->loadRequest(buf);
-				modifEvent(evList[i], EPOLLOUT);
-			}
-			else if (evList[i].events == (EPOLLOUT))
-			{
-				acceptedSocket[evList[i].data.fd]->sendData(evList[i].data.fd);
-				removeConnection(evList[i].data.fd);
-				close(evList[i].data.fd);
-			}
-			else if (evList[i].events & EPOLLHUP || evList[i].events & EPOLLERR)
-			{
-				removeEventFd(evList[i].data.fd);
-				std::cout << "Connection closed " << evList[i].data.fd << std::endl;
-				removeConnection(evList[i].data.fd);
-				close(evList[i].data.fd);
-			}
-	}
 }
 
 #endif
