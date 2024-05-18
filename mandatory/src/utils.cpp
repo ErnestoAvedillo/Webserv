@@ -3,6 +3,9 @@
 #include <cstdlib>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <string>
+#include <vector>
+#include <sstream>
 
 template <typename T>
 bool isrange(T value, T min, T max)
@@ -89,3 +92,56 @@ bool isFilePermissions(std::string path, int mode)
 // 	std::cout << std::boolalpha << isFilePermissions("./file_not_read", R_OK | W_OK) << std::endl;
 // 	return 0;
 // }
+
+size_t stringToSizeT(const std::string& str) {
+	std::stringstream ss(str);
+	size_t result = 0;
+	ss >> result;
+	return result;
+}
+
+
+std::vector<std::string> splitString(const std::string& str, char delimiter) {
+	std::vector<std::string> result;
+	std::string token;
+	std::istringstream tokenStream(str);
+
+	while (std::getline(tokenStream, token, delimiter)) {
+		// if (token != "")
+			result.push_back(token);
+	}
+
+	return result;
+}
+
+std::string removeCharFromString(const std::string& input, char c) {
+	std::string result;
+	for (size_t i = 0; i < input.size(); i++) {
+		if (input[i] != c) {
+			result += input[i];
+		}
+	}
+	return result;
+}
+
+std::string removeBlanksAndTabs(const std::string& input) {
+	std::string result;
+	for (size_t i = 0; i < input.size(); i++) {
+		if (input[i] != ' ' && input[i] != '\t') {
+			result += input[i];
+		}
+	}
+	return result;
+}
+
+template <typename T>
+std::string itos (T n)
+{
+	std::string str;
+	std::stringstream ss;
+	
+	ss << n;
+	ss >> str;
+
+	return  str;
+}

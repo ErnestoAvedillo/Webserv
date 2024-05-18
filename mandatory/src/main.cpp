@@ -21,7 +21,8 @@ int main(int av, char **ac)
 	}
 	WebServer webServer;
 	webServer.loadConfigFile(ac[1]);
-	
+	// webServer.checkConfig();
+	// webServer.initalizer();
 	// webServer.parseInfo();
 	webServer.launchServers();
 }

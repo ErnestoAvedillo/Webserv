@@ -1,5 +1,7 @@
 #include "../inc/WebServer.hpp"
 
+bool WebServer::running = true;
+
 WebServer::WebServer()
 {
 	std::cout << "WebServer created" << std::endl;
@@ -24,12 +26,16 @@ WebServer &WebServer::operator=(WebServer const &copy)
 	return *this;
 }
 
+void WebServer::signalHandler(int signum)
+{
+	if (signum == SIGINT)
+		running = false;
+}
+
 void WebServer::launchServers()
 {
-	std::vector<int> sk ;
-	// for (size_t i = 0; i < MAX_EVENTS; i++) {
-    // 	client_events[i] = 0; // Initialize all elements to zero
-	// }
+	std::vector<int> sk;
+
 
 	this->kq = kqueue();
 	this->addEventSet();
@@ -50,27 +56,6 @@ void WebServer::launchServers()
 	std::cout << "Server launched" << std::endl;
 	this->eventLoop();
 }
-
-// struct sockaddr_in WebServer::convertHost(std::string hostname, int port)
-// {
-// 	 struct addrinfo hints, *res;
-// 	 struct sockaddr_in serverAddr;
-// 	 memset(&hints, 0, sizeof(hints));
-// 	 memset(&serverAddr, 0, sizeof(serverAddr));
-// 	 hints.ai_family = AF_INET;
-// 	 hints.ai_socktype = SOCK_STREAM;
-
-// 	 if (getaddrinfo(hostname.c_str(), NULL, &hints, &res) != 0)
-// 	 {
-// 		 std::cerr << "Error: could not get address info" << std::endl;
-// 		 exit(1);
-// 	 }
-// 	 serverAddr.sin_family = AF_INET;
-// 	 serverAddr.sin_port = htons(port);
-// 	 serverAddr.sin_addr = ((struct sockaddr_in *)res->ai_addr)->sin_addr;
-// 	// freeaddrinfo(res);
-// 	 return serverAddr;
-// }
 
 void	WebServer::addEventSet()
 {
@@ -132,14 +117,10 @@ void	WebServer::newConnection(int fd)
 	addFilter(socketFd, EVFILT_READ);
 }
 
-// int	WebServer::getServerSocket(int fd)
-// {
-
-// }
-
 void	WebServer::eventLoop()
 {
 	struct kevent evList;
+	signal(SIGINT, &WebServer::signalHandler);
 	while (1)
 	{
 		std::cout << "Waiting for events" << std::endl;
@@ -147,12 +128,11 @@ void	WebServer::eventLoop()
 		int num_events = kevent(kq, NULL, 0, &evList, MAX_EVENTS, timeout);
 		if (num_events == -1)
 		{
-			std::cerr << "Error: could not wait for events" << std::endl;
-			exit(1);
+			if (errno != EINTR)
+				std::cerr << "Error: could not wait for events" << std::endl;
 		}
 		else
-		std::cout << "Events received " << num_events << std::endl;
-		//if (getServerSocket(evList.ident))
+			std::cout << "Events received " << num_events << std::endl;
 		if (serverSocket.find(evList.ident) != serverSocket.end())	
 			newConnection(evList.ident);
 		else if (evList.filter == EVFILT_READ)
@@ -176,20 +156,23 @@ void	WebServer::eventLoop()
 		else if (evList.filter == EVFILT_WRITE)
 		{
 			acceptedSocket[evList.ident]->sendData(evList.ident);
-			// delete acceptedSocket[evList[i].ident];
-			acceptedSocket.erase(evList.ident);
-			// delete acceptedSocket[evList[i].ident]; d
-			struct timespec timeout;
-			timeout.tv_sec = 5;
-			timeout.tv_nsec = 0;
-			struct kevent ev;
-			EV_SET(&ev, evList.ident, EVFILT_TIMER, EV_ADD | EV_ENABLE | EV_ONESHOT, \
-				0, 5000, &timeout);
-			if (kevent(this->kq, &ev, 1, NULL, 0, NULL) == -1)
-				;
-
-			removeFilter(evList.ident, EVFILT_WRITE);
-			close(evList.ident);
+		
+			// if (acceptedSocket[evList.ident]->getState())
+			// {
+				removeFilter(evList.ident, EVFILT_WRITE);
+				close(evList.ident);
+			// }
 		}
+		if (running == false)
+			break;
 	}
+	std::cout << "Server shutting down" << std::endl;
+}
+
+void WebServer::initalizer()
+{
+	std::cout << "WebServer initalized" << std::endl;
+	this->mimeTypes = create_filetypes();
+	this->errorPages = createHttpErrorCodes();
+	this->running = true;
 }

@@ -27,19 +27,10 @@
 //  The backlog parameter defines the maximum length for the queue of pending
 //      connections.  If a connection request arrives with the queue full, the
 //      client may receive an error with an indication of ECONNREFUSED
-enum eType {
-	READ = 1,
-	READHEADER = 2,
-	READBODY = 3,
-	WRITE = 4,
-	OVERWRITE = 5,
-	ERROR = 6
-};
-
 
 class WebServer {
 	private:
-		
+		static bool			running;
 		std::ifstream		configFile;
 		std::string			configFilename;
 		std::string 		fileContent;
@@ -48,6 +39,8 @@ class WebServer {
 		std::map<int, ListeningSocket *>	acceptedSocket;
 		
 		std::vector<Server *>	servers;
+		std::map<std::string, std::string>	mimeTypes;
+		std::map<int, std::string>	errorPages;
 		
 		
 		int kq;
@@ -62,7 +55,7 @@ class WebServer {
 
 		void	loadConfigFile(std::string configFile);
 		
-		
+		void 	checkConfig();
 		void	launchServers();
 		
 		void 	newConnection(int fd);
@@ -70,6 +63,7 @@ class WebServer {
 		void	addEventSet();
 		void	eventLoop();
 		
+
 		int getConnection(int fd);
 		int	addConnection(int fd);
 		int	removeConnection(int fd);
@@ -77,4 +71,16 @@ class WebServer {
 
 		void removeFilter(int fd, int type);
 		void addFilter(int fd, int type);
+		void initalizer();
+		static void signalHandler(int signum);
+
+		void syntaxServerName(std::string serverName);
+		void syntaxHost(std::string host);
+		void syntaxPort(std::string port);
+		void syntaxErrorPage(std::string errorPage);
+		void syntaxLocation(std::string location);
+		void syntaxRoot(std::string root);
+		void syntaxIndex(std::string index);
+		void syntaxClientBodySize(std::string clientBodySize);
+
 };
