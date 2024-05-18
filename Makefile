@@ -71,9 +71,10 @@ $(OBJDST_DIR)%.d: $(DIRSRC)%.cpp
 	rm -f $@.$$$$
 
 print:
-	@echo NAME: $(NAME)
-	@echo SRCS: $(SRCS)
-	@echo INCS: $(INCS)
+	@echo "$(RESET)NAME: $(NAME)"
+	@echo "FLAGS: $(YELLOW)$(FLAGS)$(RESET)"
+	@echo "SRCS: $(YELLOW)$(SRCS)$(RESET)"
+	@echo "INCS: $(YELLOW)$(INCS)$(RESET)"
 	@echo OBJS: $(OBJS)
 	@echo DSTS: $(DSTS)
 	@echo OBJDST_DIR: $(OBJDST_DIR)
