@@ -27,9 +27,9 @@ WebServer &WebServer::operator=(WebServer const &copy)
 void WebServer::launchServers()
 {
 	std::vector<int> sk ;
-	for (size_t i = 0; i < MAX_EVENTS; i++) {
-    	client_events[i] = 0; // Initialize all elements to zero
-	}
+	// for (size_t i = 0; i < MAX_EVENTS; i++) {
+    // 	client_events[i] = 0; // Initialize all elements to zero
+	// }
 
 	this->kq = kqueue();
 	this->addEventSet();
