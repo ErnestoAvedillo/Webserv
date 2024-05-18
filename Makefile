@@ -19,7 +19,7 @@ PINK		:=	\033[1;95m
 CYAN		:=	\033[1;96m
 CLEAN_CAR	=	\033[2K\r
 
-NAME := Websrv
+NAME := Webserv
 
 DIRSRC := ./mandatory/src/
 
@@ -49,6 +49,9 @@ endif
 FLAGS := -Wall -Werror -Wextra -std=c++98 $(SYSTEM) -g -fsanitize=address -pedantic 
 
 all:	print_system $(NAME)  
+
+print_system:
+	@printf "$(YELLOW)$(CLEAN_CAR)System compiles $(NAME) with $(shell uname -s)$(RESET)\n"
 
 $(NAME): $(DSTS) $(OBJS) 
 	@printf "$(CLEAN_CAR)Linking: $(NAME)\n"
@@ -88,8 +91,6 @@ fclean: clean
 
 re: fclean all
 
-print_system:
-	@printf "$(YELLOW)System compiles $(NAME) with $(shell uname -s)$(RESET)\n"
 
 
 PHONY: all clean fclean re print lnx print_system
