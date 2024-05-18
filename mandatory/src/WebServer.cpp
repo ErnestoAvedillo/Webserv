@@ -1,4 +1,4 @@
-#include "../inc/WebServerLNX.hpp"
+#include "../inc/WebServer.hpp"
 
 WebServer::WebServer()
 {
@@ -96,8 +96,8 @@ void WebServer::launchServers()
 	}
     try
     {
-	    this->createQueue
-	    this->addEventSet();
+		this->createQueue();
+		this->addEventSet();
     }
     catch(const std::exception& e)
     {

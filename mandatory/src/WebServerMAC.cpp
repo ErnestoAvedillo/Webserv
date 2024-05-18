@@ -76,7 +76,8 @@ void WebServer::removeEventFd(int fd)
 
 int WebServer::acceptNewEvent(int curfd)
 {
-	int fd = accept(curfd, (struct sockaddr *) &addr, &socklen);
+	int fd = 0;
+	fd = accept(curfd, (struct sockaddr *)&addr, &socklen);
 	if (fd < 0)
 	{
 		throw("Error accepting connection")

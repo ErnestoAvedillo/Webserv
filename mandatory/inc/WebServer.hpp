@@ -66,8 +66,8 @@ class WebServer {
 		void	launchServers();
 		
 		
-		void	createSocket();
-		void	Set();
+//		void	createSocket();
+//		void	Set();
 		void	eventLoop();
 		
 		int getConnection(int fd);

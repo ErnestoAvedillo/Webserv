@@ -83,6 +83,7 @@ void WebServer::removeEventFd(int fd)
 
 int WebServer::acceptNewEvent(int curfd)
 {
+	int fd = 0;
 	if(listen(serverSocket[curfd]->getFd(), SOMAXCONN) < 0)
 	{
 		std::cerr << "Error listening" << std::endl;
@@ -98,7 +99,7 @@ int WebServer::acceptNewEvent(int curfd)
 		}
 		struct sockaddr_storage addr;
 		socklen_t socklen = sizeof(addr);
-		int fd = accept(curfd, (struct sockaddr *) &addr, &socklen);
+		fd = accept(curfd, (struct sockaddr *) &addr, &socklen);
 		if (fd < 0)
 		{
 			if (errno == EAGAIN || errno == EWOULDBLOCK)
@@ -106,7 +107,7 @@ int WebServer::acceptNewEvent(int curfd)
 			else
 			{
 				std::cerr << "Error accepting connection" << std::endl;
-				exit (1); // Continue to the next event
+				return -1; // Continue to the next event
 			}
 		}
 		std::cout << "Connection accepted " << fd << std::endl;
@@ -121,6 +122,7 @@ int WebServer::acceptNewEvent(int curfd)
 			this->addEvent(fd, EPOLLIN | EPOLLET);
 		}
 	}
+	return fd;
 }
 
 void	WebServer::eventLoop()
@@ -143,9 +145,12 @@ void	WebServer::eventLoop()
 		for (int i = 0; i < num_events; i++)
 			if (serverSocket.find(evList[i].data.fd) != serverSocket.end())
 			{
-				struct sockaddr_storage addr;
-				socklen_t socklen = sizeof(addr);
 				fd = acceptNewEvent(evList[i].data.fd);
+				if(fd < 0)
+				{
+					std::cout << "Error in accepted socket" << std::endl;
+					exit(1);
+				}
 				acceptedSocket.insert(std::pair<int, ListeningSocket *>(fd, serverSocket[evList[i].data.fd]->clone()));
 				if (addConnection(fd) == 0)
 				{
