@@ -27,5 +27,5 @@
 * **[HTTP status codes and messages](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status)**
 
 ### Example Repositories
-* **[WebServer with epoll and kqueue](https://github.com/rabarbra/webserv.git)**
-* **[WebServer with kqueue](https://github.com/bsomers42/webserv)**
+* **[WebServer with epoll and kqueue](https://github.com/rabarbra/webserv.git)** Author: rabarbra
+* **[WebServer with kqueue](https://github.com/bsomers42/webserv)** Author: Bsomers42
