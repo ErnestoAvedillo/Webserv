@@ -20,7 +20,7 @@ FileContent::~FileContent() {}
 int FileContent::openFile()
 {
 	std::cout << "Opening file " << fileName << std::endl;
-	file.open(fileName.c_str());
+	file.open(fileName.c_str(), std::ios::out | std::ios::binary | std::ios::app | std::ios::ate);
 
 	if (file.is_open())
 		return 1;
@@ -37,14 +37,13 @@ std::string FileContent::getContent()
 		while (std::getline(file, line))
 		{
 			content += line + "\n";
-			if (content.size() >= MAX_SENT_BYTES)
-			{
-				//std::cout << "File content: " << content << std::endl;
-				return content;
-			}
+			// if (content.size() >= MAX_SENT_BYTES)
+			// {
+			// 	return content;
+			// }
 		}
 		file.close();
-		std::cout << "File read: " << fileName << std::endl;
+		std::cout << "File closed: " << fileName << std::endl;
 	}
 	else
 	{
