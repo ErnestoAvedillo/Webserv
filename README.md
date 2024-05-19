@@ -25,3 +25,7 @@
 * **[Unix Network Programming Volume 1](https://doc.lagout.org/programmation/unix/Unix%20Network%20Programming%20Volume%201.pdf)**
 * **[select, poll, epoll and kqueue](https://nima101.github.io/io_multiplexing)**
 * **[HTTP status codes and messages](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status)**
+
+### Example Repositories
+* **[WebServer with epoll and kqueue](https://github.com/rabarbra/webserv.git)**
+* **[WebServer with kqueue](https://github.com/bsomers42/webserv)**
