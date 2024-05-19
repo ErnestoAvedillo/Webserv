@@ -5,12 +5,14 @@ FileContent::FileContent()
 	fileName = "";
 	sendComplete = false;
 	isFileOpen = false;
+	isFistFragment = true;
 }
 FileContent::FileContent(const std::string &MyfileName) 
 {
 	this->setFileName(MyfileName);
 	sendComplete = false;
 	isFileOpen = false;
+	isFistFragment = true;
 }
 
 FileContent::~FileContent() {}
@@ -28,24 +30,29 @@ int FileContent::openFile()
 std::string FileContent::getContent() 
 {
 	std::string errorReturn = "Error: " + fileName + " File not found";
-	if (!isFileOpen)
+	if (isFileOpen)
 	{
 		std::string line;
+		content = "";
 		while (std::getline(file, line))
 		{
 			content += line + "\n";
 			if (content.size() >= MAX_SENT_BYTES)
+			{
+				//std::cout << "File content: " << content << std::endl;
 				return content;
+			}
 		}
 		file.close();
 		std::cout << "File read: " << fileName << std::endl;
 	}
 	else
 	{
-		std::cout << CHR_RED + errorReturn + RESET << std::endl;
-		return (errorReturn);
+		//std::cout << CHR_RED + errorReturn + RESET << std::endl;
+		content = errorReturn;
 	}
 	sendComplete = true;
+	//std::cout << "File content: " << content << std::endl;
 	return content;
 }
 
@@ -67,4 +74,14 @@ std::string FileContent::getFileName()
 bool FileContent::isSendComplete()
 {
 	return sendComplete;
+}
+
+void FileContent::setFirstFragment(bool first)
+{
+	isFistFragment = first;
+}
+
+bool FileContent::getFirstFragment()
+{
+	return isFistFragment;
 }

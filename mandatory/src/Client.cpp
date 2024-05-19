@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 12:49:08 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/19 12:22:51 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/19 14:15:17 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,8 +137,13 @@ std::string Client::getAnswerToSend()
 	std::string file_content = getFileContent();
 	std::cout << "File path: " << filePath << std::endl;
 	//std::cout << "File content: " << file_content << std::endl;
-	answer += "HTTP/1.1 200 OK\r\nContent-Type: " + getExtension(filePath) + "\r\n" + "Content - Length : " + toString(file_content.size()) + "\r\n\r\n" + file_content;
-
+	if (this->fileContent.getFirstFragment())
+	{
+		answer += "HTTP/1.1 200 OK\r\nContent-Type: " + getExtension(filePath) + "\r\n" + "Content - Length : " + toString(file_content.size()) + "\r\n\r\n" + file_content;
+		this->fileContent.setFirstFragment(false);
+	}
+	else
+		answer += file_content;
 	return (answer);
 }
 

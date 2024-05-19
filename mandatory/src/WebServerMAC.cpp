@@ -84,7 +84,9 @@ int WebServer::acceptNewEvent(int curfd)
 		return fd;
 	else
 		std::cout << "Connection accepted " << fd << std::endl;
-	acceptedSocket.insert(std::pair<int, ListeningSocket *>(fd, serverSocket[curfd]->clone()));
+	acceptedSocket.insert(std::pair<int, ListeningSocket *>(fd, serverSocket[curfd]->clone(fd)));
+	std::cout << "New socket created from server socket" << serverSocket[curfd] << std::endl;
+	std::cout << "New socket created in acce[ted socket" << acceptedSocket[fd] << std::endl;
 	this->addEvent(fd, EVFILT_READ);
 	// if (addConnection(fd) == 0)
 	// {

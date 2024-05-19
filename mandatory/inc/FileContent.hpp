@@ -4,13 +4,14 @@
 #include <string>
 #include "../inc/colors.h"
 
-#define MAX_SENT_BYTES 1024
+#define MAX_SENT_BYTES 8192
 class FileContent
 {
 private:
 	std::string fileName;
 	std::string content;
 	std::ifstream file;
+	bool isFistFragment;
 	bool isFileOpen;
 	bool sendComplete;
 
@@ -23,4 +24,6 @@ public:
 	std::string getFileName();
 	std::string getContent();
 	bool isSendComplete();
+	void setFirstFragment(bool);
+	bool getFirstFragment();
 };

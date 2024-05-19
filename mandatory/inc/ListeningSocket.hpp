@@ -54,5 +54,5 @@ public:
 	bool sendData(int);
 	void loadRequest(char *buff);
 	std::string getServerName();
-	ListeningSocket *clone();
+	ListeningSocket *clone(int fd);
 };

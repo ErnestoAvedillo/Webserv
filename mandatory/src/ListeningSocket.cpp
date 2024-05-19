@@ -32,7 +32,7 @@ bool ListeningSocket::startListening()
 
 	if (fcntl(socketFd, F_SETFL, O_NONBLOCK) < 0)
 	{
-		std::cerr << "Error" << std::endl;
+		std::cerr << CHR_RED"Error" << std::endl;
 		exit(1);
 	}
 
@@ -72,6 +72,7 @@ void ListeningSocket::stopListening()
 {
 	if (socketFd != -1)
 	{
+		std::cout << "Closing socket " << socketFd << std::endl;
 		close(socketFd);
 		socketFd = -1;
 	}
@@ -173,10 +174,10 @@ bool ListeningSocket::sendData(int clientSocketFd)
 	return this->client->isSendComplete();
 }
 
-ListeningSocket *ListeningSocket::clone()
+ListeningSocket *ListeningSocket::clone(int fd)
 {
 	ListeningSocket *newSocket = new ListeningSocket(this->server);
-	newSocket->socketFd = this->socketFd;
+	newSocket->socketFd = fd;
 	newSocket->n = this->n;
 
 	return newSocket;

@@ -101,7 +101,7 @@ void WebServer::launchServers()
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        std::cerr << CHR_RED"ERROR: " << e.what() << RESET << '\n';
         exit(1);
     }
     
@@ -186,7 +186,12 @@ void	WebServer::eventLoop()
 	while (1)
 	{
 		std::cout << CHR_YELLOW << "Waiting Events" << RESET << std::endl;
-		std::cout << " Last Error found: " << strerror(errno) << std::endl;
+		if (errno != 0)
+		{
+			std::cerr << " Last Error found: " << strerror(errno) << std::endl;
+			errno = 0;
+			std::cin.get();
+		}
 		num_events = waitEvent(evList);
 		if (num_events == -1)
 		{
@@ -224,10 +229,21 @@ void	WebServer::eventLoop()
 			else if (type_event == (WRITE_EVENT))
 			{
 				if (acceptedSocket[currfd]->sendData(currfd))
-					removeEventFd(currfd, WRITE_EVENT);	
-				// removeConnection(currfd);
-				std::cout << CHR_RED << "Data sent Connection closed " << RESET << currfd << std::endl;
-				close(currfd);
+				{
+					std::cout << "Data complete sent, Connection closed " << currfd << std::endl;
+					removeEventFd(currfd, WRITE_EVENT);
+					std::cout << "delete socket " << acceptedSocket[currfd] << std::endl;
+					delete acceptedSocket[currfd];
+
+					acceptedSocket.erase(currfd);
+					//removeConnection(currfd);	
+					//close(currfd);
+				}
+				else
+				{
+					std::cout << "Partial data sent, Connection renewed " << currfd << std::endl;
+				//	modifEvent(evList[i], WRITE_EVENT, WRITE_EVENT);
+				}
 			}
 			else if (type_event & END_EVENT || type_event & ERR_EVENT)
 			{
