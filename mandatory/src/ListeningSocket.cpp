@@ -160,7 +160,7 @@ int ListeningSocket::getFd()
 	return socketFd;
 }
 
-void ListeningSocket::sendData(int clientSocketFd)
+bool ListeningSocket::sendData(int clientSocketFd)
 {
 	std::cout << "sendData " << std::endl;
 	//std::string answer = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello, MY World!</h1></body></html>\r\n";
@@ -170,10 +170,7 @@ void ListeningSocket::sendData(int clientSocketFd)
 	{
 		std::cerr << "Failed to write to client" << std::endl;
 	}
-	// else
-	// {
-	// 	std::cout << "Sent " << n << " bytes: " << answer << std::endl;
-	// }
+	return this->client->isSendComplete();
 }
 
 ListeningSocket *ListeningSocket::clone()

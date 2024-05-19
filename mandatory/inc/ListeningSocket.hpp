@@ -51,9 +51,8 @@ public:
 	void stopListening();
 	int getPort();
 	int getFd();
-	void sendData(int);
+	bool sendData(int);
 	void loadRequest(char *buff);
 	std::string getServerName();
-
 	ListeningSocket *clone();
 };

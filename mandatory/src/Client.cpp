@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 12:49:08 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/18 17:32:51 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/19 12:22:51 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,8 +107,8 @@ void Client::loadCompleteClient( std::string const &str)
 
 std::string Client::getFileContent()
 {
-	return (this->fileContent.getContent());
-
+	std::string content = this->fileContent.getContent();
+	return (content);
 }
 
 std::string getExtension(std::string filePath)
@@ -140,4 +140,9 @@ std::string Client::getAnswerToSend()
 	answer += "HTTP/1.1 200 OK\r\nContent-Type: " + getExtension(filePath) + "\r\n" + "Content - Length : " + toString(file_content.size()) + "\r\n\r\n" + file_content;
 
 	return (answer);
+}
+
+bool Client::isSendComplete()
+{
+	return this->fileContent.isSendComplete();
 }

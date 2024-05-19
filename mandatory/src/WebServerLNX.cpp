@@ -109,12 +109,13 @@ int WebServer::acceptNewEvent(int curfd)
 		fcntl(fd, F_SETFL, O_NONBLOCK, O_CLOEXEC);
 		acceptedSocket[fd] = serverSocket[curfd]->clone();
 		std::cout << "Connection accepted " << serverSocket[curfd]->getServerName() << std::endl;
-		if (addConnection(fd) == 0)
-		{
-			std::cout << "Connection added " << fd << std::endl;
-			//evList[i].events = EPOLLIN | EPOLLET; // Edge-triggered mode
-			this->addEvent(fd, EPOLLIN | EPOLLET);
-		}
+		this->addEvent(fd, EPOLLIN | EPOLLET);
+//		if (addConnection(fd) == 0)
+//		{
+//			std::cout << "Connection added " << fd << std::endl;
+//			//evList[i].events = EPOLLIN | EPOLLET; // Edge-triggered mode
+//			this->addEvent(fd, EPOLLIN | EPOLLET);
+//		}
 	}
 	return fd;
 }

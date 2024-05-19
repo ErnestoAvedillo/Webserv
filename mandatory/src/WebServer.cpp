@@ -223,8 +223,8 @@ void	WebServer::eventLoop()
 			}
 			else if (type_event == (WRITE_EVENT))
 			{
-				acceptedSocket[currfd]->sendData(currfd);
-				removeEventFd(currfd, WRITE_EVENT);	
+				if (acceptedSocket[currfd]->sendData(currfd))
+					removeEventFd(currfd, WRITE_EVENT);	
 				// removeConnection(currfd);
 				std::cout << CHR_RED << "Data sent Connection closed " << RESET << currfd << std::endl;
 				close(currfd);
