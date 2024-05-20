@@ -24,7 +24,7 @@ public:
 	FileContent(const std::string &);
 	~FileContent();
 	int openFile();
-	void setFileName(const std::string &);
+	bool setFileName(const std::string &);
 	std::string getFileName();
 	std::string getContent();
 	bool isSendComplete();

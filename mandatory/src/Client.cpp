@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 12:49:08 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/20 17:25:22 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/20 18:49:13 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,14 @@ Client::Client(std::string const &str, Server *srv)
 	this->server = srv;
 	this->loadCompleteClient(str);
 	std::cout << "File1: " << this->Request[REQ_FILE] << std::endl;
-	fileContent.setFileName(this->Request[REQ_FILE]);
-	if(fileContent.openFile())
+	if(fileContent.setFileName(this->Request[REQ_FILE]))
 	{
+		std::cout << "confirm opened" << std::endl;
 		header.setLastModified(fileContent.getLastModified());
 		this->getExtension();
 		header.setContentLength(fileContent.getContentSize());
+		header.setStatus("200 OK");
+		header.setServer(server->getServerName());
 	}
 	else
 		header.setStatus("404 Not Found");
@@ -240,12 +242,10 @@ std::string Client::getAnswerToSend()
 	(void)server;
 	std::string answer;
 	std::string filePath = this->fileContent.getFileName();
-	std::cout << "File Path: " << filePath << std::endl;
 	std::string file_content = getFileContent();
-	std::cout << "File path: " << filePath << std::endl;
-	//std::cout << "File content: " << file_content << std::endl;
 	if (this->fileContent.getFirstFragment())
 	{
+		std::cout << "Header :" << header.generateHeader() << std::endl;
 		answer += header.generateHeader() + file_content;
 		this->fileContent.setFirstFragment(false);
 	}

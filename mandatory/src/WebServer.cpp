@@ -104,7 +104,7 @@ void	WebServer::eventLoop()
 				currfd = evList[i].data.fd;
 				type_event = evList[i].events;
 			#endif
-			std::cout << "Event ident " << currfd << std::endl;
+			std::cout << "Event ident " << i <<  " with fd " << currfd << std::endl;
 			if (serverSocket.find(currfd) != serverSocket.end())
 			{
 				fd = acceptNewEvent(currfd);
