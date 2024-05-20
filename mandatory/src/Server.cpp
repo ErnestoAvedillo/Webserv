@@ -22,6 +22,7 @@ std::map<std::string, int> var_names_server()
 	varnames[VAR_ROOT] = 0;
 	varnames[VAR_INDEX] = 0;
 	varnames[VAR_CLIENT_MAX_BODY_SIZE] = 0;
+	varnames[VAR_LOCATIONS] = 0;
 	return varnames;
 }
 
@@ -36,6 +37,7 @@ std::map<std::string, void (Server::*)(const std::string &)> getServerMethods()
 	serverMethods[VAR_ROOT] = &Server::setRoot;
 	serverMethods[VAR_INDEX] = &Server::setIndex;
 	serverMethods[VAR_CLIENT_MAX_BODY_SIZE] = &Server::setClientMaxBodySize;
+	serverMethods[VAR_LOCATIONS] = &Server::addLocation;
 	return serverMethods;
 }
 
@@ -53,7 +55,7 @@ void	Server::setDefaultData()
 
 Server::Server() {
 	bool ret;
-	this->setDefaultData();
+	//this->setDefaultData();
 	std::map<int, ListeningSocket*>::iterator itb = this->port.begin();
 	std::map<int, ListeningSocket*>::iterator ite = this->port.end();
 	while (itb != ite){
@@ -135,16 +137,37 @@ int Server::loadData(std::string const &content) {
 			std::cout << "Error: Variable no reconocida: " << line.substr(0, line.find(":")) << std::endl;
 		else
 		{
-			straux = line.substr(line.find(":") + 1, line.size());
-			(this->*getServerMethods()[it->first])(straux);
+				//std::cout << "Line: " << line << std::endl;
+				straux = line.substr(line.find(":") + 1, line.size());
+				(this->*getServerMethods()[it->first])(straux);
+			// std::cout << "Line: " << line << std::endl;
+			// straux = line.substr(line.find(":") + 1, line.size());
+			// (this->*getServerMethods()[it->first])(straux);
 		}
 	}
 	return 0;
 }
 
+void	Server::print()
+{
+	std::cout << "-------------------- Server --------------------" << std::endl;
+	std::cout << "Server Name: " << this->serverName << std::endl;
+	std::cout << "Host: " << this->Host << std::endl;
+	std::cout << "Error Page: " << this->errorPage << std::endl;
+	std::cout << "Root: " << this->root << std::endl;
+	std::cout << "Index: " << this->index << std::endl;
+	std::cout << "Client Max Body Size: " << this->maxClientBodySize << std::endl;
+	std::cout << "Is Default: " << this->isDefault << std::endl;
+	for (size_t i = 0; i < this->ports.size(); i++)
+		std::cout << "Port: " << this->ports[i] << std::endl;
+
+	for (size_t i = 0; i < this->locations.size(); i++)
+		this->locations[i]->print();
+	std::cout << "-----------------------------------------------" << std::endl;
+}
+
 void Server::setPort(std::string const &port)
 {
-	ListeningSocket *ls;
 	std::string aux;
 	std::istringstream portStream(port);
 	if(this->port.size() != 0)

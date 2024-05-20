@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 12:49:08 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/20 13:50:42 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/16 02:33:02 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,6 +144,97 @@ std::string Client::getAnswerToSend()
 	}
 	else
 		answer += file_content;
+
+/*
+Normalize the path, removes .., adds ./ at teh beggining if necessary, removes / at the end, removes duplicate /.
+*/
+std::string	Client::normalizePath(std::string path)
+{
+	while (path.find("..") != std::string::npos)
+		path.erase(path.find(".."), 2);
+
+	std::vector<std::string> parts = splitString(path, '/');
+	std::string normalizePath;
+	for (size_t i = 0; i < parts.size(); i++)
+	{
+		if (i == 0)
+		{
+			if (parts[i] == ".")
+				normalizePath = parts[i] + "/";
+			else if (i == (parts.size() - 1))
+				normalizePath = "/" + parts[i];
+			else
+				normalizePath = "/" + parts[i] + "/";
+		}
+		else if (i == (parts.size() - 1))
+			normalizePath += parts[i];
+		else
+			normalizePath += parts[i] + "/";
+	}
+	return (normalizePath);
+}
+
+std::string Client::getFilePath(Server *server)
+{
+
+	std::cout << "Normalizing Path: " << normalizePath(server->getRoot()) << std::endl;
+	std::string filePath = normalizePath(server->getRoot()) +  this->Request[REQ_FILE];
+	if (filePath.at(filePath.size() - 1) == '/')
+		filePath += server->getIndex();
+	filePath = filePath.substr(0, filePath.find("?"));
+	std::cout << "MY File Path: " << filePath << std::endl;
+
+	return (filePath);
+}
+
+std::string Client::getFileContent(std::string filename)
+{
+	std::ifstream file;
+	std::string file_content;
+	file.open(filename);
+	if (!file)
+	{
+		std::cerr << "File not found" << std::endl;
+		errno = 0;
+		return ("HTTP/1.1 404 Not Found\r\n\r\n");
+	}
+	std::string line;
+	while (std::getline(file, line))
+		file_content += line + "\n";
+	file.close();
+	return (file_content);
+
+}
+
+std::string getExtension(std::string filePath)
+{
+	size_t point = filePath.find_last_of(".");
+	std::string extension = filePath.substr(point + 1, filePath.size());
+
+	/* Create once only */
+	std::map<std::string, std::string> Mimetype = create_filetypes();
+
+	std::cout << "found extension " << extension << std::endl;
+	if (Mimetype.find(extension) != Mimetype.end())
+		return(Mimetype[extension]);
+	else
+		return("text/html"); 
+}
+
+std::string Client::getAnswerToSend(Server *server)
+{	
+	std::string answer;
+	std::string filePath = getFilePath(server);
+	std::string file_content = getFileContent(filePath);
+	if (file_content.find("HTTP/1.1 404 Not Found\r\n\r\n") != std::string::npos)
+		return ("HTTP/1.1 404 Not Found\r\n\r\n");
+	answer += "HTTP/1.1 200 OK\r\nContent-Type: " + getExtension(filePath) + "\r\nContent-Lenght: " + std::to_string(file_content.size())  + "\r\n\r\n";
+	std::cout << getExtension(filePath) << std::endl;
+	
+	std::cout << "File Path: " << filePath << "$" << std::endl;
+	// std::ifstream file;
+	std::cout << "File Path: " << filePath << std::endl;
+	answer += file_content;
 	return (answer);
 }
 

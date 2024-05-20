@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 12:46:28 by eavedill          #+#    #+#             */
 /*   Updated: 2024/05/20 13:49:29 by eavedill         ###   ########.fr       */
@@ -17,7 +17,11 @@
 #include <string>
 #include <fstream>
 #include <sstream>
-#include "../inc/commonFunctions.hpp"
+#include "../inc/utils.hpp"
+
+class Server;
+#include "../inc/Server.hpp"
+
 #include "../inc/FileContent.hpp"
 #include "../inc/toString.hpp"
 #include "../inc/colors.h"
@@ -52,7 +56,10 @@ public:
 	void deleteClient(std::string const &);
 	void updateClient(std::string const &, std::string const &);
 	void loadCompleteClient(const std::string &);
-	std::string getAnswerToSend();
+	std::string getAnswerToSend(Server *server);
+	std::string getFilePath(Server *server);
+	std::string getFileContent(std::string filename);
+	std::string	normalizePath(std::string path);
 	std::string getFileContent();
 	bool isSendComplete();
 };

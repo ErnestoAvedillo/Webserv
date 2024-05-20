@@ -138,7 +138,6 @@ void WebServer::launchServers()
 		std::vector<int> serverFds = this->servers[i]->getServerFds();
 		for (size_t j = 0; j < serverFds.size(); j++)
 			std::cout << "Server " << i << " listening on " << serverFds[j] << std::endl;
-			//erverSocket[serverFds[j]] = this->servers[i]->getListening(serverFds[j]);
 	}
 	//*/
 	for (size_t i = 0; i < this->servers.size(); i++)

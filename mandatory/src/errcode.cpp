@@ -2,7 +2,8 @@
 #include <string>
 
 
-std::map<int, std::string> getHttpErrorTypes() {
+std::map<int, std::string> createHttpErrorCodes()
+{
 	std::map<int, std::string> errorTypes;
 	
 	// Add HTTP error types to the map
@@ -15,3 +16,4 @@ std::map<int, std::string> getHttpErrorTypes() {
 	
 	return errorTypes;
 }
+

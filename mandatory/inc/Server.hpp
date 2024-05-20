@@ -8,7 +8,7 @@
 # include <stdlib.h>
 # include <string>
 # include <algorithm>
-# include "commonFunctions.hpp"
+# include "utils.hpp"
 # include "Location.hpp"
 
 #define VAR_PORT	"port"
@@ -18,6 +18,7 @@
 #define VAR_ROOT	"root"
 #define VAR_INDEX	"index"
 #define VAR_CLIENT_MAX_BODY_SIZE	"client_max_body_size"
+#define VAR_LOCATIONS	"location"
 
 #ifdef __APPLE__
 	#define READ_EVENT EVFILT_READ
@@ -37,6 +38,7 @@ class Server {
 	protected:
 		bool		isDefault;
 		std::map<int, ListeningSocket *> port;
+		std::vector<std::string> ports;
 		size_t			maxClientBodySize;
 		std::string	Host;
 		std::string	serverName;
@@ -73,6 +75,9 @@ class Server {
 		std::string	getErrorPage();
 		std::string	getRoot();
 		std::string	getIndex();
+
+		void	setPorts(std::string const &ports);
+		void	print();
 		//std::vector<class Location> getLocations();
 };
 
