@@ -18,8 +18,10 @@ std::string Header::generateHeader() const
 	header = "HTTP/" + Version + " " + Status + "\r\n"; 
 	header += "Server: " + Server + "\r\n";
 	header += "Date: " + Date + "\r\n";
-	header += "Last-modified: " + LastModified + "\r\n";
-	header += "Content-length: " + std::to_string(ContentLength) + "\r\n";
+	if (LastModified != "")
+		header += "Last-modified: " + LastModified + "\r\n";
+	if(ContentLength != 0)
+		header += "Content-length: " + std::to_string(ContentLength) + "\r\n";
 	header += "Content-Type: " + ContentType + "\r\n";
 	header += "\r\n";
 	return header;
