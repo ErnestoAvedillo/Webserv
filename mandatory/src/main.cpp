@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/07 11:21:58 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/20 13:50:54 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/16 21:23:08 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/main.hpp"
+#include "../inc/WebServer.hpp"
 
 int main(int av, char **ac)
 {
@@ -21,6 +21,9 @@ int main(int av, char **ac)
 	}
 	WebServer webServer;
 	webServer.loadConfigFile(ac[1]);
+	// webServer.checkConfig();
+	// webServer.initalizer();
+	// webServer.parseInfo();
 	webServer.launchServers();
 	return 0;
 }

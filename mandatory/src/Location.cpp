@@ -52,6 +52,8 @@ Location::Location()
 }
 Location::Location(std::string const &content)
 {
+	std::cout << "Location constructor" << std::endl;
+	std::cout << content << std::endl;
 	this->loadData(content);
 }
 // Copy constructor
@@ -133,3 +135,14 @@ Location::Location(const Location& other)
 		return 0;
 }
 
+void Location::print()
+{
+	std::cout << "-------------------- Location --------------------" << std::endl;
+	std::cout << "Name: " << name << std::endl;
+	std::cout << "Root: " << root << std::endl;
+	std::cout << "Return: " << return_ << std::endl;
+	std::cout << "Index: " << index << std::endl;
+	std::cout << "Allow Methods: " << allow_methods << std::endl;
+	std::cout << "Autoindex: " << autoindex << std::endl;
+	std::cout << "Alias: " << alias << std::endl;
+}

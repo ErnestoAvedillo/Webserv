@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 12:46:28 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/20 13:49:29 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/20 17:21:33 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,11 @@
 #include <string>
 #include <fstream>
 #include <sstream>
-#include "../inc/commonFunctions.hpp"
+#include "../inc/utils.hpp"
+
+class Server;
+#include "../inc/Server.hpp"
+
 #include "../inc/FileContent.hpp"
 #include "../inc/toString.hpp"
 #include "../inc/colors.h"
@@ -27,8 +31,7 @@
 #define REQ_VER "Version"
 #define REQ_CONTENT "Content-Type"
 
-class Server;
-#include "../inc/Server.hpp"
+#include "Header.hpp"
 
 class Client
 {
@@ -36,6 +39,7 @@ private:
 	std::map<std::string, std::string> Request;
 	FileContent fileContent;
 	Server *server;
+	Header header;
 public:
 	Client();
 	Client(std::string const &, Server *);
@@ -53,7 +57,12 @@ public:
 	void updateClient(std::string const &, std::string const &);
 	void loadCompleteClient(const std::string &);
 	std::string getAnswerToSend();
+	std::string getFilePath();
+	std::string getFileContent(std::string filename);
+	std::string	normalizePath(std::string path);
 	std::string getFileContent();
 	bool isSendComplete();
+	void getExtension();
+
 };
 

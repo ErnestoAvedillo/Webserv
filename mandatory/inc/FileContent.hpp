@@ -2,6 +2,8 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <sys/stat.h>
+#include <filesystem>
 #include "../inc/colors.h"
 
 #define MAX_SENT_BYTES 8192
@@ -14,6 +16,8 @@ private:
 	bool isFistFragment;
 	bool isFileOpen;
 	bool sendComplete;
+	struct stat fileStat;
+
 
 public:
 	FileContent();
@@ -26,4 +30,6 @@ public:
 	bool isSendComplete();
 	void setFirstFragment(bool);
 	bool getFirstFragment();
+	std::string getLastModified();
+	size_t getContentSize();
 };

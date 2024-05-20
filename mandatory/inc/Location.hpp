@@ -21,7 +21,7 @@ class Location
 		std::string root;
 		std::string return_;
 		std::string index;
-		std::string allow_methods;
+		std::string allow_methods; 
 		std::string autoindex;
 		std::string alias;
 		int loadData(const std::string &data);
@@ -57,6 +57,7 @@ class Location
 		void setAlias(const std::string&);
 
 		// Load data from a string configuration
+		void print();
 };
 
 //typedef void (Location::*location)(std::string);

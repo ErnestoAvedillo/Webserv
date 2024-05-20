@@ -9,9 +9,14 @@ FileContent::FileContent()
 }
 FileContent::FileContent(const std::string &MyfileName) 
 {
-	this->setFileName(MyfileName);
+	if (stat(fileName.c_str(), &fileStat) < 0)
+			isFileOpen = false;
+	else
+	{
+		this->setFileName(MyfileName);
+		isFileOpen = true;
+	}
 	sendComplete = false;
-	isFileOpen = false;
 	isFistFragment = true;
 }
 
@@ -82,4 +87,18 @@ void FileContent::setFirstFragment(bool first)
 bool FileContent::getFirstFragment()
 {
 	return isFistFragment;
+}
+
+std::string FileContent::getLastModified()
+{
+	if (stat(fileName.c_str(), &fileStat) < 0)
+	{
+		return "";
+	}
+	return ctime(&fileStat.st_mtime);
+}
+
+size_t FileContent::getContentSize()
+{
+	return fileStat.st_size;
 }

@@ -52,22 +52,13 @@ class WebServer {
 		std::map<int, ListeningSocket *>	acceptedSocket;
 		
 		std::vector<Server *>	servers;
+		std::map<std::string, std::string>	mimeTypes;
+		std::map<int, std::string>	errorPages;
 		
 		
 		int kq;
 		int client_events[MAX_CLIENTS];
 		void	processConfigFile();
-		/* Socket Configuration */
-		std::map<int, ListeningSocket *>	serverSocket;
-		std::map<int, ListeningSocket *>	acceptedSocket;
-		
-		std::vector<Server *>	servers;
-		
-		
-		int kq;
-		int client_events[MAX_CLIENTS];
-		void	processConfigFile();
-
 	public:
 		WebServer();
 		~WebServer();
