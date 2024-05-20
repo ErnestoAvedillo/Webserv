@@ -215,11 +215,11 @@ int ListeningSocket::getFd()
 
 void ListeningSocket::sendData(int clientSocketFd)
 {
-	// std::cout << "sendData " << std::endl;
-	// std::string buffer = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello, MY World!</h1></body></html>\r\n";
 	std::string answer = this->client->getAnswerToSend(this->server);
 	n = send(clientSocketFd, answer.c_str(), answer.size(), 0);
-	if (n < 0)
+	if (errno )
+        std::cout << "Error " << strerror(errno) << std::endl;
+	if (n <=	 0)
 	{
 		std::cerr << "Failed to send data" << std::endl;
 		// close (clientSocketFd);
@@ -227,10 +227,10 @@ void ListeningSocket::sendData(int clientSocketFd)
 	std::cout << "send" << std::endl;
 }
 
-ListeningSocket *ListeningSocket::clone()
+ListeningSocket *ListeningSocket::clone(int fd)
 {
 	ListeningSocket *newSocket = new ListeningSocket(this->server);
-	newSocket->socketFd = this->socketFd;
+	newSocket->socketFd = fd;
 	newSocket->kq = this->kq;
 	newSocket->n = this->n;
 

@@ -136,10 +136,11 @@ std::string Client::getFileContent(std::string filename)
 {
 	std::ifstream file;
 	std::string file_content;
-	file.open(filename, std::ios::binary);
+	file.open(filename);
 	if (!file)
 	{
 		std::cerr << "File not found" << std::endl;
+		errno = 0;
 		return ("HTTP/1.1 404 Not Found\r\n\r\n");
 	}
 	std::string line;
@@ -170,16 +171,13 @@ std::string Client::getAnswerToSend(Server *server)
 	std::string answer;
 	std::string filePath = getFilePath(server);
 	std::string file_content = getFileContent(filePath);
-	// Get File Content
-	// std::string filePath = this->Request[REQ_FILE];
-	// std::cout << 
-	if (file_content.empty())
+	if (file_content.find("HTTP/1.1 404 Not Found\r\n\r\n") != std::string::npos)
 		return ("HTTP/1.1 404 Not Found\r\n\r\n");
 	answer += "HTTP/1.1 200 OK\r\nContent-Type: " + getExtension(filePath) + "\r\nContent-Lenght: " + std::to_string(file_content.size())  + "\r\n\r\n";
 	std::cout << getExtension(filePath) << std::endl;
 	
 	std::cout << "File Path: " << filePath << "$" << std::endl;
-	std::ifstream file;
+	// std::ifstream file;
 	std::cout << "File Path: " << filePath << std::endl;
 	answer += file_content;
 	return (answer);

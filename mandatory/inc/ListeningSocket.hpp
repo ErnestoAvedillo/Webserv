@@ -69,5 +69,5 @@ class ListeningSocket
 		void sendData(int);
 		void loadRequest(char *buff);
 
-		ListeningSocket * clone();
+		ListeningSocket * clone(int fd);
 };

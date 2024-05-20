@@ -113,7 +113,7 @@ void	WebServer::newConnection(int fd)
 		std::cerr << "Error: could not set socket to non-blocking" << std::endl;
 		exit(1);
 	}
-	acceptedSocket.insert(std::pair<int, ListeningSocket *>(socketFd, serverSocket[fd]->clone()));
+	acceptedSocket.insert(std::pair<int, ListeningSocket *>(socketFd, serverSocket[fd]->clone(fd)));
 	addFilter(socketFd, EVFILT_READ);
 }
 
@@ -160,7 +160,9 @@ void	WebServer::eventLoop()
 			// if (acceptedSocket[evList.ident]->getState())
 			// {
 				removeFilter(evList.ident, EVFILT_WRITE);
-				close(evList.ident);
+				delete acceptedSocket[evList.ident];
+				acceptedSocket.erase(evList.ident);
+				//close(evList.ident);
 			// }
 		}
 		if (running == false)
