@@ -12,6 +12,8 @@ mandatory/objdst_dir/
 manuals
 .DS_Store
 Resources/Filetypes/Makefile
+Test.cpp
+www/*
 # Prerequisites
 *.d
 

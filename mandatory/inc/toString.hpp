@@ -1,26 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   toString.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/07 11:21:58 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/20 13:50:54 by eavedill         ###   ########.fr       */
+/*   Created: 2024/04/21 13:55:21 by eavedill          #+#    #+#             */
+/*   Updated: 2024/05/20 13:50:25 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/main.hpp"
+#pragma once
+#include <iostream>
+#include <sstream>
 
-int main(int av, char **ac)
+template <typename T>
+std::string toString (T n)
 {
-		if (av != 2)
-	{
-		std::cerr << "Error: No se ha pasado el archivo de configuración" << std::endl;
-		return 1;
-	}
-	WebServer webServer;
-	webServer.loadConfigFile(ac[1]);
-	webServer.launchServers();
-	return 0;
+	std::string str;
+	std::stringstream ss;
+	
+	ss << n;
+	ss >> str;
+
+	return  str;
 }
