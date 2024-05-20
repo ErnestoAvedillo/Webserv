@@ -20,7 +20,7 @@ FileContent::~FileContent() {}
 int FileContent::openFile()
 {
 	std::cout << "Opening file " << fileName << std::endl;
-	file.open(fileName.c_str(), std::ios::out | std::ios::binary | std::ios::app | std::ios::ate);
+	file.open(fileName.c_str(), std::ios::out | std::ios::binary); //| std::ios::app | std::ios::ate
 
 	if (file.is_open())
 		return 1;
@@ -32,18 +32,26 @@ std::string FileContent::getContent()
 	std::string errorReturn = "Error: " + fileName + " File not found";
 	if (isFileOpen)
 	{
-		std::string line;
 		content = "";
-		while (std::getline(file, line))
+		char buffer[MAX_SENT_BYTES];
+		while (file.read(buffer, MAX_SENT_BYTES))
 		{
-			content += line + "\n";
-			// if (content.size() >= MAX_SENT_BYTES)
+			content.append(buffer, file.gcount());
+		}
+		content.append(buffer, file.gcount());
+//		std::string line;
+//		content = "";
+//		while (std::getline(file, line))
+//		{
+//			content += line; //+ "\n";
+							 // if (content.size() >= MAX_SENT_BYTES)
 			// {
 			// 	return content;
 			// }
-		}
+//		}
 		file.close();
 		std::cout << "File closed: " << fileName << std::endl;
+		//std::cout << "File content: " << content << std::endl;
 	}
 	else
 	{

@@ -84,30 +84,30 @@ int WebServer::acceptNewEvent(int curfd)
 		exit(1);
 	}
 
-	while (1)
-	{
-		if (listen(curfd, SOMAXCONN) < 0)
-		{
-			std::cerr << "Error listening" << curfd << std::endl;
-			exit(1);
-		}
+//	while (1)
+//	{
+//		if (listen(curfd, SOMAXCONN) < 0)
+//		{
+//			std::cerr << "Error listening" << curfd << std::endl;
+//			exit(1);
+//		}
 		struct sockaddr_storage addr;
 		socklen_t socklen = sizeof(addr);
 		fd = accept(curfd, (struct sockaddr *) &addr, &socklen);
 		if (fd < 0)
 		{
-			if (errno == EAGAIN || errno == EWOULDBLOCK)
-				break;
-			else
-			{
+//			if (errno == EAGAIN || errno == EWOULDBLOCK)
+//				break;
+//			else
+//			{
 				std::cerr << "Error accepting connection" << std::endl;
-				return -1; // Continue to the next event
-			}
+				return fd; // Continue to the next event
+//			}
 		}
 		std::cout << "Connection accepted " << fd << std::endl;
 
 		fcntl(fd, F_SETFL, O_NONBLOCK, O_CLOEXEC);
-		acceptedSocket[fd] = serverSocket[curfd]->clone();
+		acceptedSocket[fd] = serverSocket[curfd]->clone(fd);
 		std::cout << "Connection accepted " << serverSocket[curfd]->getServerName() << std::endl;
 		this->addEvent(fd, EPOLLIN | EPOLLET);
 //		if (addConnection(fd) == 0)
@@ -116,7 +116,7 @@ int WebServer::acceptNewEvent(int curfd)
 //			//evList[i].events = EPOLLIN | EPOLLET; // Edge-triggered mode
 //			this->addEvent(fd, EPOLLIN | EPOLLET);
 //		}
-	}
+//	}
 	return fd;
 }
 

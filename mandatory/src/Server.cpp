@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/27 14:24:35 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/19 16:45:34 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/19 20:25:25 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ Server::Server(std::string const &str)
 	//this->setDefaultData();
 	if(this->loadData(str) == -1)
 	{
-		std::cerr << CHR_RED"Error: No se ha podido cargar la configuración del servidor. Parámetros por defecto establecidos."RESET << std::endl;
+		std::cerr << CHR_RED << "Error: No se ha podido cargar la configuración del servidor. Parámetros por defecto establecidos." << RESET << std::endl;
 		exit(1);
 	}
 //	std::map<int, ListeningSocket*>::iterator itb = this->port.begin();

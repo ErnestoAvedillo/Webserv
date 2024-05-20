@@ -166,7 +166,7 @@ bool ListeningSocket::sendData(int clientSocketFd)
 	std::cout << "sendData " << std::endl;
 	//std::string answer = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello, MY World!</h1></body></html>\r\n";
 	std::string answer = this->client->getAnswerToSend();
-	// std::cout << "Send " << clientSocketFd << "     " << answer << std::endl;
+	//std::cout << "Send " << clientSocketFd << "     " << answer << std::endl;
 	n = send(clientSocketFd, answer.c_str(), answer.size(), 0);
 	std::cout << "Sent " << n << " bytes to client" << std::endl;
 	if (n < 0)
