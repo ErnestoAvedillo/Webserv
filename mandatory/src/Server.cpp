@@ -37,7 +37,7 @@ std::map<std::string, void (Server::*)(const std::string &)> getServerMethods()
 	serverMethods[VAR_ROOT] = &Server::setRoot;
 	serverMethods[VAR_INDEX] = &Server::setIndex;
 	serverMethods[VAR_CLIENT_MAX_BODY_SIZE] = &Server::setClientMaxBodySize;
-		serverMethods[VAR_LOCATIONS] = &Server::addLocation;
+	serverMethods[VAR_LOCATIONS] = &Server::addLocation;
 	return serverMethods;
 }
 
@@ -131,17 +131,9 @@ int Server::loadData(std::string const &content) {
 			std::cout << "Error: Variable no reconocida: " << line.substr(0, line.find(":")) << std::endl;
 		else
 		{
-			if (line.find_first_of("locations:{") == 0)
-			{
-				straux = line.substr(0, line.find_first_of("};"));
-				(this->*getServerMethods()[it->first])(straux);
-			}
-			else
-			{
 				//std::cout << "Line: " << line << std::endl;
 				straux = line.substr(line.find(":") + 1, line.size());
 				(this->*getServerMethods()[it->first])(straux);
-			}
 			// std::cout << "Line: " << line << std::endl;
 			// straux = line.substr(line.find(":") + 1, line.size());
 			// (this->*getServerMethods()[it->first])(straux);
