@@ -56,8 +56,8 @@ public:
 	void deleteClient(std::string const &);
 	void updateClient(std::string const &, std::string const &);
 	void loadCompleteClient(const std::string &);
-	std::string getAnswerToSend(Server *server);
-	std::string getFilePath(Server *server);
+	std::string getAnswerToSend();
+	std::string getFilePath();
 	std::string getFileContent(std::string filename);
 	std::string	normalizePath(std::string path);
 	std::string getFileContent();
