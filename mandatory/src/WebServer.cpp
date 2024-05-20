@@ -190,7 +190,6 @@ void	WebServer::eventLoop()
 		{
 			std::cerr << " Last Error found: " << strerror(errno) << std::endl;
 			errno = 0;
-			std::cin.get();
 		}
 		num_events = waitEvent(evList);
 		if (num_events == -1)

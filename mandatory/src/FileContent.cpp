@@ -34,32 +34,23 @@ std::string FileContent::getContent()
 	{
 		content = "";
 		char buffer[MAX_SENT_BYTES];
-		while (file.read(buffer, MAX_SENT_BYTES))
+		if(file.read(buffer, MAX_SENT_BYTES))
 		{
 			content.append(buffer, file.gcount());
+			return content;
 		}
-		content.append(buffer, file.gcount());
-//		std::string line;
-//		content = "";
-//		while (std::getline(file, line))
-//		{
-//			content += line; //+ "\n";
-							 // if (content.size() >= MAX_SENT_BYTES)
-			// {
-			// 	return content;
-			// }
-//		}
-		file.close();
-		std::cout << "File closed: " << fileName << std::endl;
-		//std::cout << "File content: " << content << std::endl;
+		else
+		{
+			std::cout << "File closed: " << fileName << std::endl;
+			file.close();
+			content.append(buffer, file.gcount());
+		}
 	}
 	else
 	{
-		//std::cout << CHR_RED + errorReturn + RESET << std::endl;
 		content = errorReturn;
 	}
 	sendComplete = true;
-	//std::cout << "File content: " << content << std::endl;
 	return content;
 }
 
