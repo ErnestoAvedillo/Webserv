@@ -5,10 +5,11 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/07 11:23:40 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/18 16:37:51 by eavedill         ###   ########.fr       */
+/*   Created: Invalid date        by                   #+#    #+#             */
+/*   Updated: 2024/05/20 13:50:05 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #pragma once
 #include <iostream>
@@ -23,9 +24,6 @@
 #include <map>
 #include <sys/stat.h>
 #include "unp.h"
-#include "Header.hpp"
-#include "Request.hpp"
-#include "SendFile.hpp"
 #include "commonFunctions.hpp"
 #include "../inc/WebServer.hpp"
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/27 14:24:35 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/19 20:25:25 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/20 13:51:00 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,8 +51,8 @@ void	Server::setDefaultData()
 	this->index = "index.html";
 }
 
-
 Server::Server() {
+	bool ret;
 	this->setDefaultData();
 	std::map<int, ListeningSocket*>::iterator itb = this->port.begin();
 	std::map<int, ListeningSocket*>::iterator ite = this->port.end();
@@ -144,8 +144,11 @@ int Server::loadData(std::string const &content) {
 
 void Server::setPort(std::string const &port)
 {
+	ListeningSocket *ls;
 	std::string aux;
 	std::istringstream portStream(port);
+	if(this->port.size() != 0)
+		this->port.clear();
 	while (std::getline(portStream, aux, ','))
 	{	
 		if(aux.find(":") != std::string::npos)
@@ -156,6 +159,11 @@ void Server::setPort(std::string const &port)
 				std::cout << "Error: Puerto mal definido." << std::endl;
 				exit(1);
 			}
+			if(stringToSizeT(aux2[0]) >= stringToSizeT(aux2[1]))
+			{
+				std::cout << "Error: puerto " << aux2[0] << "<" << aux[1] << "Definicion de puertos incorrecta." << std::endl;
+			}
+
 			for(size_t i = stringToSizeT(aux2[0]); i <= stringToSizeT(aux2[1]); i++)
 			{
 				ListeningSocket *ls = new ListeningSocket(i, this);
@@ -218,6 +226,7 @@ void Server::setIsDefault(std::string const &is_default)
 }
 
 ListeningSocket *Server::getPort(int i) {
+	std::map<int, ListeningSocket *>::iterator it = this->port.find(i);
 	std::map<int, ListeningSocket *>::iterator it = this->port.find(i);
 	if (it == this->port.end())
 	{

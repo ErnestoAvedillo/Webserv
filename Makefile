@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+         #
+#    By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/01 15:03:29 by eavedill          #+#    #+#              #
-#    Updated: 2024/05/01 19:44:22 by eavedill         ###   ########.fr        #
+#    Updated: 2024/05/05 14:41:11 by eavedill         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,7 +24,7 @@ DIRSRC := ./mandatory/src/
 
 DIRINC := ./mandatory/inc/
 
-OBJDST_DIR := ./mandatory/objdst_dir/
+OBJDST_DIR :=	./mandatory/objdst_dir/
 
 SRCS := $(wildcard $(DIRSRC)*.cpp) 
 
@@ -41,8 +41,11 @@ CC:= g++
 ifeq (,$(findstring "Linux",$(shell uname -s)))
 	SYSTEM := -DLNX
 endif
+ifeq (,$(findstring "Darwin",$(shell uname -s)))
+	SYSTEM := -DMAC
+endif
 
-FLAGS := -Wall -Werror -Wextra -pedantic -g -std=c++98 $(SYSTEM) -fsanitize=address 
+FLAGS := -Wall -Werror -Wextra -std=c++98 $(SYSTEM) -g #-fsanitize=address -pedantic 
 
 all:	print_system $(NAME) Makefile 
 

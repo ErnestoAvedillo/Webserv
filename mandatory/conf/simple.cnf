@@ -1,4 +1,4 @@
-/* format type of the configutation file
+/* format type of the configutation file # This is a comment part /*
 server:{
 	listen:8001;                        # listening port, mandatory parameter. Can be multiple ex: 8000:8100, 8060, 8020
 	host:127.0.0.1;                     # host or 127.0.0.1 by default
@@ -8,7 +8,7 @@ server:{
 	root:docs/fusion_web/;              # root folder of site directory, full or relative path, mandatory parameter
 	index:index.html;                   # default page when requesting a directory, index.html by default
 }
-*/
+*/ 
 server:{
 	port:8085,8084;                			# listening port, mandatory parameter
 	host:127.0.0.1;                     # host or 127.0.0.1 by default

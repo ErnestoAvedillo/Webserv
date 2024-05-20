@@ -9,7 +9,6 @@
 # include <string>
 # include <algorithm>
 # include "commonFunctions.hpp"
-# include "ListeningSocket.hpp"
 # include "Location.hpp"
 
 #define VAR_PORT	"port"
@@ -66,7 +65,7 @@ class Server {
 		ListeningSocket *getListening(int i);
 		std::vector<int> getServerFds();
 
-		ListeningSocket *		getPort(int i);
+		ListeningSocket *		getPort(int i); 
 		size_t			getClientBodySize();
 		bool getIsDefault();
 		std::string	getHost();

@@ -25,6 +25,31 @@ WebServer &WebServer::operator=(WebServer const &copy)
 }
 
 
+WebServer::WebServer()
+{
+	std::cout << "WebServer created" << std::endl;
+}
+
+WebServer::~WebServer()
+{
+	std::cout << "WebServer destroyed" << std::endl;
+}
+
+WebServer::WebServer(WebServer const &copy)
+{
+	*this = copy;
+}
+
+WebServer &WebServer::operator=(WebServer const &copy)
+{
+	if (this != &copy)
+	{
+		this->servers = copy.servers;
+	}
+	return *this;
+}
+
+
 void WebServer::loadConfigFile(std::string configFile) // WebServer loadConfigFile
 {
 	this->configFilename = configFile;
