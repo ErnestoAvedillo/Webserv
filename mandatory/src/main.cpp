@@ -25,4 +25,5 @@ int main(int av, char **ac)
 	// webServer.initalizer();
 	// webServer.parseInfo();
 	webServer.launchServers();
+	return 0;
 }

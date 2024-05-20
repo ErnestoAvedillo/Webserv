@@ -1,4 +1,14 @@
-# Webserv
+<!--HEADER-->
+<h1 align="center"> Webserv | 
+ <picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://cdn.simpleicons.org/42/white">
+  <img alt="42" width=40 align="top" src="https://cdn.simpleicons.org/42/Black">
+ </picture>
+ Cursus 
+  <!--<img alt="Complete" src="https://raw.githubusercontent.com/Mqxx/GitHub-Markdown/main/blockquotes/badge/dark-theme/complete.svg">-->
+</h1>
+<!--FINISH HEADER-->
+
 ### To-dos
 ##### File configuration
 - [ ] Define file configuration. Explore Nginx file configurations and define the properties that our file config would have.
@@ -15,3 +25,7 @@
 * **[Unix Network Programming Volume 1](https://doc.lagout.org/programmation/unix/Unix%20Network%20Programming%20Volume%201.pdf)**
 * **[select, poll, epoll and kqueue](https://nima101.github.io/io_multiplexing)**
 * **[HTTP status codes and messages](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status)**
+
+### Example Repositories
+* **[WebServer with epoll and kqueue](https://github.com/rabarbra/webserv.git)** Author: rabarbra
+* **[WebServer with kqueue](https://github.com/bsomers42/webserv)** Author: Bsomers42

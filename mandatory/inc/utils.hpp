@@ -16,6 +16,7 @@ bool isDirPermissions(std::string path, int mode);
 
 bool isFilePermissions(std::string path, int mode);
 
+#include "toString.hpp"
 
 std::string removeBlanksAndTabs(const std::string& input);
 std::string removeCharFromString(const std::string& input, char c);
@@ -26,3 +27,4 @@ std::map<int, std::string> createHttpErrorCodes();
 void pauseRequest(std::string message);
 template <typename T>
 std::string itos (T n);
+void replaceString(std::string &mainString, const std::string &searchString, const std::string &replaceString);

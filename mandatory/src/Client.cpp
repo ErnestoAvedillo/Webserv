@@ -12,17 +12,13 @@
 
 #include "../inc/Client.hpp"
 
-#define REQ_TYPE "Type"
-#define REQ_FILE "File"
-#define REQ_VER "Version"
-#define REQ_CONTENT "Content-Type"
-
-
 Client::Client(){}
 
-Client::Client(std::string const &str)
+Client::Client(std::string const &str, Server *srv)
 {
+	this->server = srv;
 	this->loadCompleteClient(str);
+	fileContent.setFileName(this->Request[REQ_FILE]);
 }
 
 Client &Client::operator=(Client const &rsh)
@@ -42,6 +38,25 @@ Client::~Client(){}
 void Client::addKeyReq(std::string const &key, std::string const &value)
 {
 	this->Request[key] = value;
+}
+
+void Client::addKeyType(std::string const &value)
+{
+	this->Request[REQ_TYPE] = value;
+}
+
+void Client::addKeyFile(std::string const &value)
+{
+	this->Request[REQ_FILE] = "./" + this->server->getRoot() + value;
+	if (value == "/")
+		this->Request[REQ_FILE] += this->server->getIndex();
+	replaceString(this->Request[REQ_FILE], "%20", " ");
+	std::cout << "File: " << this->Request[REQ_FILE] << std::endl;
+}
+
+void Client::addKeyVers(std::string const &value)
+{
+	this->Request[REQ_VER] = value;
 }
 
 std::map<std::string, std::string>::iterator Client::findClient(std::string const &key)
@@ -82,13 +97,53 @@ void Client::loadCompleteClient( std::string const &str)
 	if (parts.size() == 3)
 	{
 		std::cout << "Parts: " << parts[0] << " " << parts[1] << " " << parts[2] << std::endl;
-		this->addKeyReq(REQ_TYPE, parts[0]);
-		this->addKeyReq(REQ_FILE, parts[1]);
-		this->addKeyReq(REQ_VER, parts[2]);
+		this->addKeyType(parts[0]);
+		this->addKeyFile(parts[1]);
+		this->addKeyVers(parts[2]);
 	}
 	for (size_t i = 1; i < lines.size(); i++)
 			this->addKeyReq(lines[i].substr(0, lines[i].find(":")), lines[i].substr(lines[i].find(":") + 1, lines.size()));
 }
+
+std::string Client::getFileContent()
+{
+	std::string content = this->fileContent.getContent();
+	return (content);
+}
+
+std::string getExtension(std::string filePath)
+{
+	size_t point = filePath.find_last_of(".");
+	std::string extension = filePath.substr(point + 1, filePath.size());
+
+	std::map<std::string, std::string> Mimetype = create_filetypes();
+
+	if (Mimetype.find(extension) != Mimetype.end())
+	{
+		std::cout << CHR_BLUE << "found extension " << extension << ": " << Mimetype[extension] << RESET << std::endl;
+		return(Mimetype[extension]);
+	}
+	else
+	{
+		std::cout << CHR_MGENTA << "NOT found extension " << extension << RESET << std::endl;
+		return("text/html"); 
+	}
+}
+
+std::string Client::getAnswerToSend()
+{	
+	std::string answer;
+	std::string filePath = this->fileContent.getFileName();
+	std::string file_content = getFileContent();
+	std::cout << "File path: " << filePath << std::endl;
+	//std::cout << "File content: " << file_content << std::endl;
+	if (this->fileContent.getFirstFragment())
+	{
+		answer += "HTTP/1.1 200 OK\r\nContent-Type: " + getExtension(filePath) + "\r\n" + "Content - Length : " + toString(file_content.size()) + "\r\n\r\n" + file_content;
+		this->fileContent.setFirstFragment(false);
+	}
+	else
+		answer += file_content;
 
 /*
 Normalize the path, removes .., adds ./ at teh beggining if necessary, removes / at the end, removes duplicate /.
@@ -181,4 +236,9 @@ std::string Client::getAnswerToSend(Server *server)
 	std::cout << "File Path: " << filePath << std::endl;
 	answer += file_content;
 	return (answer);
+}
+
+bool Client::isSendComplete()
+{
+	return this->fileContent.isSendComplete();
 }
