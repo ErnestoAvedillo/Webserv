@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 12:49:08 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/21 09:17:07 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/21 14:24:41 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,22 +14,15 @@
 
 Client::Client(){}
 
+Client::Client(Server *srv)
+{
+	this->server = srv;
+}
+
 Client::Client(std::string const &str, Server *srv)
 {
 	this->server = srv;
 	this->loadCompleteClient(str);
-	std::cout << "File1: " << this->Request[REQ_FILE] << std::endl;
-	if(fileContent.setFileName(this->Request[REQ_FILE]))
-	{
-		std::cout << "confirm opened" << std::endl;
-		header.setLastModified(fileContent.getLastModified());
-		this->getExtension();
-		header.setContentLength(fileContent.getContentSize());
-		header.setStatus("200 OK");
-		header.setServer(server->getServerName());
-	}
-	else
-		header.setStatus("404 Not Found");
 }
 
 Client &Client::operator=(Client const &rsh)
@@ -116,6 +109,7 @@ void Client::loadCompleteClient( std::string const &str)
 	}
 	for (size_t i = 1; i < lines.size(); i++)
 			this->addKeyReq(lines[i].substr(0, lines[i].find(":")), lines[i].substr(lines[i].find(":") + 1, lines.size()));
+	this->loadDataHeader();
 }
 
 
@@ -238,7 +232,6 @@ std::string Client::getFileContent()
 // }
 std::string Client::getAnswerToSend()
 {	
-	(void)server;
 	std::string answer;
 	std::string filePath = this->fileContent.getFileName();
 	std::string file_content = getFileContent();
@@ -256,4 +249,20 @@ std::string Client::getAnswerToSend()
 bool Client::isSendComplete()
 {
 	return this->fileContent.isSendComplete();
+}
+
+void Client::loadDataHeader()
+{
+	std::cout << "File1: " << this->Request[REQ_FILE] << std::endl;
+	if (fileContent.setFileName(this->Request[REQ_FILE]))
+	{
+		std::cout << "confirm opened" << std::endl;
+		header.setLastModified(fileContent.getLastModified());
+		this->getExtension();
+		header.setContentLength(fileContent.getContentSize());
+		header.setStatus("200 OK");
+		header.setServer(server->getServerName());
+	}
+	else
+		header.setStatus("404 Not Found");
 }

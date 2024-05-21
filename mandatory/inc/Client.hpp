@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 12:46:28 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/20 17:21:33 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/21 14:22:43 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ private:
 public:
 	Client();
 	Client(std::string const &, Server *);
+	Client(Server *);
 	Client &operator=(Client const &);
 	~Client();
 	void addKeyReq(std::string const &, std::string const &);
@@ -63,6 +64,6 @@ public:
 	std::string getFileContent();
 	bool isSendComplete();
 	void getExtension();
-
+	void loadDataHeader();
 };
 

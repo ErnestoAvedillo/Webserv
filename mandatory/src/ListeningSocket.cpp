@@ -181,14 +181,13 @@ ListeningSocket *ListeningSocket::clone(int fd)
 	ListeningSocket *newSocket = new ListeningSocket(this->server);
 	newSocket->socketFd = fd;
 	newSocket->n = this->n;
+	newSocket->client = new Client(server);
 
 	return newSocket;
 }
 
 void ListeningSocket::loadRequest(char *buff)
 {
-	this->client = new Client((std::string)buff, server);
-	std::cout << "loadRequest created Client " << this->client << std::endl;
 	this->client->loadCompleteClient(buff);
 }
 

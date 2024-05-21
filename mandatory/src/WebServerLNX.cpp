@@ -108,7 +108,9 @@ int WebServer::acceptNewEvent(int curfd)
 
 		fcntl(fd, F_SETFL, O_NONBLOCK, O_CLOEXEC);
 		acceptedSocket[fd] = serverSocket[curfd]->clone(fd);
-		std::cout << "Connection accepted " << serverSocket[curfd]->getServerName() << std::endl;
+		std::cout << "Connection accepted " << fd << " socket ptr " << acceptedSocket[fd] << std::endl;
+
+		std::cout << "-- Client ptr  " << acceptedSocket[fd]->getClientPtr() << std::endl;
 		this->addEvent(fd, EPOLLIN | EPOLLET);
 //		if (addConnection(fd) == 0)
 //		{
