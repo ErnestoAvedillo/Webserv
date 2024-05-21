@@ -88,6 +88,14 @@ void	WebServer::eventLoop()
 			std::cerr << " Last Error found: " << strerror(errno) << std::endl;
 			errno = 0;
 		}
+		for (size_t i = 0; i < acceptedSocket.size(); i++)
+		{
+			#ifdef __APPLE__
+				EV_SET(&evList[i], -1, 0, 0, 0, 0, 0);
+			#elif __linux__
+				std::cout << "accepted fd pendig to be closed" << i << " " << acceptedSocket[i] << std::endl;
+			#endif
+		}
 		num_events = waitEvent(evList);
 		if (num_events == -1)
 		{
@@ -108,7 +116,7 @@ void	WebServer::eventLoop()
 			if (serverSocket.find(currfd) != serverSocket.end())
 			{
 				fd = acceptNewEvent(currfd);
-				//std::cout << "created socket " << acceptedSocket[fd] << " Client ptr " << acceptedSocket[fd]->getClientPtr() << std::endl;
+				std::cout << "created socket " << acceptedSocket[fd] << " Client ptr " << acceptedSocket[fd]->getClientPtr() << std::endl;
 				if (fd == -1)
 					continue;
 			}
@@ -128,8 +136,8 @@ void	WebServer::eventLoop()
 			{
 				if (acceptedSocket[currfd]->sendData(currfd))
 				{
-					//std::cout << "Data complete sent, Connection closed " << currfd << std::endl;
-					//std::cout << "delete socket " << acceptedSocket[currfd] << " Client ptr " << acceptedSocket[currfd]->getClientPtr() << std::endl;
+					std::cout << "Data complete sent, Connection closed " << currfd << std::endl;
+					std::cout << "delete socket " << acceptedSocket[currfd] << " Client ptr " << acceptedSocket[currfd]->getClientPtr() << std::endl;
 					removeEventFd(currfd, WRITE_EVENT);
 					delete acceptedSocket[currfd];
 					acceptedSocket.erase(currfd);
@@ -145,9 +153,15 @@ void	WebServer::eventLoop()
 			else if (type_event & END_EVENT || type_event & ERR_EVENT)
 			{
 				removeEventFd(currfd, READ_EVENT);
+				delete acceptedSocket[currfd];
+				acceptedSocket.erase(currfd);
 				std::cout << CHR_RED << "Connection closed " << RESET << currfd << std::endl;
 				// removeConnection(currfd);
-				close(currfd);
+				//close(currfd);
+			}
+			else
+			{
+				std::cerr << "Unknown event " << type_event << std::endl;
 			}
 		}
 	}
