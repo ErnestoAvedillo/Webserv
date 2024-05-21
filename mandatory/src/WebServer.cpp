@@ -108,6 +108,7 @@ void	WebServer::eventLoop()
 			if (serverSocket.find(currfd) != serverSocket.end())
 			{
 				fd = acceptNewEvent(currfd);
+				//std::cout << "created socket " << acceptedSocket[fd] << " Client ptr " << acceptedSocket[fd]->getClientPtr() << std::endl;
 				if (fd == -1)
 					continue;
 			}
@@ -115,6 +116,7 @@ void	WebServer::eventLoop()
 			{
 				recv(currfd, buf, sizeof(buf) * MAX_MSG_SIZE, 0);
 				this->acceptedSocket[currfd]->loadRequest(buf);
+				//std::cout << "load request " << acceptedSocket[fd] << " Client ptr " << acceptedSocket[fd]->getClientPtr() << std::endl;
 				//removeEventFd(currfd,READ_EVENT);
 				#ifdef __APPLE__
 					modifEvent(evList[i], READ_EVENT, WRITE_EVENT);
@@ -126,11 +128,10 @@ void	WebServer::eventLoop()
 			{
 				if (acceptedSocket[currfd]->sendData(currfd))
 				{
-					std::cout << "Data complete sent, Connection closed " << currfd << std::endl;
+					//std::cout << "Data complete sent, Connection closed " << currfd << std::endl;
+					//std::cout << "delete socket " << acceptedSocket[currfd] << " Client ptr " << acceptedSocket[currfd]->getClientPtr() << std::endl;
 					removeEventFd(currfd, WRITE_EVENT);
-					std::cout << "delete socket " << acceptedSocket[currfd] << std::endl;
 					delete acceptedSocket[currfd];
-
 					acceptedSocket.erase(currfd);
 					//removeConnection(currfd);	
 					//close(currfd);

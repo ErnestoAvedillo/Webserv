@@ -3,6 +3,7 @@
 #include <fstream>
 #include <string>
 #include <sys/stat.h>
+#include <time.h>
 #include <filesystem>
 #include "../inc/colors.h"
 

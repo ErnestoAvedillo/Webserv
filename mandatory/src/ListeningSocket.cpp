@@ -95,7 +95,7 @@ ListeningSocket::ListeningSocket(Server *srv)
 ListeningSocket::~ListeningSocket()
 {
 	stopListening();
-	delete client;
+	delete this->client;
 }
 
 bool ListeningSocket::startListening()
@@ -188,10 +188,16 @@ ListeningSocket *ListeningSocket::clone(int fd)
 void ListeningSocket::loadRequest(char *buff)
 {
 	this->client = new Client((std::string)buff, server);
+	std::cout << "loadRequest created Client " << this->client << std::endl;
 	this->client->loadCompleteClient(buff);
 }
 
 std::string ListeningSocket::getServerName()
 {
 	return server->getServerName();
+}
+
+Client *ListeningSocket::getClientPtr()
+{
+	return this->client;
 }

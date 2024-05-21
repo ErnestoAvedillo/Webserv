@@ -21,7 +21,7 @@ std::string Header::generateHeader() const
 	if (LastModified != "")
 		header += "Last-modified: " + LastModified + "\r\n";
 	if(ContentLength != 0)
-		header += "Content-length: " + std::to_string(ContentLength) + "\r\n";
+		header += "Content-length: " + toString(ContentLength) + "\r\n";
 	header += "Content-Type: " + ContentType + "\r\n";
 	header += "\r\n";
 	return header;
@@ -45,7 +45,7 @@ void Header::setServer(std::string server)
 void Header::setDate()
 {
 	// Get the current time
-	std::time_t currentTime = std::time(nullptr);
+	std::time_t currentTime = std::time(NULL);
 
 	// Convert the current time to a string in the desired format
 	std::tm* timeInfo = std::gmtime(&currentTime);

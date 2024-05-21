@@ -110,7 +110,7 @@ std::string FileContent::getLastModified()
 	}
 	char buffer[80];
 
-	std::strftime(buffer, sizeof(buffer), "%A, %d-%b-%y %H:%M:%S GMT", std::localtime(&fileStat.st_mtime));
+	strftime(buffer, sizeof(buffer), "%A, %d-%b-%y %H:%M:%S GMT", localtime(&fileStat.st_mtime));
 	return buffer;
 }
 
