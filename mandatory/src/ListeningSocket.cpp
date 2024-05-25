@@ -6,12 +6,16 @@ ListeningSocket::ListeningSocket(int myPort, Server *srv)
 {
 	this->port = myPort;
 	this->server = srv;
+	this->client = new Client(srv);
 	this->socketFd = -1;
 	this->startListening();
+
 }
 ListeningSocket::ListeningSocket(Server *srv)
 {
+	this->client = new Client(srv);
 	this->server = srv;
+	
 }
 
 ListeningSocket::~ListeningSocket()
@@ -165,10 +169,10 @@ int ListeningSocket::getFd()
 
 bool ListeningSocket::sendData(int clientSocketFd)
 {
-	std::cout << "sendData " << std::endl;
+	std::cout << "sendData1 " << this->client << std::endl;
 	//std::string answer = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello, MY World!</h1></body></html>\r\n";
 	std::string answer = this->client->getAnswerToSend();
-	std::cout << "sendData " << std::endl;
+	std::cout << "sendData2 " << std::endl;
 	//std::cout << "Send " << clientSocketFd << "     " << answer << std::endl;
 	n = send(clientSocketFd, answer.c_str(), answer.size(), 0);
 	std::cout << "Sent " << n << " bytes to client" << std::endl;
@@ -184,8 +188,6 @@ ListeningSocket *ListeningSocket::clone(int fd)
 	ListeningSocket *newSocket = new ListeningSocket(this->server);
 	newSocket->socketFd = fd;
 	newSocket->n = this->n;
-	newSocket->client = new Client(server);
-
 	return newSocket;
 }
 

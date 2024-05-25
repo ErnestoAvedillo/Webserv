@@ -109,7 +109,17 @@ void	WebServer::eventLoop()
 				type_event = evList[i].events;
 			#endif
 			std::cout << "Event ident " << i <<  " with fd " << currfd << std::endl;
-			if (serverSocket.find(currfd) != serverSocket.end())
+			if (evList[i].flags &  EV_EOF)
+			// else if (type_event & END_EVENT || type_event & ERR_EVENT)
+			{
+				//removeEventFd(currfd, READ_EVENT);
+				//delete acceptedSocket[currfd];
+				acceptedSocket.erase(currfd);
+				std::cout << CHR_RED << "Connection closed " << RESET << currfd << std::endl;
+				// removeConnection(currfd);
+				//close(currfd);
+			}
+			else if (serverSocket.find(currfd) != serverSocket.end())
 			{
 				fd = acceptNewEvent(currfd);
 				// std::cout << "Accepted new connection " << std::endl;
@@ -146,15 +156,6 @@ void	WebServer::eventLoop()
 					std::cout << "Partial data sent, Connection renewed " << currfd << acceptedSocket[currfd] << " Client ptr " << acceptedSocket[currfd]->getClientPtr() <<  std::endl;
 				//	modifEvent(evList[i], WRITE_EVENT, WRITE_EVENT);
 				}
-			}
-			else if (type_event & END_EVENT || type_event & ERR_EVENT)
-			{
-				//removeEventFd(currfd, READ_EVENT);
-				delete acceptedSocket[currfd];
-				acceptedSocket.erase(currfd);
-				std::cout << CHR_RED << "Connection closed " << RESET << currfd << std::endl;
-				// removeConnection(currfd);
-				//close(currfd);
 			}
 			else
 			{

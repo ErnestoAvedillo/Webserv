@@ -86,23 +86,22 @@ int WebServer::acceptNewEvent(int curfd)
 	{
 		fd = accept(curfd, (struct sockaddr *)&addr, &socklen);
 		if (fd < 0)
+		{
 			if (errno == EAGAIN || errno == EWOULDBLOCK)
-				break ;
-			// throw std::runtime_error(
-				// "Error accepting connection: " +
-				// std::string(trerror(errno))
-		
-	fcntl(curfd, F_SETFL, O_NONBLOCK, FD_CLOEXEC);
-	#ifdef __APPLE__
+				break;
+			else
+			{
+				std::cerr << "Error accepting connection" << std::endl;
+				return fd; // Continue to the next event
+			}
+		}		
+		fcntl(curfd, F_SETFL, O_NONBLOCK, FD_CLOEXEC);
 		int nosigpipe = 1;
 		setsockopt(curfd, SOL_SOCKET, SO_NOSIGPIPE, &nosigpipe, sizeof(nosigpipe));
-	#endif
-	std::cout << "Connection accepted " << fd << std::endl;
-	acceptedSocket[fd] = serverSocket[curfd]->clone(fd);
-	std::cout << "Connection accepted " << fd << " socket ptr " << acceptedSocket[fd] << std::endl;
-	std::cout << "-- Client ptr  " << acceptedSocket[fd]->getClientPtr() << std::endl;
-	//acceptedSocket.insert(std::pair<int, ListeningSocket *>(fd, serverSocket[curfd]->clone(fd)));
-	this->addEvent(fd, EVFILT_READ);
+		acceptedSocket[fd] = serverSocket[curfd]->clone(fd);
+		std::cout << "Connection accepted " << fd << " socket ptr " << acceptedSocket[fd] << std::endl;
+		std::cout << "-- Client ptr  " << acceptedSocket[fd]->getClientPtr() << std::endl;
+		this->addEvent(fd, EVFILT_READ);
 	}
 
 	// if (addConnection(fd) == 0)

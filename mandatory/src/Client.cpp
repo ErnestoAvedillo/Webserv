@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 12:49:08 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/25 13:27:23 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/25 14:16:44 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,6 @@ void Client::loadCompleteClient( std::string const &str)
 {
 	std::vector<std::string> lines = splitString(str, '\n');
 	std::vector<std::string> parts = splitString(lines[0], ' ');
-	//std::cout << "Lines: " << lines[0] << std::endl;
 	if (parts.size() == 3)
 	{
 		std::cout << "Parts: " << parts[0] << " " << parts[1] << " " << parts[2] << std::endl;
@@ -232,6 +231,7 @@ std::string Client::getFileContent()
 // }
 std::string Client::getAnswerToSend()
 {	
+	std::cout << "paso " << std::endl;
 	std::string answer;
 	std::string filePath = this->fileContent.getFileName();
 	std::string file_content = getFileContent();
