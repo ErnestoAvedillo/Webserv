@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 12:49:08 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/25 14:16:44 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/25 15:25:08 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,6 +106,7 @@ void Client::loadCompleteClient( std::string const &str)
 		this->addKeyFile(parts[1]);
 		this->addKeyVers(parts[2]);
 	}
+	std::cout << "Lines: " << str << std::endl;
 	for (size_t i = 1; i < lines.size(); i++)
 			this->addKeyReq(lines[i].substr(0, lines[i].find(":")), lines[i].substr(lines[i].find(":") + 1, lines.size()));
 	this->loadDataHeader();
