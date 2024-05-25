@@ -45,7 +45,6 @@ void Server::setPorts(std::string const &ports)
 			for (size_t i = stringToSizeT(aux2[0]); i <= stringToSizeT(aux2[1]); i++)
 			{
 				this->ports.push_back(toString(i));
-	
 			// this->ports.push_back(aux2[0]);
 			// this->ports.push_back(aux2[1]);
 

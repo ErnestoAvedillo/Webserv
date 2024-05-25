@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
+/*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 12:49:08 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/25 15:25:08 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/16 02:33:02 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,6 +126,7 @@ void Client::getExtension()
 		header.setContentType(Mimetype[extension]);
 	else
 		header.setContentType("text/html");
+
 }
 
 // std::string getExtension(std::string filePath)
@@ -189,25 +190,6 @@ std::string Client::getFilePath()
 	return (filePath);
 }
 
-// std::string Client::getFileContent(std::string filename)
-// {
-// 	std::ifstream file;
-// 	std::string file_content;
-// 	file.open(filename);
-// 	if (!file)
-// 	{
-// 		std::cerr << "File not found" << std::endl;
-// 		errno = 0;
-// 		return ("HTTP/1.1 404 Not Found\r\n\r\n");
-// 	}
-// 	std::string line;
-// 	while (std::getline(file, line))
-// 		file_content += line + "\n";
-// 	file.close();
-// 	return (file_content);
-
-// }
-
 std::string Client::getFileContent()
 {
 	std::string content = this->fileContent.getContent();
@@ -232,9 +214,9 @@ std::string Client::getFileContent()
 // }
 std::string Client::getAnswerToSend()
 {	
-	std::cout << "paso " << std::endl;
 	std::string answer;
 	std::string filePath = this->fileContent.getFileName();
+	std::cout << "File Path: " << filePath << std::endl;
 	std::string file_content = getFileContent();
 	if (this->fileContent.getFirstFragment())
 	{
