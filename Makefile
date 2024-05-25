@@ -6,7 +6,7 @@
 #    By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/01 15:03:29 by eavedill          #+#    #+#              #
-#    Updated: 2024/05/25 13:48:48 by eavedill         ###   ########.fr        #
+#    Updated: 2024/05/25 16:21:15 by eavedill         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,7 +19,7 @@ PINK		:=	\033[1;95m
 CYAN		:=	\033[1;96m
 CLEAN_CAR	=	\033[2K\r
 
-NAME := Webserv
+NAME := Websrv
 
 DIRSRC := ./mandatory/src/
 
