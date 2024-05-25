@@ -104,8 +104,6 @@ int WebServer::acceptNewEvent(int curfd)
 				return fd; // Continue to the next event
 //			}
 		}
-		std::cout << "Connection accepted " << fd << std::endl;
-
 		fcntl(fd, F_SETFL, O_NONBLOCK, O_CLOEXEC);
 		acceptedSocket[fd] = serverSocket[curfd]->clone(fd);
 		std::cout << "Connection accepted " << fd << " socket ptr " << acceptedSocket[fd] << std::endl;

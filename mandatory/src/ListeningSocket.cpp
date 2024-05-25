@@ -4,9 +4,9 @@
 
 ListeningSocket::ListeningSocket(int myPort, Server *srv)
 {
-	port = myPort;
-	server = srv;
-	socketFd = -1;
+	this->port = myPort;
+	this->server = srv;
+	this->socketFd = -1;
 	this->startListening();
 }
 ListeningSocket::ListeningSocket(Server *srv)
@@ -17,6 +17,8 @@ ListeningSocket::ListeningSocket(Server *srv)
 ListeningSocket::~ListeningSocket()
 {
 	stopListening();
+	std::cout << "Delete cent from listening socket " << this->client << std::endl;
+	delete this->client;
 }
 
 bool ListeningSocket::startListening()
@@ -57,7 +59,7 @@ bool ListeningSocket::startListening()
 	}
 
 	// Start listening for incoming connections
-	if (listen(socketFd, 5) < 0)
+	if (listen(socketFd, SOMAXCONN) < 0)
 	{
 		std::cerr << "Failed to start listening of port " << port << std::endl;
 		return false;
@@ -166,6 +168,7 @@ bool ListeningSocket::sendData(int clientSocketFd)
 	std::cout << "sendData " << std::endl;
 	//std::string answer = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello, MY World!</h1></body></html>\r\n";
 	std::string answer = this->client->getAnswerToSend();
+	std::cout << "sendData " << std::endl;
 	//std::cout << "Send " << clientSocketFd << "     " << answer << std::endl;
 	n = send(clientSocketFd, answer.c_str(), answer.size(), 0);
 	std::cout << "Sent " << n << " bytes to client" << std::endl;
