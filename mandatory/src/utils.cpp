@@ -80,19 +80,6 @@ bool isFilePermissions(std::string path, int mode)
 	return true;
 }
 
-
-// int main()
-// {
-//     std::string nbr = "+29020";
-  
-//     std::cout << std::boolalpha << isNumber(nbr) << std::endl;
-// 	std::cout << std::boolalpha << isrange(1000, IPPORT_RESERVED, 46555) << std::endl ;
-// 	std::cout << std::boolalpha << validIPAddress(".128.255.10.1") << std::endl;
-// 	std::cout << std::boolalpha << isDirPermissions("./dir", R_OK | W_OK) << std::endl;
-// 	std::cout << std::boolalpha << isFilePermissions("./file_not_read", R_OK | W_OK) << std::endl;
-// 	return 0;
-// }
-
 size_t stringToSizeT(const std::string& str) {
 	std::stringstream ss(str);
 	size_t result = 0;

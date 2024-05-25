@@ -58,8 +58,6 @@ void WebServer::addEvent(int fd, int type)
 		std::cerr << "Error: could not add event" << std::endl;
 		exit(1);
 	}
-	else
-		std::cout << CHR_GREEN << "Event added " << RESET << fd << std::endl;	
 }
 
 void WebServer::removeEventFd(int fd, int type)
@@ -72,8 +70,6 @@ void WebServer::removeEventFd(int fd, int type)
 		std::cerr << "Error: could not delete event" << fd << std::endl;
 		exit(1);
 	}
-	std::cout << "Close connection, delete socket " << acceptedSocket[fd] << " Client ptr " << acceptedSocket[fd]->getClientPtr() << std::endl;
-
 }
 
 int WebServer::acceptNewEvent(int curfd)
@@ -99,16 +95,8 @@ int WebServer::acceptNewEvent(int curfd)
 		int nosigpipe = 1;
 		setsockopt(curfd, SOL_SOCKET, SO_NOSIGPIPE, &nosigpipe, sizeof(nosigpipe));
 		acceptedSocket[fd] = serverSocket[curfd]->clone(fd);
-		std::cout << "Connection accepted " << fd << " socket ptr " << acceptedSocket[fd] << std::endl;
-		std::cout << "-- Client ptr  " << acceptedSocket[fd]->getClientPtr() << std::endl;
 		this->addEvent(fd, EVFILT_READ);
 	}
-
-	// if (addConnection(fd) == 0)
-	// {
-	// 	std::cout << "New socket created " << fd << std::endl;
-	// 	this->addEvent(fd, EVFILT_READ);
-	// }	
 	return fd;
 }
 

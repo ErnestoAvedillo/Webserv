@@ -42,7 +42,6 @@ std::string FileContent::getContent()
 		{
 			if(file.eof())
 			{
-				std::cout << "File closed: " << fileName << std::endl;
 				file.close();
 				sendComplete = true;
 			}
@@ -51,7 +50,6 @@ std::string FileContent::getContent()
 		}
 		else
 		{
-			std::cout << "File closed: " << fileName << std::endl;
 			file.close();
 			content.append(buffer, file.gcount());
 		}
@@ -71,13 +69,9 @@ bool FileContent::setFileName(const std::string &file_name)
 	else
 		fileName = file_name;
 	isFileOpen = this->openFile();
-	if (isFileOpen)
+	if (!isFileOpen)
 	{
-		std::cout << "File open: " << fileName << std::endl;
-	}
-	else
-	{
-		std::cout << "File not open: " << fileName << std::endl;
+		std::cerr << "File not open: " << fileName << std::endl;
 	}
 	return isFileOpen;
 }

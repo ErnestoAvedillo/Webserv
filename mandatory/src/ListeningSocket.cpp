@@ -21,7 +21,6 @@ ListeningSocket::ListeningSocket(Server *srv)
 ListeningSocket::~ListeningSocket()
 {
 	stopListening();
-	std::cout << "Delete cent from listening socket " << this->client << std::endl;
 	delete this->client;
 }
 
@@ -34,7 +33,6 @@ bool ListeningSocket::startListening()
 		std::cerr << "Failed to create socket" << std::endl;
 		return false;
 	}
-	std::cout << "created socket nr:" << socketFd << std::endl;
 
 	if (fcntl(socketFd, F_SETFL, O_NONBLOCK) < 0)
 	{
@@ -70,7 +68,6 @@ bool ListeningSocket::startListening()
 	}
 
 	// Add the socket file descriptor to the kqueue
-	std::cout << "Listening of port " << port << std::endl;
 	return true;
 }
 
@@ -78,7 +75,6 @@ void ListeningSocket::stopListening()
 {
 	if (socketFd != -1)
 	{
-		std::cout << "Closing socket " << socketFd << std::endl;
 		close(socketFd);
 		socketFd = -1;
 	}
@@ -144,7 +140,6 @@ bool ListeningSocket::startListening()
 		std::cerr << "Failed to start listening" << std::endl;
 		return false;
 	}
-	std::cout << "Listening on port " << port << std::endl;
 	return true;
 }
 void ListeningSocket::stopListening()
@@ -171,13 +166,8 @@ int ListeningSocket::getFd()
 
 bool ListeningSocket::sendData(int clientSocketFd)
 {
-	std::cout << "sendData1 " << this->client << std::endl;
-	//std::string answer = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello, MY World!</h1></body></html>\r\n";
 	std::string answer = this->client->getAnswerToSend();
-	std::cout << "sendData2 " << std::endl;
-	//std::cout << "Send " << clientSocketFd << "     " << answer << std::endl;
 	n = send(clientSocketFd, answer.c_str(), answer.size(), 0);
-	std::cout << "Sent " << n << " bytes to client" << std::endl;
 	if (n < 0)
 	{
 		std::cerr << "Failed to write to client" << std::endl;

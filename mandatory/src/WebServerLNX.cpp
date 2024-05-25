@@ -38,7 +38,6 @@ void WebServer::modifEvent(struct epoll_event eventList, int type)
 {
 	// struct epoll_event evSet;
 
-	std::cout << "Connection filter add " << eventList.data.fd << std::endl;
 	eventList.events = type; // Edge-triggered mode
 	if (epoll_ctl(this->kq, EPOLL_CTL_MOD, eventList.data.fd, &eventList) == -1)
 	{
@@ -57,8 +56,6 @@ void WebServer::addEvent(int fd, int type)
 		std::cerr << "Error: could not add event to queue " << std::endl;
 		exit(1);
 	}
-	else
-		std::cout << "Connection added to queue " << fd << std::endl;
 
 }
 
@@ -101,17 +98,8 @@ int WebServer::acceptNewEvent(int curfd)
 		}
 		fcntl(fd, F_SETFL, O_NONBLOCK, O_CLOEXEC);
 		acceptedSocket[fd] = serverSocket[curfd]->clone(fd);
-		std::cout << "Connection accepted " << fd << " socket ptr " << acceptedSocket[fd] << std::endl;
-		std::cout << "-- Client ptr  " << acceptedSocket[fd]->getClientPtr() << std::endl;
 		this->addEvent(fd, EPOLLIN | EPOLLET);
 	}
-//		if (addConnection(fd) == 0)
-//		{
-//			std::cout << "Connection added " << fd << std::endl;
-//			//evList[i].events = EPOLLIN | EPOLLET; // Edge-triggered mode
-//			this->addEvent(fd, EPOLLIN | EPOLLET);
-//		}
-//	}
 	return fd;
 }
 

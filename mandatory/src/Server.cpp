@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/27 14:24:35 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/20 13:51:00 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/25 15:54:52 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,22 +127,18 @@ int Server::loadData(std::string const &content) {
 			if (line.find(it->first) != std::string::npos)
 			{
 				if (it->second == 1)
-					std::cout << "Error: " << it->first << " ha sido ya asignado." << std::endl;
+					std::cerr << "Error: " << it->first << " ha sido ya asignado." << std::endl;
 				it->second = 1;
 				break;
 			}
 			it++;
 		}
 		if (it == varnames.end())
-			std::cout << "Error: Variable no reconocida: " << line.substr(0, line.find(":")) << std::endl;
+			std::cerr << "Error: Variable no reconocida: " << line.substr(0, line.find(":")) << std::endl;
 		else
 		{
-				//std::cout << "Line: " << line << std::endl;
-				straux = line.substr(line.find(":") + 1, line.size());
-				(this->*getServerMethods()[it->first])(straux);
-			// std::cout << "Line: " << line << std::endl;
-			// straux = line.substr(line.find(":") + 1, line.size());
-			// (this->*getServerMethods()[it->first])(straux);
+			straux = line.substr(line.find(":") + 1, line.size());
+			(this->*getServerMethods()[it->first])(straux);
 		}
 	}
 	return 0;

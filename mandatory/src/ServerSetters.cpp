@@ -34,20 +34,17 @@ void Server::setPorts(std::string const &ports)
 			std::vector<std::string> aux2 = splitString(aux, ':');
 			if (aux2.size() != 2)
 			{
-				std::cout << "Error: Wrong set of ports defined" << std::endl;
+				std::cerr << "Error: Wrong set of ports defined" << std::endl;
 				exit(1);
 			}
 			if (isNumber(aux2[0]) == false || isNumber(aux2[1]) == false)
 			{
-				std::cout << "Error: Port not a number." << std::endl;
+				std::cerr << "Error: Port not a number." << std::endl;
 				exit(1);
 			}
 			for (size_t i = stringToSizeT(aux2[0]); i <= stringToSizeT(aux2[1]); i++)
 			{
 				this->ports.push_back(toString(i));
-			// this->ports.push_back(aux2[0]);
-			// this->ports.push_back(aux2[1]);
-
 			}
 			
 		}
@@ -55,7 +52,7 @@ void Server::setPorts(std::string const &ports)
 		{
 			if (isNumber(aux) == false)
 			{
-				std::cout << "Error: Port not a number." << std::endl;
+				std::cerr << "Error: Port not a number." << std::endl;
 				exit(1);
 			}
 			this->ports.push_back(aux);
@@ -77,12 +74,12 @@ void Server::setPort(std::string const &port)
 			std::vector<std::string>  aux2 = splitString(aux, ':');
 			if (aux2.size() != 2)
 			{
-				std::cout << "Error: Puerto mal definido." << std::endl;
+				std::cerr << "Error: Puerto mal definido." << std::endl;
 				exit(1);
 			}
 			if(stringToSizeT(aux2[0]) >= stringToSizeT(aux2[1]))
 			{
-				std::cout << "Error: puerto " << aux2[0] << "<" << aux[1] << "Definicion de puertos incorrecta." << std::endl;
+				std::cerr << "Error: puerto " << aux2[0] << "<" << aux[1] << "Definicion de puertos incorrecta." << std::endl;
 			}
 
 			for(size_t i = stringToSizeT(aux2[0]); i <= stringToSizeT(aux2[1]); i++)
