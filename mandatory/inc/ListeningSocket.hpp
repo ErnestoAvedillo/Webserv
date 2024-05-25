@@ -58,4 +58,5 @@ public:
 	void loadRequest(char *buff);
 	std::string getServerName();
 	ListeningSocket *clone(int fd);
+	Client *getClientPtr();
 };

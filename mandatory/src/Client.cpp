@@ -14,12 +14,15 @@
 
 Client::Client(){}
 
+Client::Client(Server *srv)
+{
+	this->server = srv;
+}
+
 Client::Client(std::string const &str, Server *srv)
 {
 	this->server = srv;
 	this->loadCompleteClient(str);
-	std::cout << "File1: " << this->Request[REQ_FILE] << std::endl;
-	fileContent.setFileName(this->Request[REQ_FILE]);
 }
 
 Client &Client::operator=(Client const &rsh)
@@ -34,7 +37,9 @@ Client &Client::operator=(Client const &rsh)
 	return (*this);
 }
 
-Client::~Client(){}
+Client::~Client()
+{
+}
 
 void Client::addKeyReq(std::string const &key, std::string const &value)
 {
@@ -94,7 +99,6 @@ void Client::loadCompleteClient( std::string const &str)
 {
 	std::vector<std::string> lines = splitString(str, '\n');
 	std::vector<std::string> parts = splitString(lines[0], ' ');
-	//std::cout << "Lines: " << lines[0] << std::endl;
 	if (parts.size() == 3)
 	{
 		std::cout << "Parts: " << parts[0] << " " << parts[1] << " " << parts[2] << std::endl;
@@ -102,24 +106,27 @@ void Client::loadCompleteClient( std::string const &str)
 		this->addKeyFile(parts[1]);
 		this->addKeyVers(parts[2]);
 	}
+	std::cout << "Lines: " << str << std::endl;
 	for (size_t i = 1; i < lines.size(); i++)
 			this->addKeyReq(lines[i].substr(0, lines[i].find(":")), lines[i].substr(lines[i].find(":") + 1, lines.size()));
+	this->loadDataHeader();
 }
 
 
-std::string getExtension(std::string filePath)
+void Client::getExtension()
 {
-	size_t point = filePath.find_last_of(".");
-	std::string extension = filePath.substr(point + 1, filePath.size());
+	size_t point = this->Request[REQ_FILE].find_last_of(".");
+	std::string extension = this->Request[REQ_FILE].substr(point + 1, this->Request[REQ_FILE].size());
 
 	/* Create once only */
 	std::map<std::string, std::string> Mimetype = create_filetypes();
 
 	std::cout << "found extension " << extension << std::endl;
 	if (Mimetype.find(extension) != Mimetype.end())
-		return(Mimetype[extension]);
+		header.setContentType(Mimetype[extension]);
 	else
-		return("text/html"); 
+		header.setContentType("text/html");
+
 }
 
 // std::string getExtension(std::string filePath)
@@ -183,25 +190,6 @@ std::string Client::getFilePath()
 	return (filePath);
 }
 
-// std::string Client::getFileContent(std::string filename)
-// {
-// 	std::ifstream file;
-// 	std::string file_content;
-// 	file.open(filename);
-// 	if (!file)
-// 	{
-// 		std::cerr << "File not found" << std::endl;
-// 		errno = 0;
-// 		return ("HTTP/1.1 404 Not Found\r\n\r\n");
-// 	}
-// 	std::string line;
-// 	while (std::getline(file, line))
-// 		file_content += line + "\n";
-// 	file.close();
-// 	return (file_content);
-
-// }
-
 std::string Client::getFileContent()
 {
 	std::string content = this->fileContent.getContent();
@@ -226,16 +214,14 @@ std::string Client::getFileContent()
 // }
 std::string Client::getAnswerToSend()
 {	
-	(void)server;
 	std::string answer;
 	std::string filePath = this->fileContent.getFileName();
 	std::cout << "File Path: " << filePath << std::endl;
 	std::string file_content = getFileContent();
-	std::cout << "File path: " << filePath << std::endl;
-	//std::cout << "File content: " << file_content << std::endl;
 	if (this->fileContent.getFirstFragment())
 	{
-		answer += "HTTP/1.1 200 OK\r\nContent-Type: " + getExtension(filePath) + "\r\n" + "Content - Length : " + toString(file_content.size()) + "\r\n\r\n" + file_content;
+		std::cout << "Header :" << header.generateHeader() << std::endl;
+		answer += header.generateHeader() + file_content;
 		this->fileContent.setFirstFragment(false);
 	}
 	else
@@ -246,4 +232,20 @@ std::string Client::getAnswerToSend()
 bool Client::isSendComplete()
 {
 	return this->fileContent.isSendComplete();
+}
+
+void Client::loadDataHeader()
+{
+	std::cout << "File1: " << this->Request[REQ_FILE] << std::endl;
+	if (fileContent.setFileName(this->Request[REQ_FILE]))
+	{
+		std::cout << "confirm opened" << std::endl;
+		header.setLastModified(fileContent.getLastModified());
+		this->getExtension();
+		header.setContentLength(fileContent.getContentSize());
+		header.setStatus("200 OK");
+		header.setServer(server->getServerName());
+	}
+	else
+		header.setStatus("404 Not Found");
 }

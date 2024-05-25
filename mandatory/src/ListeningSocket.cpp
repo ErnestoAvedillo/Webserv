@@ -4,19 +4,25 @@
 
 ListeningSocket::ListeningSocket(int myPort, Server *srv)
 {
-	port = myPort;
-	server = srv;
-	socketFd = -1;
+	this->port = myPort;
+	this->server = srv;
+	this->client = new Client(srv);
+	this->socketFd = -1;
 	this->startListening();
+
 }
 ListeningSocket::ListeningSocket(Server *srv)
 {
+	this->client = new Client(srv);
 	this->server = srv;
+	
 }
 
 ListeningSocket::~ListeningSocket()
 {
 	stopListening();
+	std::cout << "Delete cent from listening socket " << this->client << std::endl;
+	delete this->client;
 }
 
 bool ListeningSocket::startListening()
@@ -57,7 +63,7 @@ bool ListeningSocket::startListening()
 	}
 
 	// Start listening for incoming connections
-	if (listen(socketFd, 5) < 0)
+	if (listen(socketFd, SOMAXCONN) < 0)
 	{
 		std::cerr << "Failed to start listening of port " << port << std::endl;
 		return false;
@@ -84,18 +90,20 @@ ListeningSocket::ListeningSocket(int myPort, Server *srv)
 {
 	port = myPort;
 	server = srv;
+	this->client = new Client(srv);
 	socketFd = -1;
 	this->startListening();
 }
 ListeningSocket::ListeningSocket(Server *srv)
 {
 	this->server = srv;
+	this->client = new Client(srv);
 }
 
 ListeningSocket::~ListeningSocket()
 {
 	stopListening();
-	delete client;
+	delete this->client;
 }
 
 bool ListeningSocket::startListening()
@@ -163,9 +171,10 @@ int ListeningSocket::getFd()
 
 bool ListeningSocket::sendData(int clientSocketFd)
 {
-	std::cout << "sendData " << std::endl;
+	std::cout << "sendData1 " << this->client << std::endl;
 	//std::string answer = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Hello, MY World!</h1></body></html>\r\n";
 	std::string answer = this->client->getAnswerToSend();
+	std::cout << "sendData2 " << std::endl;
 	//std::cout << "Send " << clientSocketFd << "     " << answer << std::endl;
 	n = send(clientSocketFd, answer.c_str(), answer.size(), 0);
 	std::cout << "Sent " << n << " bytes to client" << std::endl;
@@ -181,17 +190,20 @@ ListeningSocket *ListeningSocket::clone(int fd)
 	ListeningSocket *newSocket = new ListeningSocket(this->server);
 	newSocket->socketFd = fd;
 	newSocket->n = this->n;
-
 	return newSocket;
 }
 
 void ListeningSocket::loadRequest(char *buff)
 {
-	this->client = new Client((std::string)buff, server);
 	this->client->loadCompleteClient(buff);
 }
 
 std::string ListeningSocket::getServerName()
 {
 	return server->getServerName();
+}
+
+Client *ListeningSocket::getClientPtr()
+{
+	return this->client;
 }

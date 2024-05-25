@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 12:46:28 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/20 13:49:29 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/21 14:22:43 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,7 @@ class Server;
 #define REQ_VER "Version"
 #define REQ_CONTENT "Content-Type"
 
-class Server;
-#include "../inc/Server.hpp"
+#include "Header.hpp"
 
 class Client
 {
@@ -40,9 +39,11 @@ private:
 	std::map<std::string, std::string> Request;
 	FileContent fileContent;
 	Server *server;
+	Header header;
 public:
 	Client();
 	Client(std::string const &, Server *);
+	Client(Server *);
 	Client &operator=(Client const &);
 	~Client();
 	void addKeyReq(std::string const &, std::string const &);
@@ -62,5 +63,7 @@ public:
 	std::string	normalizePath(std::string path);
 	std::string getFileContent();
 	bool isSendComplete();
+	void getExtension();
+	void loadDataHeader();
 };
 

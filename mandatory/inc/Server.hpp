@@ -10,6 +10,7 @@
 # include <algorithm>
 # include "utils.hpp"
 # include "Location.hpp"
+#include "../inc/toString.hpp"
 
 #define VAR_PORT	"port"
 #define VAR_HOST	"host"

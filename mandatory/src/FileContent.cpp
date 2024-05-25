@@ -9,9 +9,14 @@ FileContent::FileContent()
 }
 FileContent::FileContent(const std::string &MyfileName) 
 {
-	this->setFileName(MyfileName);
+	if (stat(fileName.c_str(), &fileStat) < 0)
+		isFileOpen = false;
+	else
+	{
+		this->setFileName(MyfileName);
+		isFileOpen = true;
+	}
 	sendComplete = false;
-	isFileOpen = false;
 	isFistFragment = true;
 }
 
@@ -19,7 +24,6 @@ FileContent::~FileContent() {}
 
 int FileContent::openFile()
 {
-	std::cout << "Opening file " << fileName << std::endl;
 	file.open(fileName.c_str(), std::ios::out | std::ios::binary); //| std::ios::app | std::ios::ate
 
 	if (file.is_open())
@@ -36,6 +40,12 @@ std::string FileContent::getContent()
 		char buffer[MAX_SENT_BYTES];
 		if(file.read(buffer, MAX_SENT_BYTES))
 		{
+			if(file.eof())
+			{
+				std::cout << "File closed: " << fileName << std::endl;
+				file.close();
+				sendComplete = true;
+			}
 			content.append(buffer, file.gcount());
 			return content;
 		}
@@ -54,14 +64,22 @@ std::string FileContent::getContent()
 	return content;
 }
 
-void FileContent::setFileName(const std::string &file_name)
+bool FileContent::setFileName(const std::string &file_name)
 {
 	if (file_name.find("?") != std::string::npos)
 		fileName = file_name.substr(0, file_name.find("?"));
 	else
 		fileName = file_name;
-	std::cout << "File name set to: " << fileName << std::endl;
 	isFileOpen = this->openFile();
+	if (isFileOpen)
+	{
+		std::cout << "File open: " << fileName << std::endl;
+	}
+	else
+	{
+		std::cout << "File not open: " << fileName << std::endl;
+	}
+	return isFileOpen;
 }
 
 std::string FileContent::getFileName()
@@ -82,4 +100,21 @@ void FileContent::setFirstFragment(bool first)
 bool FileContent::getFirstFragment()
 {
 	return isFistFragment;
+}
+
+std::string FileContent::getLastModified()
+{
+	if (stat(fileName.c_str(), &fileStat) < 0)
+	{
+		return "";
+	}
+	char buffer[80];
+
+	strftime(buffer, sizeof(buffer), "%A, %d-%b-%y %H:%M:%S GMT", localtime(&fileStat.st_mtime));
+	return buffer;
+}
+
+size_t FileContent::getContentSize()
+{
+	return fileStat.st_size;
 }

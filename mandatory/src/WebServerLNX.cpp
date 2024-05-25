@@ -84,32 +84,27 @@ int WebServer::acceptNewEvent(int curfd)
 		exit(1);
 	}
 
-//	while (1)
-//	{
-//		if (listen(curfd, SOMAXCONN) < 0)
-//		{
-//			std::cerr << "Error listening" << curfd << std::endl;
-//			exit(1);
-//		}
+	while (1)
+	{
 		struct sockaddr_storage addr;
 		socklen_t socklen = sizeof(addr);
 		fd = accept(curfd, (struct sockaddr *) &addr, &socklen);
 		if (fd < 0)
 		{
-//			if (errno == EAGAIN || errno == EWOULDBLOCK)
-//				break;
-//			else
-//			{
+			if (errno == EAGAIN || errno == EWOULDBLOCK)
+				break;
+			else
+			{
 				std::cerr << "Error accepting connection" << std::endl;
 				return fd; // Continue to the next event
-//			}
+			}
 		}
-		std::cout << "Connection accepted " << fd << std::endl;
-
 		fcntl(fd, F_SETFL, O_NONBLOCK, O_CLOEXEC);
 		acceptedSocket[fd] = serverSocket[curfd]->clone(fd);
-		std::cout << "Connection accepted " << serverSocket[curfd]->getServerName() << std::endl;
+		std::cout << "Connection accepted " << fd << " socket ptr " << acceptedSocket[fd] << std::endl;
+		std::cout << "-- Client ptr  " << acceptedSocket[fd]->getClientPtr() << std::endl;
 		this->addEvent(fd, EPOLLIN | EPOLLET);
+	}
 //		if (addConnection(fd) == 0)
 //		{
 //			std::cout << "Connection added " << fd << std::endl;
