@@ -7,6 +7,7 @@ ListeningSocket::ListeningSocket(int myPort, Server *srv)
 	this->port = myPort;
 	this->server = srv;
 	this->client = new Client(srv);
+	this->receiver = new Receive();
 	this->socketFd = -1;
 	this->startListening();
 
@@ -14,6 +15,7 @@ ListeningSocket::ListeningSocket(int myPort, Server *srv)
 ListeningSocket::ListeningSocket(Server *srv)
 {
 	this->client = new Client(srv);
+	this->receiver = new Receive();
 	this->server = srv;
 	
 }
@@ -167,25 +169,30 @@ int ListeningSocket::getFd()
 bool ListeningSocket::sendData(int clientSocketFd)
 {
 	std::string answer = this->client->getAnswerToSend();
-	n = send(clientSocketFd, answer.c_str(), answer.size(), 0);
-	if (n < 0)
+	if ((send(clientSocketFd, answer.c_str(), answer.size(), 0)) < 0)
 	{
 		std::cerr << "Failed to write to client" << std::endl;
 	}
 	return this->client->isSendComplete();
 }
 
+bool ListeningSocket::receive(void)
+{
+	bool ret = receiver->receive(this->socketFd);
+	std::cout << std::boolalpha << "BOOOLALLPHA recieve" << ret << std::endl;
+	return(ret);
+}
+
 ListeningSocket *ListeningSocket::clone(int fd)
 {
 	ListeningSocket *newSocket = new ListeningSocket(this->server);
 	newSocket->socketFd = fd;
-	newSocket->n = this->n;
 	return newSocket;
 }
 
-void ListeningSocket::loadRequest(char *buff)
+void ListeningSocket::loadRequest()
 {
-	this->client->loadCompleteClient(buff);
+	this->client->loadCompleteClient(receiver->getRequest());
 }
 
 std::string ListeningSocket::getServerName()

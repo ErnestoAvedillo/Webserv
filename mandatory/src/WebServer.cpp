@@ -62,7 +62,7 @@ void	WebServer::eventLoop()
 	#elif __linux__
 		struct epoll_event evList[MAX_EVENTS];
 	#endif
-	char buf[MAX_MSG_SIZE] = {0};
+	// char buf[MAX_MSG_SIZE] = {0};
 	int currfd = 0;
 	int fd;
 	int type_event;
@@ -99,13 +99,18 @@ void	WebServer::eventLoop()
 			}
 			else if (type_event == (READ_EVENT))
 			{
-				recv(currfd, buf, sizeof(buf) * MAX_MSG_SIZE, 0);
-				this->acceptedSocket[currfd]->loadRequest(buf);
-				#ifdef __APPLE__
-					modifEvent(evList[i], READ_EVENT, WRITE_EVENT);
-				#elif __linux__
-					modifEvent(evList[i], WRITE_EVENT);
-				#endif
+				
+				if (this->acceptedSocket[currfd]->receive() == true)
+				{
+					this->acceptedSocket[currfd]->loadRequest();
+					#ifdef __APPLE__
+						modifEvent(evList[i], READ_EVENT, WRITE_EVENT);
+					#elif __linux__
+						modifEvent(evList[i], WRITE_EVENT);
+					#endif
+				}
+				else 
+					continue;
 			}
 			else if (type_event == (WRITE_EVENT))
 			{
