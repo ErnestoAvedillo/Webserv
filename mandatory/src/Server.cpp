@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/27 14:24:35 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/20 13:51:00 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/25 18:19:49 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ std::map<std::string, int> var_names_server()
 	varnames[VAR_INDEX] = 0;
 	varnames[VAR_CLIENT_MAX_BODY_SIZE] = 0;
 	varnames[VAR_LOCATIONS] = 0;
+	varnames[VAR_CGI_EXTENSION] = 0;
 	return varnames;
 }
 
@@ -36,6 +37,7 @@ std::map<std::string, void (Server::*)(const std::string &)> getServerMethods()
 	serverMethods[VAR_ERROR_PAGE] = &Server::setErrorPage;
 	serverMethods[VAR_ROOT] = &Server::setRoot;
 	serverMethods[VAR_INDEX] = &Server::setIndex;
+	serverMethods[VAR_CGI_EXTENSION] = &Server::setCGIExtension;
 	serverMethods[VAR_CLIENT_MAX_BODY_SIZE] = &Server::setClientMaxBodySize;
 	serverMethods[VAR_LOCATIONS] = &Server::addLocation;
 	return serverMethods;

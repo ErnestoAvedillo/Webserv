@@ -17,6 +17,7 @@ private:
 	bool isFistFragment;
 	bool isFileOpen;
 	bool sendComplete;
+	bool isCGI;
 	struct stat fileStat;
 
 

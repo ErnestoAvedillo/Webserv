@@ -6,6 +6,7 @@ FileContent::FileContent()
 	sendComplete = false;
 	isFileOpen = false;
 	isFistFragment = true;
+	isCGI = false;
 }
 FileContent::FileContent(const std::string &MyfileName) 
 {
