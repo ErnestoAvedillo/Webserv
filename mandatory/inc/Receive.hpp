@@ -9,7 +9,9 @@ class Receive {
         std::string buffer;
         std::string request;
         std::string body;
-        bool isrequest;
+        bool isbody;
+        size_t maxSize;
+        size_t sizeSent;
     public:
         Receive();
         ~Receive();
@@ -22,5 +24,5 @@ class Receive {
         void        setBody(std::string body);
         std::string getBody();
         bool receive(int fd);
-
+        void setSize(size_t size);
 };

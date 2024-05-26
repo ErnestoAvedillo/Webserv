@@ -43,9 +43,11 @@ private:
 	Server *server;
 	int port;
 	int socketFd;
+	bool first_read;
 	// char *buffer;
 	Client *client;
 	Receive *receiver;
+
 	//void handleConnection(int clientSocketFd);
 
 public:
@@ -62,5 +64,6 @@ public:
 	std::string getServerName();
 	ListeningSocket *clone(int fd);
 	Client *getClientPtr();
-	bool receive(void);
+	bool receive(size_t size);
+	void setSize(size_t size);
 };

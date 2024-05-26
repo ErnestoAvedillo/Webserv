@@ -68,6 +68,7 @@ void	WebServer::eventLoop()
 	int type_event;
 	int flag;
 	int num_events = 0;
+	size_t size = 0;
 	while (1)
 	{
 		num_events = waitEvent(evList);
@@ -81,10 +82,12 @@ void	WebServer::eventLoop()
 				currfd = evList[i].ident;
 				type_event = evList[i].filter;
 				flag = evList[i].flags;
+				size = evList[i].data;
 			#elif __linux__
 				currfd = evList[i].data.fd;
 				type_event = evList[i].events;
 				flag = evList[i].events;
+				size = evList[i].data.u32;
 			#endif
 			if (serverSocket.find(currfd) != serverSocket.end())
 			{
@@ -99,8 +102,8 @@ void	WebServer::eventLoop()
 			}
 			else if (type_event == (READ_EVENT))
 			{
-				
-				if (this->acceptedSocket[currfd]->receive() == true)
+				std::cout << "EVLSIT data "  << evList[i].data << std::endl;
+				if (this->acceptedSocket[currfd]->receive(size) == true)
 				{
 					this->acceptedSocket[currfd]->loadRequest();
 					#ifdef __APPLE__
@@ -110,7 +113,13 @@ void	WebServer::eventLoop()
 					#endif
 				}
 				else 
-					continue;
+				{
+					#ifdef __APPLE__
+						modifEvent(evList[i], READ_EVENT, READ_EVENT);
+					#elif __linux__
+						modifEvent(evList[i], READ_EVENT);
+					#endif
+				}
 			}
 			else if (type_event == (WRITE_EVENT))
 			{
