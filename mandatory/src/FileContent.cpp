@@ -7,6 +7,7 @@ FileContent::FileContent()
 	isFileOpen = false;
 	isFistFragment = true;
 	isCGI = false;
+	this->cgiModule = new CGI();
 }
 FileContent::FileContent(const std::string &MyfileName) 
 {
