@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CGI.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/25 17:42:25 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/25 23:15:31 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/26 11:10:35 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,10 @@
 
 class CGI {
 private:
-	int fd;
 	std::string file_name;
 	std::vector <std::string> args;
-	std::vector <std::string> env;
 public:
+	CGI();
 	CGI(const std::string& str);
 	~CGI();
 	std::string execute();

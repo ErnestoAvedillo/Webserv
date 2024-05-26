@@ -3,14 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   CGI.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/25 17:42:08 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/25 23:16:25 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/26 11:10:15 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/CGI.hpp"
+
+CGI::CGI()
+{
+	std::cout << "CGI defaut constructor" << std::endl;
+	file_name = "";
+}
 
 CGI::CGI(const std::string& str)
 {
@@ -28,9 +34,14 @@ CGI::~CGI()
 
 std::string CGI::execute()
 {
+	int fd[2], tmp_fd;
+	if (pipe(fd) == -1) {
+		// Handle error creating pipe
+		throw std::runtime_error("Pipe error on creation");
+	}
+	tmp_fd = dup(STDOUT_FILENO);
 	// Create a child process using fork
 	pid_t pid = fork();
-
 	if (pid == -1) {
 		// Handle error forking process
 		throw std::runtime_error("Fork error on creation");
@@ -38,7 +49,9 @@ std::string CGI::execute()
 
 	if (pid == 0) {
 		// Child process
-
+		dup2(fd[1], STDOUT_FILENO);
+		close(fd[0]);
+		close(fd[1]);
 		// Convert the arguments vector to a null-terminated array
 		std::vector<char*> argsArray;
 		std::vector<std::string>::iterator itb = args.begin();
@@ -55,6 +68,8 @@ std::string CGI::execute()
 			exit(EXIT_FAILURE);
 		}
 	} else {
+		close(fd[1]);
+		close(fd[0]);
 		// Parent process
 
 		// Wait for the child process to finish
@@ -67,10 +82,10 @@ std::string CGI::execute()
 			char buffer[1024];
 			std::string output;
 			ssize_t bytesRead;
-			while ((bytesRead = read(fd, buffer, sizeof(buffer))) > 0) {
+			while ((bytesRead = read(fd[1], buffer, sizeof(buffer))) > 0) {
 				output += std::string(buffer, bytesRead);
 			}
-
+			fd[1] = tmp_fd;
 			// Do something with the output
 			return output;
 			// ...
