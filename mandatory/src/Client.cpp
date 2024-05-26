@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 12:49:08 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/25 23:18:19 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/26 11:39:49 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -252,8 +252,8 @@ void Client::loadDataHeader()
 	if (fileContent.setFileName(this->Request[REQ_FILE]))
 	{
 		std::cout << "confirm opened" << std::endl;
-		header.setLastModified(fileContent.getLastModified());
 		this->getExtension();
+		header.setLastModified(fileContent.getLastModified());
 		header.setContentLength(fileContent.getContentSize());
 		header.setStatus("200 OK");
 		header.setServer(server->getServerName());

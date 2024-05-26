@@ -72,6 +72,7 @@ bool FileContent::setFileName(const std::string &file_name)
 		fileName = file_name.substr(0, file_name.find("?"));
 	else
 		fileName = file_name;
+	
 	isFileOpen = this->openFile();
 	if (isFileOpen)
 	{
