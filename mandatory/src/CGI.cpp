@@ -3,18 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   CGI.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/25 17:42:08 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/25 18:11:07 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/25 23:16:25 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/CGI.hpp"
 
-CGI::CGI(const std::string& str, int currfd)
+CGI::CGI(const std::string& str)
 {
-	fd =  currfd;
 	std::cout << "CGI constructor" << std::endl;
 	std::vector <std::string> tmp = splitString(str, '?');
 	file_name = tmp[0];

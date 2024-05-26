@@ -119,3 +119,14 @@ size_t FileContent::getContentSize()
 {
 	return fileStat.st_size;
 }
+
+bool FileContent::isCGIFile()
+{
+	return isCGI;
+}
+
+void FileContent::setCGIFile(bool isCGI)
+{
+	this->isCGI = isCGI;
+}
+

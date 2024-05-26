@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 12:49:08 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/25 18:34:18 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/25 23:18:19 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,6 +121,11 @@ void Client::getExtension()
 	/* Create once only */
 	std::map<std::string, std::string> Mimetype = create_filetypes();
 
+	if (extension == "cgi")
+	{
+		this->fileContent->cgiModule = new CGI(this->Request[REQ_FILE]);
+		this->fileContent.setCGIFile(true);
+	}
 	std::cout << "found extension " << extension << std::endl;
 	if (Mimetype.find(extension) != Mimetype.end())
 		header.setContentType(Mimetype[extension]);
@@ -192,7 +197,14 @@ std::string Client::getFilePath()
 
 std::string Client::getFileContent()
 {
-	std::string content = this->fileContent.getContent();
+	std::string content;
+	if (this->fileContent.isCGIFile())
+	{
+		content = fileContent->cgiModule->execute();
+		delete fileContent->cgiModule;
+	}
+	else
+		content = this->fileContent.getContent();
 	return (content);
 }
 

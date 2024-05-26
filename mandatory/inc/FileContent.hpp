@@ -6,6 +6,7 @@
 #include <time.h>
 #include <filesystem>
 #include "../inc/colors.h"
+#include "../inc/CGI.hpp"
 
 #define MAX_SENT_BYTES 8192
 class FileContent
@@ -19,7 +20,7 @@ private:
 	bool sendComplete;
 	bool isCGI;
 	struct stat fileStat;
-
+	CGI *cgiModule;
 
 public:
 	FileContent();
@@ -34,4 +35,6 @@ public:
 	bool getFirstFragment();
 	std::string getLastModified();
 	size_t getContentSize();
+	bool isCGIFile();
+	void setCGIFile(bool);
 };
