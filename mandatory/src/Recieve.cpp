@@ -1,4 +1,6 @@
 #include "../inc/Receive.hpp"
+#include <iostream>
+#include <fstream>
 
 Receive::Receive() : buffer(""), request(""), body(""), isbody(false), maxSize(0), sizeSent(0)
 {
@@ -57,15 +59,21 @@ std::string Receive::getBody()
 }
 
 bool Receive::receive(int fd)
-{
+{  
+    receiveHeader(fd);
+    receiveBody(fd);
+    return false;
+}
 
+bool Receive::receiveHeader(int fd)
+{
     std::cout << "Receive::receive" << std::endl;
     char buf[MAX_MSG_SIZE] = {0};
     int ret;
     std::memset(buf, 0, MAX_MSG_SIZE);
     this->buffer = "";
     ret = recv(fd, buf, MAX_MSG_SIZE, 0);
-
+    std::cout << "ret: " << ret << std::endl;
     if (ret < 0)
     {
         std::cerr << "Failed to read from client" << std::endl;
@@ -78,36 +86,37 @@ bool Receive::receive(int fd)
     }
     if (ret)
     {
+        
         sizeSent += ret;
-        this->buffer += std::string(buf, ret);
-        // std::cout << "buffer: " << this->buffer << std::endl;
-        std::cout << "sizeSent: " << maxSize << std::endl;
-        std::cout << "sent until now: " << sizeSent << std::endl;
-    
-        if (isbody == true)
+        this->buffer.append(buf, ret);
+        if (!this->isbody && buffer.find("\r\n\r\n") != std::string::npos)
         {
-            std::cout << "ISREQUEST" << std::endl;
-            body += this->buffer;
+            request += this->buffer.substr(0, this->buffer.find("\r\n\r\n") );
+            std::cout << "request: " << request << std::endl;
+            if (request.find("Content-Length: ") != std::string::npos)
+            {
+                std::string contentLength = request.substr(request.find("Content-Length: ") + 16, request.find("\r\n", request.find("Content-Length: ")));
+                this->maxSize = std::stoi(contentLength) + request.size();
+            }
+            else
+                return true;
+            body = this->buffer.substr(this->buffer.find("\r\n\r\n") + 4, this->buffer.at(this->buffer.size() - 1));
+            this->isbody = true;
+            return false;
         }
         else
         {
-            std::cout << "ISNOTREQUEST" << std::endl;
+            std::cout << "IS NOT BODY" << std::endl;
             request += this->buffer;
         }
-        if (sizeSent >= maxSize)
-        {
-            std::cerr << "Max size reached" << std::endl;
-            std::cout << "request: " << this->request << std::endl;
-            return true;
-        }
-        if (buffer.find("\r\n\r\n") != std::string::npos)
-        {
-            request = this->buffer.substr(0, this->buffer.find("\r\n\r\n"));
-            body = this->buffer.substr(this->buffer.find("\r\n\r\n") + 4);
-            this->isbody = true;
-            // return true;
-        }    
     }
+    return false;
+}
+
+bool Receive::receiveBody(int fd)
+{
+    char buf[MAX_MSG_SIZE] = {0};
+    recv(fd, buf, MAX_MSG_SIZE, 0);
     return false;
 }
 
