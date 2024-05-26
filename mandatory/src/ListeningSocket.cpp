@@ -200,6 +200,7 @@ ListeningSocket *ListeningSocket::clone(int fd)
 
 void ListeningSocket::loadRequest()
 {
+	std::cout << "request by receiver: " << receiver->getRequest() << std::endl;
 	this->client->loadCompleteClient(receiver->getRequest());
 }
 
