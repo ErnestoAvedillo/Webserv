@@ -7,6 +7,7 @@ void Server::setClientMaxBodySize(std::string const &max_client_body_size) { thi
 void Server::setRoot(std::string const &root) { this->root = root; }
 void Server::setIndex(std::string const &index) { this->index = index; }
 void Server::setCGIExtension(std::string const &cgi_extension) { this->cgiExtension = cgi_extension; }
+void Server::setCGIFolder(std::string const &cgi_folder) { this->cgiFolder = cgi_folder; }
 void Server::addLocation(std::string const &content) { this->locations.push_back(new Location(content)); }
 
 void Server::setIsDefault(std::string const &is_default)

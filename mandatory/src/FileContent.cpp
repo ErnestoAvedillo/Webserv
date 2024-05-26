@@ -7,19 +7,17 @@ FileContent::FileContent()
 	isFileOpen = false;
 	isFistFragment = true;
 	isCGI = false;
+	CGIFolder = "";
 	this->cgiModule = new CGI();
 }
 FileContent::FileContent(const std::string &MyfileName) 
 {
-	if (stat(fileName.c_str(), &fileStat) < 0)
-		isFileOpen = false;
-	else
-	{
-		this->setFileName(MyfileName);
-		isFileOpen = true;
-	}
+	isFileOpen = this->setFileName(MyfileName);
 	sendComplete = false;
 	isFistFragment = true;
+	isCGI = false;
+	CGIFolder = "";
+	this->cgiModule = new CGI();
 }
 
 FileContent::~FileContent() {}
@@ -36,6 +34,15 @@ int FileContent::openFile()
 std::string FileContent::getContent() 
 {
 	std::string errorReturn = "Error: " + fileName + " File not found";
+	if (isCGI)
+	{
+		std::cout << "is a CGI file: " << fileName << std::endl;
+		return cgiModule->execute();
+	}
+	else
+	{
+		std::cout << "is not a CGI file: " << fileName << std::endl;
+	}
 	if (isFileOpen)
 	{
 		content = "";
@@ -68,12 +75,58 @@ std::string FileContent::getContent()
 
 bool FileContent::setFileName(const std::string &file_name)
 {
+	std::vector<std::string> tmp;
+	bool filefound = false;
+
 	if (file_name.find("?") != std::string::npos)
-		fileName = file_name.substr(0, file_name.find("?"));
+	{
+		tmp = splitString(file_name, '?');
+		fileName = tmp[0];
+		args = splitString(tmp[1], '&');
+		if (stat(fileName.c_str(), &fileStat) == 0)
+		{
+			std::cout << "File <"<< fileName << "> foundxx: " << filefound << std::endl;
+			filefound = true;
+		}
+		else
+		{
+			std::cout << "File <"<< fileName << "> not foundxx: " << filefound << std::endl;
+
+		}
+		if(fileName.find(CGIFolder) != std::string::npos)
+		{
+			std::cout << "CGI folder found: " << fileName << std::endl;
+			if(filefound)
+			{
+				std::cout << "CGI file found: " << fileName << std::endl;
+				isCGI = true;
+			}
+			else
+			{
+				std::cout << "CGI file xx not found: " << fileName << std::endl;
+			}
+		}
+		else
+		{
+			std::cout << "CGI folder not found: " << fileName << std::endl;
+		}
+		cgiModule->setFileName(fileName);
+		cgiModule->setArgs(args);
+	}
 	else
-		fileName = file_name;
-	
-	isFileOpen = this->openFile();
+	{
+		if(stat(fileName.c_str(), &fileStat))
+		{
+			fileName = file_name;
+			isFileOpen = this->openFile();
+			std::cout << "File found en stat: " << fileName << std::endl;
+		}
+		else
+		{
+			std::cout << "File mot found en stat: " << fileName << std::endl;
+
+		}
+	}
 	if (isFileOpen)
 	{
 		std::cout << "File open: " << fileName << std::endl;
@@ -132,3 +185,12 @@ void FileContent::setCGIFile(bool isCGI)
 	this->isCGI = isCGI;
 }
 
+void FileContent::setCGIFolder(const std::string &folder)
+{
+	CGIFolder = folder;
+}
+
+std::string FileContent::getCGIFolder()
+{
+	return CGIFolder;
+}

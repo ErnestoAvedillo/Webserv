@@ -29,3 +29,5 @@
 ### Example Repositories
 * **[WebServer with epoll and kqueue](https://github.com/rabarbra/webserv.git)** Author: rabarbra
 * **[WebServer with kqueue](https://github.com/bsomers42/webserv)** Author: Bsomers42
+### Interesting WEBS
+* **[CGI in HTTP protocoll](https://www.tutorialspoint.com/cplusplus/cpp_web_programming.htm)** 

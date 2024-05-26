@@ -41,3 +41,8 @@ std::vector<int>	Server::getServerFds()
 	}
 	return fd;
 }
+
+std::string Server::getCGIFolder()
+{
+	return this->cgiFolder;
+}

@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/25 17:42:08 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/26 11:10:15 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/26 16:33:49 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,12 +32,36 @@ CGI::~CGI()
 	std::cout << "CGI destructor" << std::endl;
 }
 
+void CGI::setFileName(const std::string& str)
+{
+	file_name = str;
+}
+
+std::string CGI::getFileName()
+{
+	return file_name;
+}
+
+void CGI::setArgs(const std::vector <std::string>& vec)
+{
+	args = vec;
+}
+
+std::vector <std::string> CGI::getArgs()
+{
+	return args;
+}
+
 std::string CGI::execute()
 {
 	int fd[2], tmp_fd;
 	if (pipe(fd) == -1) {
 		// Handle error creating pipe
 		throw std::runtime_error("Pipe error on creation");
+	}
+	else
+	{
+		std::cout << "Pipe created" << std::endl;
 	}
 	tmp_fd = dup(STDOUT_FILENO);
 	// Create a child process using fork
@@ -46,7 +70,10 @@ std::string CGI::execute()
 		// Handle error forking process
 		throw std::runtime_error("Fork error on creation");
 	}
-
+	else
+	{
+		std::cout << "Fork created " << pid << std::endl;
+	}
 	if (pid == 0) {
 		// Child process
 		dup2(fd[1], STDOUT_FILENO);
@@ -54,17 +81,24 @@ std::string CGI::execute()
 		close(fd[1]);
 		// Convert the arguments vector to a null-terminated array
 		std::vector<char*> argsArray;
+		argsArray.push_back(const_cast<char*>(file_name.c_str()));
 		std::vector<std::string>::iterator itb = args.begin();
 		std::vector<std::string>::iterator ite = args.end();
 		while (itb != ite) {
 			argsArray.push_back(const_cast<char*>(itb->c_str()));
 			++itb;
 		}
-		argsArray.push_back(nullptr);
-
+		argsArray.push_back(NULL);
+		std::vector<char*>::iterator itb1 = argsArray.begin();
+		std::vector<char*>::iterator ite1 = argsArray.end();
+		while (itb1 != ite1) {
+			std::cerr << "Args: " << *itb1 << std::endl;
+			++itb1;
+		}
 		// Execute the file with its parameters
-		if (execve(file_name.c_str(), argsArray.data(), nullptr) == -1) {
+		if (execve(file_name.c_str(), argsArray.data(), NULL) == -1) {
 			// Handle error executing file
+			std::cerr << "Error executing file" << std::endl;
 			exit(EXIT_FAILURE);
 		}
 	} else {

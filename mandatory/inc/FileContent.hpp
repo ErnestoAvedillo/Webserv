@@ -5,6 +5,7 @@
 #include <sys/stat.h>
 #include <time.h>
 #include <filesystem>
+#include <vector>
 #include "../inc/colors.h"
 #include "../inc/CGI.hpp"
 
@@ -13,12 +14,14 @@ class FileContent
 {
 private:
 	std::string fileName;
+	std::vector <std::string> args;
 	std::string content;
 	std::ifstream file;
 	bool isFistFragment;
 	bool isFileOpen;
 	bool sendComplete;
 	bool isCGI;
+	std::string CGIFolder;
 	struct stat fileStat;
 	CGI *cgiModule;
 
@@ -37,4 +40,6 @@ public:
 	size_t getContentSize();
 	bool isCGIFile();
 	void setCGIFile(bool);
+	void setCGIFolder(const std::string &);
+	std::string getCGIFolder();
 };

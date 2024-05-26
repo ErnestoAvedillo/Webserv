@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 12:46:28 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/21 14:22:43 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/26 13:10:28 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,6 @@ public:
 	std::string	normalizePath(std::string path);
 	std::string getFileContent();
 	bool isSendComplete();
-	void getExtension();
 	void loadDataHeader();
 };
 

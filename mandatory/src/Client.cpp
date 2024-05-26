@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 12:49:08 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/26 11:39:49 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/26 15:25:25 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,11 +17,13 @@ Client::Client(){}
 Client::Client(Server *srv)
 {
 	this->server = srv;
+	this->fileContent.setCGIFolder(srv->getCGIFolder());
 }
 
 Client::Client(std::string const &str, Server *srv)
 {
 	this->server = srv;
+	this->fileContent.setCGIFolder(srv->getCGIFolder());
 	this->loadCompleteClient(str);
 }
 
@@ -113,26 +115,7 @@ void Client::loadCompleteClient( std::string const &str)
 }
 
 
-void Client::getExtension()
-{
-	size_t point = this->Request[REQ_FILE].find_last_of(".");
-	std::string extension = this->Request[REQ_FILE].substr(point + 1, this->Request[REQ_FILE].size());
 
-	/* Create once only */
-	std::map<std::string, std::string> Mimetype = create_filetypes();
-
-	if (extension == "cgi")
-	{
-		this->fileContent->cgiModule = new CGI(this->Request[REQ_FILE]);
-		this->fileContent.setCGIFile(true);
-	}
-	std::cout << "found extension " << extension << std::endl;
-	if (Mimetype.find(extension) != Mimetype.end())
-		header.setContentType(Mimetype[extension]);
-	else
-		header.setContentType("text/html");
-
-}
 
 // std::string getExtension(std::string filePath)
 // {
@@ -198,12 +181,6 @@ std::string Client::getFilePath()
 std::string Client::getFileContent()
 {
 	std::string content;
-	if (this->fileContent.isCGIFile())
-	{
-		content = fileContent->cgiModule->execute();
-		delete fileContent->cgiModule;
-	}
-	else
 		content = this->fileContent.getContent();
 	return (content);
 }
@@ -251,8 +228,8 @@ void Client::loadDataHeader()
 	std::cout << "File1: " << this->Request[REQ_FILE] << std::endl;
 	if (fileContent.setFileName(this->Request[REQ_FILE]))
 	{
+		header.setContentType(this->Request[REQ_FILE]);
 		std::cout << "confirm opened" << std::endl;
-		this->getExtension();
 		header.setLastModified(fileContent.getLastModified());
 		header.setContentLength(fileContent.getContentSize());
 		header.setStatus("200 OK");
