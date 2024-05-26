@@ -24,5 +24,7 @@ class Receive {
         void        setBody(std::string body);
         std::string getBody();
         bool receive(int fd);
+        bool receiveHeader(int fd);
+        bool receiveBody(int fd);
         void setSize(size_t size);
 };

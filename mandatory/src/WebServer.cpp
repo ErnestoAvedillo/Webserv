@@ -76,6 +76,7 @@ void	WebServer::eventLoop()
 		{
 			throw("Error: could not wait for events");
 		}
+		std::cout << "Event " << num_events << std::endl;
 		for (int i = 0; i < num_events; i++)
 		{
 			#ifdef __APPLE__
@@ -114,11 +115,12 @@ void	WebServer::eventLoop()
 				}
 				else 
 				{
-					#ifdef __APPLE__
-						modifEvent(evList[i], READ_EVENT, READ_EVENT);
-					#elif __linux__
-						modifEvent(evList[i], READ_EVENT);
-					#endif
+					// #ifdef __APPLE__
+					// 	modifEvent(evList[i], READ_EVENT, READ_EVENT);
+					// #elif __linux__
+					// 	modifEvent(evList[i], READ_EVENT);
+					// #endif
+					continue;
 				}
 			}
 			else if (type_event == (WRITE_EVENT))

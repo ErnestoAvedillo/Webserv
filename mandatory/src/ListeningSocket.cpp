@@ -182,11 +182,16 @@ bool ListeningSocket::receive(size_t size)
 {
 	// if (this->first_read)
 	// {
-		// this->first_read = false;
+	// 	this->first_read = false;
 	setSize(size);
 	// }
 	bool ret = receiver->receive(this->socketFd);
 	std::cout << std::boolalpha << "BOOOLALLPHA recieve" << ret << std::endl;
+	// if (ret && size == 0)
+	// 	return true;
+	// else
+	// 	return false;
+
 	return(ret);
 }
 
@@ -201,6 +206,8 @@ ListeningSocket *ListeningSocket::clone(int fd)
 void ListeningSocket::loadRequest()
 {
 	std::cout << "request by receiver: " << receiver->getRequest() << std::endl;
+	std::cout << "body by receiver: $" << receiver->getBody() << "$" << std::endl;
+	//receive->getBody();
 	this->client->loadCompleteClient(receiver->getRequest());
 }
 
