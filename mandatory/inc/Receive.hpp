@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <sys/socket.h>
 
@@ -12,6 +13,8 @@ class Receive {
         bool isbody;
         size_t maxSize;
         size_t sizeSent;
+        int bodyStart;
+         std::ofstream file;
     public:
         Receive();
         ~Receive();
