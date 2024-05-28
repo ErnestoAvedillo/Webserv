@@ -234,7 +234,7 @@ void ListeningSocket::loadRequest()
 	// std::cout << "body by receiver: $" << receiver->getBody().substr(receiver->getBody().size() - 20, receiver->getBody().size()) << "$" << std::endl;
 	// print_visible(receiver->getBody());
 	// std::cout << "$" << std::endl;
-	if (receiver->getRequest().find("POST") != std::string::npos)
+	if (receiver->getRequest().find("POST") != std::string::npos && receiver->getisform() == false)
 	{
 		std::fstream file("./file.png", std::ios::out | std::ios::binary | std::ios::app);
 		std::string rec = receiver->getBody().substr(receiver->getBody().find("\r\n\r\n") + 4);
@@ -248,6 +248,8 @@ void ListeningSocket::loadRequest()
 		// std::cout << "rec: " << rec << std::endl;
 		file.write(rec.c_str(), rec.size());
 	}
+	else
+		std::cout << "form: " << receiver->getBody() << std::endl;
 	this->client->loadCompleteClient(receiver->getRequest());
 }
 

@@ -2,7 +2,7 @@
 #include <iostream>
 #include <fstream>
 
-Receive::Receive() : buffer(""), request(""), body(""), isbody(false), maxSize(0), sizeSent(0), bodyStart(-1)
+Receive::Receive() : buffer(""), request(""), body(""), isbody(false), maxSize(0), sizeSent(0), bodyStart(-1), isform(false)
 {
     std::cerr << "Receive created" << std::endl;
 }
@@ -99,11 +99,11 @@ bool Receive::receiveHeader(int fd)
             std::cout << "request: " << request << std::endl;
             if (request.find("Content-Length: ") != std::string::npos)
             {
-                if (request.find("Content-Type: multipart/form-data; boundary=") != std::string::npos)
-                {
-                    this->boundary = request.substr(request.find("boundary=") + 9, request.find("\r\n", request.find("boundary=")) - 9);
-                    std::cout << "boundary: " << boundary << std::endl;
-                }
+                // if (request.find("Content-Type: multipart/form-data; boundary=") != std::string::npos)
+                // {
+                //     this->boundary = request.substr(request.find("boundary=") + 9, request.find("\r\n", request.find("boundary=")) - 9);
+                //     std::cout << "boundary: " << boundary << std::endl;
+                // }
                 std::string contentLength = request.substr(request.find("Content-Length: ") + 16, request.find("\r\n", request.find("Content-Length: ")));
                 this->maxSize = std::stoi(contentLength); //+ request.size();
                 std::cout << "maxSize: " << this->maxSize << std::endl;
@@ -112,7 +112,17 @@ bool Receive::receiveHeader(int fd)
                 return true;
             this->body = this->buffer.substr(this->buffer.find("\r\n\r\n") + 4, this->buffer.at(this->buffer.size() - 1));
             std::cout << "body restas: $" << body << "$" << std::endl;
+            std::cout << "body size: " << body.size() << std::endl;
+            std::cout << "size sent: " << this->sizeSent << std::endl;
+            std::cout << "maxSize: " << this->maxSize << std::endl;
             this->sizeSent += this->body.size();
+            if (this->sizeSent >= this->maxSize)
+            {
+                this->isform = true;
+                this->isbody = false;
+                return true;
+            }
+
             this->isbody = true;
             return false;
         }
@@ -179,3 +189,8 @@ void Receive::setSize(size_t size)
     this->maxSize = size;
 }
 
+
+bool Receive::getisform()
+{
+    return this->isform;
+}

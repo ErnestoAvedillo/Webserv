@@ -16,6 +16,8 @@ class Receive {
         int bodyStart;
         std::ofstream file;
         std::string boundary;
+        bool isform;
+
     public:
         Receive();
         ~Receive();
@@ -31,4 +33,5 @@ class Receive {
         bool receiveHeader(int fd);
         bool receiveBody(int fd);
         void setSize(size_t size);
+        bool getisform();
 };
