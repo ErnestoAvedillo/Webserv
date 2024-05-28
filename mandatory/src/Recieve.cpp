@@ -66,7 +66,7 @@ bool Receive::receive(int fd)
     }
     else
     {
-        this->file.open("/Users/josephcheel/GITHUB/42-Webserv/file.png", std::ios::out | std::ios::binary | std::ios::app);
+        // this->file.open("/Users/jcheel-n/GITHUB/42-Webserv/file.png", std::ios::out | std::ios::app | std::ios::binary);
         return this->receiveBody(fd);
     }
     return false;
@@ -105,8 +105,8 @@ bool Receive::receiveHeader(int fd)
             }
             else
                 return true;
-            body = this->buffer.substr(this->buffer.find("\r\n\r\n") + 4, this->buffer.at(this->buffer.size() - 1));
-            std::cout << "body restas: " << body << std::endl;
+            this->body = this->buffer.substr(this->buffer.find("\r\n\r\n") + 4, this->buffer.at(this->buffer.size() - 1));
+            std::cout << "body restas: $" << body << "$" << std::endl;
             this->isbody = true;
             return false;
         }
@@ -121,10 +121,8 @@ bool Receive::receiveHeader(int fd)
 
 bool Receive::receiveBody(int fd)
 {
-    // std::cout << "Receive::receiveBody" << std::endl;
     char buf[MAX_MSG_SIZE] = {0};
-    this->buffer = "";
-    // this->sizeSent = this->body.size();
+    this->buffer.clear();
     int ret = recv(fd, buf, MAX_MSG_SIZE, 0);
     if (ret < 0)
     {
@@ -138,27 +136,22 @@ bool Receive::receiveBody(int fd)
     }
     if (ret)
     {
-        this->buffer.append(buf, ret);
-        if (this->sizeSent + ret >= this->maxSize)
+        this->sizeSent += ret;
+        this->buffer = std::string(buf, ret);
+        // std::cout << "buffer: $" << this->buffer << "$" << std::endl;
+        if (this->sizeSent >= this->maxSize)
         {
             if (bodyStart == -1)
             {
-                this->body = "";
-                bodyStart = this->buffer.at(this->buffer.find_first_of("\n")) - this->buffer.at(0);
-                this->body = this->buffer.substr(0 + bodyStart);
-                 bodyStart = 0;
+                // std::cout << "HOLA BODYSTART" << std::endl;
+                if (body.empty())
+                    this->body.clear();
+                bodyStart = this->buffer.at(this->buffer.find_first_of("\n"));
+                this->body += this->buffer.substr(0 + bodyStart);
+                bodyStart = 0;
             }
             else
                 this->body += this->buffer.substr(0, this->maxSize - this->sizeSent);
-            if (file.is_open())
-            {
-                file.write(this->body.c_str(), this->body.size());
-                file.close();
-            }
-            else
-            {
-                std::cerr << "Failed to create file.png" << std::endl;
-            }
             return true;
         }
         else
@@ -166,7 +159,6 @@ bool Receive::receiveBody(int fd)
             this->body += this->buffer;
         }
     }
-    this->sizeSent += ret;
     return false;
 }
 

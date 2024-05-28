@@ -191,7 +191,6 @@ bool ListeningSocket::receive(size_t size)
 	// 	return true;
 	// else
 	// 	return false;
-
 	return(ret);
 }
 
@@ -203,11 +202,49 @@ ListeningSocket *ListeningSocket::clone(int fd)
 	return newSocket;
 }
 
+// void print_visible(const std::string& str) {
+//     for (char ch : str) {
+//         switch (ch) {
+//             case '\n':
+//                 std::cout << "\\n";
+//                 break;
+//             case '\r':
+//                 std::cout << "\\r";
+//                 break;
+//             case '\t':
+//                 std::cout << "\\t";
+//                 break;
+//             default:
+//                 if (std::isprint(static_cast<unsigned char>(ch))) {
+//                     std::cout << ch;
+//                 } else {
+//                     std::cout << "\\x" << std::hex << std::uppercase << static_cast<int>(static_cast<unsigned char>(ch));
+//                     std::cout << std::dec;  // Reset to decimal for future use
+//                 }
+//         }
+//     }
+// }
+
 void ListeningSocket::loadRequest()
 {
-	// std::cout << "request by receiver: " << receiver->getRequest() << std::endl;
-	// std::cout << "body by receiver: $" << receiver->getBody() << "$" << std::endl;
-	//receive->getBody();
+	std::cout << "request by receiver: " << receiver->getRequest() << std::endl;
+	std::cout << "body by receiver: $" ;
+	// print_visible(receiver->getBody());
+	// std::cout << "$" << std::endl;
+	if (receiver->getRequest().find("POST") != std::string::npos)
+	{
+		std::fstream file("./file.png", std::ios::out | std::ios::binary | std::ios::app);
+		std::string rec = receiver->getBody().substr(receiver->getBody().find("\r\n\r\n") + 4);
+		std::string header = receiver->getBody().substr(0, receiver->getBody().find("\r\n\r\n") + 4);
+
+		// std::cout << "header: " << header << std::endl;
+		std::string key_file = header.substr(header.find_first_of("-"), header.find("\r\n"));
+		// std::cout << "header: " << header << std::endl;
+		rec = rec.substr(0, rec.find(key_file) - 2);
+
+		// std::cout << "rec: " << rec << std::endl;
+		file.write(rec.c_str(), rec.size());
+	}
 	this->client->loadCompleteClient(receiver->getRequest());
 }
 
