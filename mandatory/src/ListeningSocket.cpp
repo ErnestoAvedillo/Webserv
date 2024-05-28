@@ -228,7 +228,7 @@ ListeningSocket *ListeningSocket::clone(int fd)
 void ListeningSocket::loadRequest()
 {
 	std::cout << "request by receiver: " << receiver->getRequest() << std::endl;
-	std::cout << "body by receiver: $" ;
+	std::cout << "body by receiver: $" << receiver->getBody().substr(receiver->getBody().size() - 20, receiver->getBody().size()) << "$" << std::endl;
 	// print_visible(receiver->getBody());
 	// std::cout << "$" << std::endl;
 	if (receiver->getRequest().find("POST") != std::string::npos)
