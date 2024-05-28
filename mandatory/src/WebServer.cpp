@@ -106,7 +106,15 @@ void	WebServer::eventLoop()
 				std::cout << "EVLSIT data "  << evList[i].data << std::endl;
 				if (this->acceptedSocket[currfd]->receive(size) == true)
 				{
+					try {
+
 					this->acceptedSocket[currfd]->loadRequest();
+					}
+					catch
+					(const std::exception& e)
+					{
+						std::cerr << "Error: " << e.what() << std::endl;
+					}
 					#ifdef __APPLE__
 						modifEvent(evList[i], READ_EVENT, WRITE_EVENT);
 					#elif __linux__
@@ -125,6 +133,7 @@ void	WebServer::eventLoop()
 			}
 			else if (type_event == (WRITE_EVENT))
 			{
+				std::cout << "ESTAMOS AQUI" << std::endl;
 				if (acceptedSocket[currfd]->sendData(currfd))
 				{
 					delete acceptedSocket[currfd];

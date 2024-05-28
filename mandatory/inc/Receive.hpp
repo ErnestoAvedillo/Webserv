@@ -14,7 +14,8 @@ class Receive {
         size_t maxSize;
         size_t sizeSent;
         int bodyStart;
-         std::ofstream file;
+        std::ofstream file;
+        std::string boundary;
     public:
         Receive();
         ~Receive();

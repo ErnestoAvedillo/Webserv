@@ -66,7 +66,6 @@ bool Receive::receive(int fd)
     }
     else
     {
-        // this->file.open("/Users/jcheel-n/GITHUB/42-Webserv/file.png", std::ios::out | std::ios::app | std::ios::binary);
         return this->receiveBody(fd);
     }
     return false;
@@ -100,13 +99,20 @@ bool Receive::receiveHeader(int fd)
             std::cout << "request: " << request << std::endl;
             if (request.find("Content-Length: ") != std::string::npos)
             {
+                if (request.find("Content-Type: multipart/form-data; boundary=") != std::string::npos)
+                {
+                    this->boundary = request.substr(request.find("boundary=") + 9, request.find("\r\n", request.find("boundary=")) - 9);
+                    std::cout << "boundary: " << boundary << std::endl;
+                }
                 std::string contentLength = request.substr(request.find("Content-Length: ") + 16, request.find("\r\n", request.find("Content-Length: ")));
-                this->maxSize = std::stoi(contentLength) + request.size();
+                this->maxSize = std::stoi(contentLength); //+ request.size();
+                std::cout << "maxSize: " << this->maxSize << std::endl;
             }
             else
                 return true;
             this->body = this->buffer.substr(this->buffer.find("\r\n\r\n") + 4, this->buffer.at(this->buffer.size() - 1));
             std::cout << "body restas: $" << body << "$" << std::endl;
+            this->sizeSent += this->body.size();
             this->isbody = true;
             return false;
         }
@@ -141,17 +147,21 @@ bool Receive::receiveBody(int fd)
         // std::cout << "buffer: $" << this->buffer << "$" << std::endl;
         if (this->sizeSent >= this->maxSize)
         {
-            if (bodyStart == -1)
-            {
-                // std::cout << "HOLA BODYSTART" << std::endl;
-                if (body.empty())
-                    this->body.clear();
-                bodyStart = this->buffer.at(this->buffer.find_first_of("\n"));
-                this->body += this->buffer.substr(0 + bodyStart);
-                bodyStart = 0;
-            }
-            else
-                this->body += this->buffer.substr(0, this->maxSize - this->sizeSent);
+            (void)bodyStart;
+            this->body += this->buffer;
+            // if (bodyStart == -1)
+            // {
+            //     // std::cout << "HOLA BODYSTART" << std::endl;
+            //     // if (body.empty())
+            //     //     this->body.clear();
+            //     // bodyStart = this->buffer.at(this->buffer.find_first_of("\n"));
+            //     // this->body += this->buffer.substr(0 + bodyStart);
+            //     this->body += this->buffer;
+            //     bodyStart = 0;
+            // }
+            // else
+                // this->body += this->buffer.substr(0, this->maxSize - this->sizeSent);
+            this->isbody = false;
             return true;
         }
         else
@@ -159,6 +169,8 @@ bool Receive::receiveBody(int fd)
             this->body += this->buffer;
         }
     }
+    std::cout << "sizeSent: " << this->sizeSent << std::endl;
+    std::cout << "maxSize: " << this->maxSize << std::endl;
     return false;
 }
 
