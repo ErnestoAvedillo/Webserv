@@ -43,8 +43,6 @@ private:
 	Server *server;
 	int port;
 	int socketFd;
-	bool first_read;
-	// char *buffer;
 	Client *client;
 	Receive *receiver;
 
@@ -65,5 +63,4 @@ public:
 	ListeningSocket *clone(int fd);
 	Client *getClientPtr();
 	bool receive();
-	void setSize(size_t size);
 };

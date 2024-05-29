@@ -6,7 +6,6 @@ ListeningSocket::ListeningSocket(int myPort, Server *srv)
 {
 	this->port = myPort;
 	this->server = srv;
-	this->first_read = true;
 	this->client = new Client(srv);
 	this->receiver = new Receive();
 	this->socketFd = -1;
@@ -18,7 +17,6 @@ ListeningSocket::ListeningSocket(Server *srv)
 	this->client = new Client(srv);
 	this->receiver = new Receive();
 	this->server = srv;
-	this->first_read = true;
 }
 
 ListeningSocket::~ListeningSocket()
@@ -189,7 +187,6 @@ ListeningSocket *ListeningSocket::clone(int fd)
 {
 	ListeningSocket *newSocket = new ListeningSocket(this->server);
 	newSocket->socketFd = fd;
-	this->first_read = true;
 	return newSocket;
 }
 
@@ -230,9 +227,4 @@ std::string ListeningSocket::getServerName()
 Client *ListeningSocket::getClientPtr()
 {
 	return this->client;
-}
-
-void ListeningSocket::setSize(size_t size)
-{
-	this->receiver->setSize(size);
 }
