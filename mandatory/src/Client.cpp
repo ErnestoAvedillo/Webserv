@@ -6,7 +6,7 @@
 /*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 12:49:08 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/29 19:59:14 by jcheel-n         ###   ########.fr       */
+/*   Updated: 2024/05/29 21:30:26 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ void Client::addKeyFile(std::string const &value)
 	if (value == "/")
 		this->Request[REQ_FILE] += this->server->getIndex();
 	replaceString(this->Request[REQ_FILE], "%20", " ");
+	std::cout << "file: " << this->Request[REQ_FILE] << std::endl;
 }
 
 void Client::addKeyVers(std::string const &value)
@@ -232,6 +233,19 @@ void Client::loadDataHeader(Receive *receiver)
 		}
 		else 
 			std::cout << "form: " << receiver->getBody() << std::endl;
+		header.setServer(server->getServerName());
+	}
+	else if (this->Request[REQ_TYPE] == "DELETE")
+	{
+		if (std::remove(this->Request[REQ_FILE].c_str()) == 0)
+			header.setStatus("200 OK");
+		else
+			header.setStatus("404 Not Found");
+		header.setServer(server->getServerName());
+	}
+	else
+	{
+		header.setStatus("405 Method Not Allowed");
 		header.setServer(server->getServerName());
 	}
 }
