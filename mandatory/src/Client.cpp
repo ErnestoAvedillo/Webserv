@@ -6,7 +6,7 @@
 /*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 12:49:08 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/29 16:22:13 by jcheel-n         ###   ########.fr       */
+/*   Updated: 2024/05/29 19:59:14 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,9 +88,9 @@ void Client::updateClient(std::string const &key, std::string const &value)
 	this->Request[key] = value;
 }
 
-void Client::loadCompleteClient(Receive receiver)
+void Client::loadCompleteClient(Receive *receiver)
 {
-	std::string str = receiver.getRequest();
+	std::string str = receiver->getRequest();
 	std::vector<std::string> lines = splitString(str, '\n');
 	std::vector<std::string> parts = splitString(lines[0], ' ');
 	if (parts.size() == 3)
@@ -183,11 +183,10 @@ bool Client::isSendComplete()
 	return this->fileContent.isSendComplete();
 }
 
-void Client::loadDataHeader(Receive receiver)
+void Client::loadDataHeader(Receive *receiver)
 {
 	if (this->Request[REQ_TYPE] == "GET")
 	{	
-
 		if (fileContent.setFileName(this->Request[REQ_FILE]))
 		{
 			header.setLastModified(fileContent.getLastModified());
@@ -201,14 +200,11 @@ void Client::loadDataHeader(Receive receiver)
 	}
 	else if (this->Request[REQ_TYPE] == "POST")
 	{
-		if (receiver.getRequest().find("POST") != std::string::npos && receiver.getisform() == false)
+		if (receiver->getRequest().find("POST") != std::string::npos && receiver->getisform() == false)
 		{
-		
-			std::string rec = receiver.getBody().substr(receiver.getBody().find("\r\n\r\n") + 4);
-			std::string postheader = receiver.getBody().substr(0, receiver.getBody().find("\r\n\r\n") + 4);
-
-			std::cout << "header: " << postheader << std::endl;
-
+			std::string body = receiver->getBody().substr(receiver->getBody().find("\r\n\r\n") + 4);
+			std::string postheader = receiver->getBody().substr(0, receiver->getBody().find("\r\n\r\n") + 4);
+			
 			std::vector<std::string> lines = splitString(postheader, '\n');
 			for (size_t i = 0; i < lines.size(); i++)
 			{
@@ -224,25 +220,18 @@ void Client::loadDataHeader(Receive receiver)
 					}
 					std::cout << "filename: " << this->Request[REQ_FILE] << std::endl;
 					std::fstream file(this->Request[REQ_FILE], std::ios::out | std::ios::binary | std::ios::app);
-					file.write(rec.c_str(), rec.size());
+					file.write(body.c_str(), body.size());
 					file.close();
 					header.setStatus("201 Created");
-					// this->fileContent.setFileName(this->Request[REQ_FILE]);
-					// this->getExtension();
 					return ;
 				}
-			}
-			
-			std::string key_file = postheader.substr(postheader.find_first_of("-"), postheader.find("\r\n"));
-			rec = rec.substr(0, rec.find(key_file) - 2);
-
-			// std::cout << "rec: " << rec << std::endl;
-			// file.write(rec.c_str(), rec.size());
-			// file.close();
+			}		
+			// std::string key_file = postheader.substr(postheader.find_first_of("-"), postheader.find("\r\n"));
+			// rec = rec.substr(0, rec.find(key_file) - 2);
+			// std::cout << "reccc: " << rec << std::endl;
 		}
-		else
-			std::cout << "form: " << receiver.getRequest() << std::endl;
-		// header.setStatus("200 OK");
+		else 
+			std::cout << "form: " << receiver->getBody() << std::endl;
 		header.setServer(server->getServerName());
 	}
 }

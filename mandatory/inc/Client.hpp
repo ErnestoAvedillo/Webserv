@@ -6,7 +6,7 @@
 /*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 12:46:28 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/29 01:40:05 by jcheel-n         ###   ########.fr       */
+/*   Updated: 2024/05/29 19:53:07 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,6 @@ public:
 	void clearClient();
 	void deleteClient(std::string const &);
 	void updateClient(std::string const &, std::string const &);
-	void loadCompleteClient(Receive receiver);
 	std::string getAnswerToSend();
 	std::string getFilePath();
 	std::string getFileContent(std::string filename);
@@ -65,6 +64,7 @@ public:
 	std::string getFileContent();
 	bool isSendComplete();
 	void getExtension();
-	void loadDataHeader(Receive receiver);
+	void loadCompleteClient(Receive *receiver);
+	void loadDataHeader(Receive *receiver);
 };
 

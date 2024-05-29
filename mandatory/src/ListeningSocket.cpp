@@ -237,7 +237,8 @@ void ListeningSocket::loadRequest()
 	// }
 	// else
 	// 	std::cout << "form: " << receiver->getBody() << std::endl;
-	this->client->loadCompleteClient(*receiver);
+	std::cout << "request by receiver: " << receiver->getRequest() << std::endl;
+	this->client->loadCompleteClient(this->receiver);
 }
 
 std::string ListeningSocket::getServerName()
