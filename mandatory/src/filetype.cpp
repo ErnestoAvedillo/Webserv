@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   filetype.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/21 12:32:16 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/19 17:32:54 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/29 00:59:40 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,5 +39,23 @@ std::map<std::string, std::string> create_filetypes()
 	filetypes["svgz"] = "image/svg+xml";
 	filetypes["tif"] = "image/tiff";
 	filetypes["tiff"] = "image/tiff";
+	filetypes["mp3"] = "audio/mpeg";
+	filetypes["mp4"] = "video/mp4";
+	filetypes["mov"] = "video/quicktime";
+	filetypes["webm"] = "video/webm";
+	filetypes["zip"] = "application/zip";
+	filetypes["rar"] = "application/x-rar-compressed";
+	filetypes["exe"] = "application/x-msdownload";
+	filetypes["msi"] = "application/x-msdownload";
+	filetypes["cab"] = "application/vnd.ms-cab-compressed";
+	filetypes["doc"] = "application/msword";
+	filetypes["docx"] = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+	filetypes["xls"] = "application/vnd.ms-excel";
+	filetypes["xlsx"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+	filetypes["ppt"] = "application/vnd.ms-powerpoint";
+	filetypes["pptx"] = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+	filetypes["7z"] = "application/x-7z-compressed";
+	filetypes["iso"] = "application/x-iso9660-image";
+	filetypes["pdf"] = "application/pdf";
 	return filetypes;
 }

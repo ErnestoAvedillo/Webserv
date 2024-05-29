@@ -64,6 +64,6 @@ public:
 	std::string getServerName();
 	ListeningSocket *clone(int fd);
 	Client *getClientPtr();
-	bool receive(size_t size);
+	bool receive();
 	void setSize(size_t size);
 };

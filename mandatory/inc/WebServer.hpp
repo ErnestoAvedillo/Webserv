@@ -42,8 +42,6 @@
 
 class WebServer {
 	private:
-		
-		
 		std::ifstream		configFile;
 		std::string			configFilename;
 		std::string 		fileContent;
@@ -56,7 +54,6 @@ class WebServer {
 		std::map<int, std::string>	errorPages;
 		
 		int kq;
-		int client_events[MAX_CLIENTS];
 		void	processConfigFile();
 	public:
 		WebServer();

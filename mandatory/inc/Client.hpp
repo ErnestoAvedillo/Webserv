@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
+/*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 12:46:28 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/21 14:22:43 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/29 01:40:05 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ class Server;
 #define REQ_CONTENT "Content-Type"
 
 #include "Header.hpp"
+#include "Receive.hpp"
 
 class Client
 {
@@ -56,7 +57,7 @@ public:
 	void clearClient();
 	void deleteClient(std::string const &);
 	void updateClient(std::string const &, std::string const &);
-	void loadCompleteClient(const std::string &);
+	void loadCompleteClient(Receive receiver);
 	std::string getAnswerToSend();
 	std::string getFilePath();
 	std::string getFileContent(std::string filename);
@@ -64,6 +65,6 @@ public:
 	std::string getFileContent();
 	bool isSendComplete();
 	void getExtension();
-	void loadDataHeader();
+	void loadDataHeader(Receive receiver);
 };
 

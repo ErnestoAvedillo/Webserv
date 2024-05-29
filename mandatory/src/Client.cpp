@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 12:49:08 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/25 15:52:20 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/29 16:22:13 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,6 @@ Client::Client(){}
 Client::Client(Server *srv)
 {
 	this->server = srv;
-}
-
-Client::Client(std::string const &str, Server *srv)
-{
-	this->server = srv;
-	this->loadCompleteClient(str);
 }
 
 Client &Client::operator=(Client const &rsh)
@@ -94,8 +88,9 @@ void Client::updateClient(std::string const &key, std::string const &value)
 	this->Request[key] = value;
 }
 
-void Client::loadCompleteClient( std::string const &str)
+void Client::loadCompleteClient(Receive receiver)
 {
+	std::string str = receiver.getRequest();
 	std::vector<std::string> lines = splitString(str, '\n');
 	std::vector<std::string> parts = splitString(lines[0], ' ');
 	if (parts.size() == 3)
@@ -106,7 +101,7 @@ void Client::loadCompleteClient( std::string const &str)
 	}
 	for (size_t i = 1; i < lines.size(); i++)
 			this->addKeyReq(lines[i].substr(0, lines[i].find(":")), lines[i].substr(lines[i].find(":") + 1, lines.size()));
-	this->loadDataHeader();
+	this->loadDataHeader(receiver);
 }
 
 
@@ -188,16 +183,66 @@ bool Client::isSendComplete()
 	return this->fileContent.isSendComplete();
 }
 
-void Client::loadDataHeader()
+void Client::loadDataHeader(Receive receiver)
 {
-	if (fileContent.setFileName(this->Request[REQ_FILE]))
+	if (this->Request[REQ_TYPE] == "GET")
+	{	
+
+		if (fileContent.setFileName(this->Request[REQ_FILE]))
+		{
+			header.setLastModified(fileContent.getLastModified());
+			this->getExtension();
+			header.setContentLength(fileContent.getContentSize());
+			header.setStatus("200 OK");
+			header.setServer(server->getServerName());
+		}
+		else
+			header.setStatus("404 Not Found");
+	}
+	else if (this->Request[REQ_TYPE] == "POST")
 	{
-		header.setLastModified(fileContent.getLastModified());
-		this->getExtension();
-		header.setContentLength(fileContent.getContentSize());
-		header.setStatus("200 OK");
+		if (receiver.getRequest().find("POST") != std::string::npos && receiver.getisform() == false)
+		{
+		
+			std::string rec = receiver.getBody().substr(receiver.getBody().find("\r\n\r\n") + 4);
+			std::string postheader = receiver.getBody().substr(0, receiver.getBody().find("\r\n\r\n") + 4);
+
+			std::cout << "header: " << postheader << std::endl;
+
+			std::vector<std::string> lines = splitString(postheader, '\n');
+			for (size_t i = 0; i < lines.size(); i++)
+			{
+				if (lines[i].find("filename=") != std::string::npos)
+				{
+					std::string filename = lines[i].substr(lines[i].find("filename=") + 10, lines[i].size() );
+					filename = filename.substr(0, filename.find("\""));
+					this->Request[REQ_FILE] +=  "/" + filename;
+					if (access(this->Request[REQ_FILE].c_str(), F_OK) == 0)
+					{
+						header.setStatus("403 Forbidden");
+						return ;
+					}
+					std::cout << "filename: " << this->Request[REQ_FILE] << std::endl;
+					std::fstream file(this->Request[REQ_FILE], std::ios::out | std::ios::binary | std::ios::app);
+					file.write(rec.c_str(), rec.size());
+					file.close();
+					header.setStatus("201 Created");
+					// this->fileContent.setFileName(this->Request[REQ_FILE]);
+					// this->getExtension();
+					return ;
+				}
+			}
+			
+			std::string key_file = postheader.substr(postheader.find_first_of("-"), postheader.find("\r\n"));
+			rec = rec.substr(0, rec.find(key_file) - 2);
+
+			// std::cout << "rec: " << rec << std::endl;
+			// file.write(rec.c_str(), rec.size());
+			// file.close();
+		}
+		else
+			std::cout << "form: " << receiver.getRequest() << std::endl;
+		// header.setStatus("200 OK");
 		header.setServer(server->getServerName());
 	}
-	else
-		header.setStatus("404 Not Found");
 }

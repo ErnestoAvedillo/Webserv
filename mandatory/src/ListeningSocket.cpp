@@ -178,22 +178,10 @@ bool ListeningSocket::sendData(int clientSocketFd)
 	return this->client->isSendComplete();
 }
 
-bool ListeningSocket::receive(size_t size)
+bool ListeningSocket::receive()
 {
-	// if (this->first_read)
-	// {
-	// 	this->first_read = false;
-	// std::cout << "size: " << size << std::endl;
-	// setSize(size);
-	(void)size;
-	// }
-	// (void)size;
 	bool ret = receiver->receive(this->socketFd);
 	std::cout << std::boolalpha << "BOOOLALLPHA recieve" << ret << std::endl;
-	// if (ret && size == 0)
-	// 	return true;
-	// else
-	// 	return false;
 	return(ret);
 }
 
@@ -230,27 +218,26 @@ ListeningSocket *ListeningSocket::clone(int fd)
 
 void ListeningSocket::loadRequest()
 {
-	std::cout << "request by receiver: " << receiver->getRequest() << std::endl;
-	// std::cout << "body by receiver: $" << receiver->getBody().substr(receiver->getBody().size() - 20, receiver->getBody().size()) << "$" << std::endl;
-	// print_visible(receiver->getBody());
-	// std::cout << "$" << std::endl;
-	if (receiver->getRequest().find("POST") != std::string::npos && receiver->getisform() == false)
-	{
-		std::fstream file("./file.png", std::ios::out | std::ios::binary | std::ios::app);
-		std::string rec = receiver->getBody().substr(receiver->getBody().find("\r\n\r\n") + 4);
-		std::string header = receiver->getBody().substr(0, receiver->getBody().find("\r\n\r\n") + 4);
+	
+	// std::cout << "request by receiver: " << receiver->getRequest() << std::endl;
+	// if (receiver->getRequest().find("POST") != std::string::npos && receiver->getisform() == false)
+	// {
+	// 	std::fstream file("./file.png", std::ios::out | std::ios::binary | std::ios::app);
+	// 	std::string rec = receiver->getBody().substr(receiver->getBody().find("\r\n\r\n") + 4);
+	// 	std::string postheader = receiver->getBody().substr(0, receiver->getBody().find("\r\n\r\n") + 4);
 
-		// std::cout << "header: " << header << std::endl;
-		std::string key_file = header.substr(header.find_first_of("-"), header.find("\r\n"));
-		// std::cout << "header: " << header << std::endl;
-		rec = rec.substr(0, rec.find(key_file) - 2);
+	// 	// std::cout << "header: " << header << std::endl;
+	// 	std::string key_file = postheader.substr(postheader.find_first_of("-"), postheader.find("\r\n"));
+	// 	// std::cout << "header: " << header << std::endl;
+	// 	rec = rec.substr(0, rec.find(key_file) - 2);
 
-		// std::cout << "rec: " << rec << std::endl;
-		file.write(rec.c_str(), rec.size());
-	}
-	else
-		std::cout << "form: " << receiver->getBody() << std::endl;
-	this->client->loadCompleteClient(receiver->getRequest());
+	// 	// std::cout << "rec: " << rec << std::endl;
+	// 	file.write(rec.c_str(), rec.size());
+	// 	file.close();
+	// }
+	// else
+	// 	std::cout << "form: " << receiver->getBody() << std::endl;
+	this->client->loadCompleteClient(*receiver);
 }
 
 std::string ListeningSocket::getServerName()

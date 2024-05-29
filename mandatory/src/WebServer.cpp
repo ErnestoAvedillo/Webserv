@@ -27,9 +27,6 @@ WebServer &WebServer::operator=(WebServer const &copy)
 void WebServer::launchServers()
 {
 	std::vector<int> sk ;
-	for (size_t i = 0; i < MAX_CLIENTS; i++) {
-    	client_events[i] = 0; // Initialize all elements to zero
-	}
     try
     {
 	    this->createQueue();
@@ -62,13 +59,11 @@ void	WebServer::eventLoop()
 	#elif __linux__
 		struct epoll_event evList[MAX_EVENTS];
 	#endif
-	// char buf[MAX_MSG_SIZE] = {0};
 	int currfd = 0;
 	int fd;
 	int type_event;
 	int flag;
 	int num_events = 0;
-	size_t size = 0;
 	while (1)
 	{
 		num_events = waitEvent(evList);
@@ -83,14 +78,12 @@ void	WebServer::eventLoop()
 				currfd = evList[i].ident;
 				type_event = evList[i].filter;
 				flag = evList[i].flags;
-				size = evList[i].data;
 			#elif __linux__
 				currfd = evList[i].data.fd;
 				type_event = evList[i].events;
 				flag = evList[i].events;
-				size = evList[i].data.u32;
 			#endif
-			if (serverSocket.find(currfd) != serverSocket.end())
+			if (serverSocket.find(currfd) != serverSocket.end())//&& acceptedSocket.find(currfd) == acceptedSocket.end())
 			{
 				fd = acceptNewEvent(currfd);
 				if (fd == -1)
@@ -100,21 +93,13 @@ void	WebServer::eventLoop()
 			{
 				delete acceptedSocket[currfd];
 				acceptedSocket.erase(currfd);
+				break ;
 			}
 			else if (type_event == (READ_EVENT))
 			{
-				std::cout << "EVLSIT data "  << evList[i].data << std::endl;
-				if (this->acceptedSocket[currfd]->receive(size) == true)
-				{
-					try {
-
+				if (this->acceptedSocket[currfd]->receive() == true)
+				{	
 					this->acceptedSocket[currfd]->loadRequest();
-					}
-					catch
-					(const std::exception& e)
-					{
-						std::cerr << "Error: " << e.what() << std::endl;
-					}
 					#ifdef __APPLE__
 						modifEvent(evList[i], READ_EVENT, WRITE_EVENT);
 					#elif __linux__
@@ -122,18 +107,10 @@ void	WebServer::eventLoop()
 					#endif
 				}
 				else 
-				{
-					// #ifdef __APPLE__
-					// 	modifEvent(evList[i], READ_EVENT, READ_EVENT);
-					// #elif __linux__
-					// 	modifEvent(evList[i], READ_EVENT);
-					// #endif
 					continue;
-				}
 			}
 			else if (type_event == (WRITE_EVENT))
 			{
-				std::cout << "ESTAMOS AQUI" << std::endl;
 				if (acceptedSocket[currfd]->sendData(currfd))
 				{
 					delete acceptedSocket[currfd];

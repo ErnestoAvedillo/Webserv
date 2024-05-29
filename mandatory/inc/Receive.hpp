@@ -13,7 +13,6 @@ class Receive {
         bool isbody;
         size_t maxSize;
         size_t sizeSent;
-        int bodyStart;
         std::ofstream file;
         std::string boundary;
         bool isform;
