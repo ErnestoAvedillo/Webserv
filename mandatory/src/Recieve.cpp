@@ -28,35 +28,17 @@ Receive &Receive::operator=(Receive const &copy)
     return *this;
 }
 
-void Receive::setBuffer(std::string buffer)
-{
-    this->buffer = buffer;
-}
+ /* Setters */
+void Receive::setBuffer(std::string buffer) { this->buffer = buffer; }
+void Receive::setRequest(std::string request) { this->request = request; }
+void Receive::setBody(std::string body) { this->body = body; }
+void Receive::setmaxSize(size_t size) { this->maxSize = size; }
 
-std::string Receive::getBuffer()
-{
-    return this->buffer;
-}
-
-void Receive::setRequest(std::string request)
-{
-    this->request = request;
-}
-
-std::string Receive::getRequest()
-{
-    return this->request;
-}
-
-void Receive::setBody(std::string body)
-{
-    this->body = body;
-}
-
-std::string Receive::getBody()
-{
-    return this->body;
-}
+ /* Getters */
+std::string Receive::getBuffer() { return this->buffer; }
+std::string Receive::getRequest() { return this->request; }
+std::string Receive::getBody() { return this->body; }
+bool Receive::getisform() { return this->isform; }
 
 bool Receive::receive(int fd)
 {
@@ -142,15 +124,4 @@ bool Receive::receiveBody(int fd)
             this->body += this->buffer;
     }
     return false;
-}
-
-void Receive::setSize(size_t size)
-{
-    this->maxSize = size;
-}
-
-
-bool Receive::getisform()
-{
-    return this->isform;
 }

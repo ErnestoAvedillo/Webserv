@@ -218,25 +218,6 @@ ListeningSocket *ListeningSocket::clone(int fd)
 
 void ListeningSocket::loadRequest()
 {
-	
-	// std::cout << "request by receiver: " << receiver->getRequest() << std::endl;
-	// if (receiver->getRequest().find("POST") != std::string::npos && receiver->getisform() == false)
-	// {
-	// 	std::fstream file("./file.png", std::ios::out | std::ios::binary | std::ios::app);
-	// 	std::string rec = receiver->getBody().substr(receiver->getBody().find("\r\n\r\n") + 4);
-	// 	std::string postheader = receiver->getBody().substr(0, receiver->getBody().find("\r\n\r\n") + 4);
-
-	// 	// std::cout << "header: " << header << std::endl;
-	// 	std::string key_file = postheader.substr(postheader.find_first_of("-"), postheader.find("\r\n"));
-	// 	// std::cout << "header: " << header << std::endl;
-	// 	rec = rec.substr(0, rec.find(key_file) - 2);
-
-	// 	// std::cout << "rec: " << rec << std::endl;
-	// 	file.write(rec.c_str(), rec.size());
-	// 	file.close();
-	// }
-	// else
-	// 	std::cout << "form: " << receiver->getBody() << std::endl;
 	std::cout << "request by receiver: " << receiver->getRequest() << std::endl;
 	this->client->loadCompleteClient(this->receiver);
 }

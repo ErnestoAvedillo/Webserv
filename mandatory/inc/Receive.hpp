@@ -22,15 +22,17 @@ class Receive {
         ~Receive();
         Receive(Receive const &copy);
         Receive &operator=(Receive const &copy);
-        void        setBuffer(std::string buffer);
-        std::string getBuffer();
-        void        setRequest(std::string request);
-        std::string getRequest();
-        void        setBody(std::string body);
-        std::string getBody();
-        bool receive(int fd);
+        
         bool receiveHeader(int fd);
         bool receiveBody(int fd);
-        void setSize(size_t size);
-        bool getisform();
+        bool receive(int fd);
+        void        setBuffer(std::string buffer);
+        void        setRequest(std::string request);
+        void        setBody(std::string body);
+        void        setmaxSize(size_t size);
+        
+        std::string getBuffer();
+        std::string getRequest();
+        std::string getBody();
+        bool        getisform();
 };
