@@ -50,8 +50,6 @@ void WebServer::launchServers()
 	this->eventLoop();
 }
 
-
-
 void	WebServer::eventLoop()
 {
 	#ifdef __APPLE__

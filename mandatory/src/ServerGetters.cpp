@@ -1,6 +1,5 @@
 #include "../inc/Server.hpp"
 
-
 size_t Server::getClientBodySize() { return this->maxClientBodySize; }
 bool Server::getIsDefault() { return this->isDefault; }
 std::string Server::getHost() { return this->Host; }
