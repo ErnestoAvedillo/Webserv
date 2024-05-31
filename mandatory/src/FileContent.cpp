@@ -37,6 +37,7 @@ std::string FileContent::getContent()
 	if (isCGI)
 	{
 		std::cout << "is a CGI file: " << fileName << std::endl;
+		sendComplete = true;
 		return cgiModule->execute();
 	}
 	else
