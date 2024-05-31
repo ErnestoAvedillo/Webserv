@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/25 17:42:08 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/31 15:26:44 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/31 21:14:06 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,11 @@ std::string CGI::getFileName()
 
 void CGI::setArgs(const std::vector <std::string>& vec)
 {
-	args = vec;
+	for (size_t i = 0; i < vec.size(); i++)
+	{
+		std::cout << "Args: " << vec[i] << std::endl;
+		args.push_back(vec[i]);
+	}
 }
 
 std::vector <std::string> CGI::getArgs()
@@ -55,6 +59,18 @@ std::vector <std::string> CGI::getArgs()
 std::string CGI::execute()
 {
 	int fd[2], tmp_fd;
+	tmp_fd = dup(STDOUT_FILENO);
+	std::vector<char*> argsArray;
+	argsArray.push_back(const_cast<char *>(file_name.c_str()));
+	std::vector<std::string>::iterator itb = args.begin();
+	std::vector<std::string>::iterator ite = args.end();
+	while (itb != ite) {
+		argsArray.push_back(const_cast<char *>(itb->c_str()));
+		std::cout << "Args insert : " << *itb << std::endl;
+		++itb;
+	}
+	argsArray.push_back(NULL);
+	// Create a child process using fork
 	if (pipe(fd) == -1) {
 		// Handle error creating pipe
 		throw std::runtime_error("Pipe error on creation");
@@ -63,16 +79,6 @@ std::string CGI::execute()
 	{
 		std::cout << "Pipe created" << std::endl;
 	}
-	tmp_fd = dup(STDOUT_FILENO);
-	std::vector<char*> argsArray;
-	argsArray.push_back(const_cast<char *>(file_name.c_str()));
-	std::vector<std::string>::iterator itb = args.begin();
-	std::vector<std::string>::iterator ite = args.end();
-	while (itb != ite) {
-		argsArray.push_back(const_cast<char *>(itb->c_str()));
-		++itb;
-	}
-	// Create a child process using fork
 	pid_t pid = fork();
 	if (pid == -1) {
 		// Handle error forking process
