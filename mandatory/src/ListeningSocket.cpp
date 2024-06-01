@@ -88,6 +88,7 @@ ListeningSocket::ListeningSocket(int myPort, Server *srv)
 	port = myPort;
 	server = srv;
 	this->client = new Client(srv);
+	this->receiver = new Receive();
 	socketFd = -1;
 	this->startListening();
 }
@@ -95,6 +96,7 @@ ListeningSocket::ListeningSocket(Server *srv)
 {
 	this->server = srv;
 	this->client = new Client(srv);
+	this->receiver = new Receive();
 }
 
 ListeningSocket::~ListeningSocket()
