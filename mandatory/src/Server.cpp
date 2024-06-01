@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/27 14:24:35 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/25 15:54:52 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/01 17:42:59 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,8 @@ std::map<std::string, int> var_names_server()
 	varnames[VAR_ERROR_PAGE] = 0;
 	varnames[VAR_ROOT] = 0;
 	varnames[VAR_INDEX] = 0;
+	varnames[VAR_CGI_EXTENSION] = 0;
+	varnames[VAR_CGI_FOLDER] = 0;
 	varnames[VAR_CLIENT_MAX_BODY_SIZE] = 0;
 	varnames[VAR_LOCATIONS] = 0;
 	return varnames;
@@ -36,6 +38,8 @@ std::map<std::string, void (Server::*)(const std::string &)> getServerMethods()
 	serverMethods[VAR_ERROR_PAGE] = &Server::setErrorPage;
 	serverMethods[VAR_ROOT] = &Server::setRoot;
 	serverMethods[VAR_INDEX] = &Server::setIndex;
+	serverMethods[VAR_CGI_EXTENSION] = &Server::setCGIExtension;
+	serverMethods[VAR_CGI_FOLDER] = &Server::setCGIFolder;
 	serverMethods[VAR_CLIENT_MAX_BODY_SIZE] = &Server::setClientMaxBodySize;
 	serverMethods[VAR_LOCATIONS] = &Server::addLocation;
 	return serverMethods;
@@ -66,18 +70,11 @@ Server::Server()
 
 Server::Server(std::string const &str) 
 {
-	//this->setDefaultData();
 	if(this->loadData(str) == -1)
 	{
 		std::cerr << CHR_RED << "Error: No se ha podido cargar la configuración del servidor. Parámetros por defecto establecidos." << RESET << std::endl;
 		exit(1);
 	}
-//	std::map<int, ListeningSocket*>::iterator itb = this->port.begin();
-//	std::map<int, ListeningSocket*>::iterator ite = this->port.end();
-//	while (itb != ite) {
-//		itb->second->startListening();
-//		itb++;
-//	}
 }
 
 Server::~Server() {}
@@ -96,7 +93,6 @@ Server &Server::operator=(Server const &copy) {
 		this->errorPage = copy.errorPage;
 		this->root = copy.root;
 		this->index = copy.index;
-		//this->locations = copy.locations;
 	}
 	return *this;
 }

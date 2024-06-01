@@ -18,6 +18,8 @@
 #define VAR_ERROR_PAGE	"error_page"
 #define VAR_ROOT	"root"
 #define VAR_INDEX	"index"
+#define VAR_CGI_EXTENSION	"CGI_extension"
+#define VAR_CGI_FOLDER	"CGI_folder"
 #define VAR_CLIENT_MAX_BODY_SIZE	"client_max_body_size"
 #define VAR_LOCATIONS	"location"
 
@@ -46,6 +48,8 @@ class Server {
 		std::string errorPage;
 		std::string root;
 		std::string index;
+		std::string cgiExtension;
+		std::string cgiFolder;
 		std::vector<Location *> locations;
 		void	setDefaultData();
 
@@ -63,6 +67,8 @@ class Server {
 		void	setClientMaxBodySize(std::string const &);
 		void	setRoot(std::string const &);
 		void	setIndex(std::string const &);
+		void	setCGIExtension(std::string const &);
+		void	setCGIFolder(std::string const &);
 		void	addLocation(std::string const &);
 		void	setIsDefault(std::string const &);
 		ListeningSocket *getListening(int i);
@@ -76,6 +82,8 @@ class Server {
 		std::string	getErrorPage();
 		std::string	getRoot();
 		std::string	getIndex();
+		std::string	getCGIExtension();
+		std::string	getCGIFolder();
 
 		void	setPorts(std::string const &ports);
 		void	print();

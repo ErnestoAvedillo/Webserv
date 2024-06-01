@@ -5,10 +5,11 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/05/04 12:49:08 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/01 16:56:23 by eavedill         ###   ########.fr       */
+/*   Created: Invalid date        by                   #+#    #+#             */
+/*   Updated: 2024/06/01 17:44:14 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #include "../inc/Client.hpp"
 
@@ -17,6 +18,14 @@ Client::Client(){}
 Client::Client(Server *srv)
 {
 	this->server = srv;
+	this->fileContent.setCGIFolder(srv->getCGIFolder());
+}
+
+Client::Client( Receive *receive, Server *srv)
+{
+	this->server = srv;
+	this->fileContent.setCGIFolder(srv->getCGIFolder());
+	this->loadCompleteClient(receive);
 }
 
 Client &Client::operator=(Client const &rsh)
@@ -51,7 +60,6 @@ void Client::addKeyFile(std::string const &value)
 	if (value == "/")
 		this->Request[REQ_FILE] += this->server->getIndex();
 	replaceString(this->Request[REQ_FILE], "%20", " ");
-	std::cout << "file: " << this->Request[REQ_FILE] << std::endl;
 }
 
 void Client::addKeyVers(std::string const &value)
@@ -108,19 +116,27 @@ void Client::loadCompleteClient(Receive *receiver)
 }
 
 
-void Client::getExtension()
-{
-	size_t point = this->Request[REQ_FILE].find_last_of(".");
-	std::string extension = this->Request[REQ_FILE].substr(point + 1, this->Request[REQ_FILE].size());
 
-	/* Create once only */
-	std::map<std::string, std::string> Mimetype = create_filetypes();
-	if (Mimetype.find(extension) != Mimetype.end())
-		header.setContentType(Mimetype[extension]);
-	else
-		header.setContentType("text/html");
 
-}
+// std::string getExtension(std::string filePath)
+// {
+// 	size_t point = filePath.find_last_of(".");
+// 	std::string extension = filePath.substr(point + 1, filePath.size());
+
+// 	std::map<std::string, std::string> Mimetype = create_filetypes();
+
+// 	if (Mimetype.find(extension) != Mimetype.end())
+// 	{
+// 		std::cout << CHR_BLUE << "found extension " << extension << ": " << Mimetype[extension] << RESET << std::endl;
+// 		return(Mimetype[extension]);
+// 	}
+// 	else
+// 	{
+// 		std::cout << CHR_MGENTA << "NOT found extension " << extension << RESET << std::endl;
+// 		return("text/html"); 
+// 	}
+// }
+
 
 /*
 Normalize the path, removes .., adds ./ at teh beggining if necessary, removes / at the end, removes duplicate /.
@@ -162,7 +178,8 @@ std::string Client::getFilePath()
 
 std::string Client::getFileContent()
 {
-	std::string content = this->fileContent.getContent();
+	std::string content;
+		content = this->fileContent.getContent();
 	return (content);
 }
 
@@ -192,9 +209,9 @@ void Client::loadDataHeader(Receive *receiver)
 	{	
 		if (fileContent.setFileName(this->Request[REQ_FILE]))
 		{
+		header.setContentType(this->Request[REQ_FILE]);
 			header.setLastModified(fileContent.getLastModified());
-			this->getExtension();
-			header.setContentLength(fileContent.getContentSize());
+				header.setContentLength(fileContent.getContentSize());
 			header.setStatus("200 OK");
 			header.setServer(server->getServerName());
 		}

@@ -7,6 +7,7 @@ std::string Server::getServerName() { return this->serverName; }
 std::string Server::getErrorPage() { return this->errorPage; }
 std::string Server::getRoot() { return this->root; }
 std::string Server::getIndex() { return this->index; }
+std::string Server::getCGIExtension() { return this->cgiExtension; }
 
 ListeningSocket *Server::getPort(int i) {
 	std::map<int, ListeningSocket *>::iterator it = this->port.find(i);
@@ -38,4 +39,9 @@ std::vector<int>	Server::getServerFds()
 		itb++;
 	}
 	return fd;
+}
+
+std::string Server::getCGIFolder()
+{
+	return this->cgiFolder;
 }

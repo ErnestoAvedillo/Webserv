@@ -181,7 +181,6 @@ bool ListeningSocket::sendData(int clientSocketFd)
 bool ListeningSocket::receive()
 {
 	bool ret = receiver->receive(this->socketFd);
-	std::cout << std::boolalpha << "BOOOLALLPHA recieve" << ret << std::endl;
 	return(ret);
 }
 
@@ -217,7 +216,6 @@ ListeningSocket *ListeningSocket::clone(int fd)
 
 void ListeningSocket::loadRequest()
 {
-	std::cout << "request by receiver: " << receiver->getRequest() << std::endl;
 	this->client->loadCompleteClient(this->receiver);
 }
 
