@@ -1,0 +1,252 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<!-- DW6 -->
+<head>
+<!-- Copyright 2005 Macromedia, Inc. All rights reserved. -->
+<title>Proyectos Mecánicos</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="stylesheet" href="index_archivos/mm_health_nutr.css" type="text/css" />
+<script language="JavaScript" type="text/javascript">
+//--------------- LOCALIZEABLE GLOBALS ---------------
+var d=new Date();
+var monthname=new Array("January","February","March","April","May","June","July","August","September","October","November","December");
+//Ensure correct for language. English is "January 1, 2004"
+var TODAY = monthname[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear();
+//---------------   END LOCALIZEABLE   ---------------
+
+
+function MM_CheckFlashVersion(reqVerStr,msg){
+  with(navigator){
+    var isIE  = (appVersion.indexOf("MSIE") != -1 && userAgent.indexOf("Opera") == -1);
+    var isWin = (appVersion.toLowerCase().indexOf("win") != -1);
+    if (!isIE || !isWin){  
+      var flashVer = -1;
+      if (plugins && plugins.length > 0){
+        var desc = plugins["Shockwave Flash"] ? plugins["Shockwave Flash"].description : "";
+        desc = plugins["Shockwave Flash 2.0"] ? plugins["Shockwave Flash 2.0"].description : desc;
+        if (desc == "") flashVer = -1;
+        else{
+          var descArr = desc.split(" ");
+          var tempArrMajor = descArr[2].split(".");
+          var verMajor = tempArrMajor[0];
+          var tempArrMinor = (descArr[3] != "") ? descArr[3].split("r") : descArr[4].split("r");
+          var verMinor = (tempArrMinor[1] > 0) ? tempArrMinor[1] : 0;
+          flashVer =  parseFloat(verMajor + "." + verMinor);
+        }
+      }
+      // WebTV has Flash Player 4 or lower -- too low for video
+      else if (userAgent.toLowerCase().indexOf("webtv") != -1) flashVer = 4.0;
+
+      var verArr = reqVerStr.split(",");
+      var reqVer = parseFloat(verArr[0] + "." + verArr[2]);
+  
+      if (flashVer < reqVer){
+        if (confirm(msg))
+          window.location = "http://www.macromedia.com/shockwave/download/download.cgi?P1_Prod_Version=ShockwaveFlash";
+      }
+    }
+  } 
+}
+</script>
+<style type="text/css">
+<!--
+-->
+</style>
+<style type="text/css">
+<!--
+p.MsoBodyText3 {
+text-indent:0pt;
+margin-left:0pt;
+margin-right:0pt;
+margin-top:0pt;
+margin-bottom:10.0pt;
+line-height:110%;
+text-align:left;
+font-family:Arial;
+font-size:10.0pt;
+color:black;
+}
+.Estilo2{
+font-family: 'Arial Black';
+font-style: normal; 
+font-variant: normal; 
+font-weight: bold;
+font-size: 24pt; 
+letter-spacing: normal; 
+line-height: 24pt; 
+text-align: left; 
+text-indent: 0px; 
+text-transform: none;
+text-decoration:underline; 
+white-space: normal; 
+color:#99CC66;
+
+}
+.EstiloTexto{
+	font-size: 12pt;
+	line-height: normal;
+	font-family: Arial;
+	text-align: justify;
+	font-style: normal;
+	font-weight: normal;
+	color: #000000;
+}
+.EstiloTextoTitulo{
+	font-size: 14pt;
+	line-height: normal;
+	font-family: Arial;
+	text-align: justify;
+	font-style: normal;
+	font-weight: bold;
+	text-decoration: underline;
+	color: #000000;
+}
+
+-->
+</style>
+</head>
+<body bgcolor="#F4FFE4" onload="MM_CheckFlashVersion('7,0,0,0','El contenido de la p&aacute;gina requiere una nueva versi&oacute;n del reproductor Macromedia Flash.  Desea descargarlo ahora?');">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr bgcolor="#D5EDB3">
+    <td colspan="3" rowspan="2"><a href="index.htm"><img src="index_archivos/LOGO EACIM.GIF" alt="Header image" width="204" height="134" border="0" /></a><a href="/index.htm"></a></td>
+    <td width="747" height="50" colspan="4" align="center" valign="bottom" nowrap="nowrap" id="logo"><strong><em>EACIM</em></strong></td>
+  </tr>
+
+  <tr bgcolor="#D5EDB3">
+    <td height="51" colspan="4" id="tagline" valign="top" align="center">INGENIERIA Y MANTENIMIENTO </td>
+  </tr>
+
+  <tr>
+    <td colspan="7" bgcolor="#5C743D"><img src="index_archivos/mm_spacer.gif" alt="" width="1" height="2" border="0" /></td>
+  </tr>
+
+  <tr>
+    <td colspan="7" bgcolor="#99CC66" ><img src="index_archivos/mm_dashed_line.gif" alt="line decor" width="4" height="3" border="0" /></td>
+  </tr>
+
+  <tr bgcolor="#99CC66">
+  	<td colspan="7" id="dateformat" height="20">&nbsp;&nbsp;<script language="JavaScript" type="text/javascript">
+      document.write(TODAY);	</script>	</td>
+  </tr>
+  <tr>
+    <td colspan="7" bgcolor="#99CC66" ><img src="index_archivos/mm_dashed_line.gif" alt="line decor" width="4" height="3" border="0" /></td>
+  </tr>
+
+  <tr>
+    <td colspan="7" bgcolor="#5C743D"><img src="index_archivos/mm_spacer.gif" alt="" width="1" height="2" border="0" /></td>
+  </tr>
+
+ <tr>
+    <td width="242" valign="top" bgcolor="#5C743D">
+	<table border="0" cellspacing="0" cellpadding="0" width="242" id="navigation">
+        <tr>
+          <td width="242">&nbsp;<br />
+		 &nbsp;<br /></td>
+        </tr>
+        <tr>
+          <td width="242"><a href="index.htm" class="navText">Pagina Principal </a></td>
+        </tr>
+        <tr>
+          <td width="242"><a href="Proyectos.htm" class="navText">Proyectos</a></td>
+        </tr>
+        <tr>
+          <td><a href="ProyMec.htm" class="navText">
+            <blockquote>Proy. Mecánica</blockquote>
+          </a></td>
+        </tr>
+        <tr>
+          <td><a href="ModernPLC.htm" class="navText">
+            <blockquote>Modernizacion de PLC </blockquote>
+          </a></td>
+        </tr>
+        <tr>
+          <td><a href="Hidraulica.htm" class="navText">
+            <blockquote>Proy. de Hidr&aacute;ulica </blockquote>
+          </a></td>
+        </tr>
+        <tr>
+          <td><a href="HMI-PLC.htm" class="navText">
+            <blockquote>HMI Y PLC </blockquote>
+          </a></td>
+        </tr>
+        <tr>
+          <td><a href="Engrases.htm" class="navText">
+            <blockquote>Engrases Centralizados </blockquote>
+          </a></td>
+        </tr>
+        <tr>
+          <td><a href="Programacion.htm" class="navText">
+            <blockquote>Programacion </blockquote>
+          </a></td>
+        </tr>
+        <tr>
+          <td><a href="Descargas.htm" class="navText">
+            <blockquote>Ficheros de inter&eacute;s</blockquote>
+          </a></td>
+        </tr>
+        <tr>
+          <td><a href="Contacto.htm">Contacto</a></td>
+        </tr>
+      </table>
+ 	 <br />
+  	&nbsp;<br />
+  	&nbsp;<br />
+  	&nbsp;<br /> 	</td>
+    <td width="35">&nbsp;</td>
+    <td colspan="5" valign="top"><img src="index_archivos/mm_spacer.gif" alt="" width="305" height="1" border="0" /><br />
+	&nbsp;<br />
+	&nbsp;<br />
+	<table border="0" cellspacing="0" cellpadding="0" width="748">
+      <tr>
+        <td width="748" class="pageName"><span class="Estilo2">Dise&ntilde;os   mec&aacute;nicos </span></p></td>     
+		</tr>
+      </table>
+	 <br />
+	&nbsp;&nbsp;
+    <p class="EstiloTextoTitulo"><span style="EstiloTextoTitulo">1-Mecanismo   para una barra de seguridad</span></p>
+    <p class="EstiloTexto"><span style="EstiloTexto">Este   mecanismo incrementa el esfuerzo de aplicaci&oacute;n del final de carrera para un   barra de seguridad.</span></p>
+    <p class="EstiloTexto"><span style="EstiloTexto">Un   final de carrera suele tener un esfuerzo de actuaci&oacute;n muy variable pero podemos   ponerlo en un valor medio de 20N .&nbsp; Este esfuerzo, en determinadas aplicaciones   como el caso de una barra de seguridad,&nbsp; es tan bajo que parar&iacute;a la maquina al   menor impacto y se ver&iacute;a seriamente afectada la productividad de la misma.   Necesitamos aumentar es esfuerzo de actuaci&oacute;n, y esto lo conseguimos con el   bloque intermedio en el que dependiendo del muelle que pongamos y de la precompresi&oacute;n que le apliquemos, aumentaremos   dicho esfuerzo a nuestra voluntad. </span></p>
+    <p><br />
+      <img src="index_archivos/image564.png" alt="" width="404" height="264" /></p>
+    <p>&nbsp;</p>
+    <p class="EstiloTextoTitulo"><span style="EstiloTextoTitulo">2-Sistema   de corte</span></p>
+    <p class="EstiloTexto"><span style="EstiloTexto">Rueda   de corte desarrollada para incrementar la vida &uacute;til de las   cuchillas.</span> </p>
+    <p ><img src="index_archivos/image306.png" alt="" width="616" height="432" /></p>
+    <p class="EstiloTexto"><span style="EstiloTexto">En   el dibujo anterior, se muestra una comparaci&oacute;n de los sistemas antiguo y   nuevo.</span></p>
+    <p class="EstiloTexto"><span style="EstiloTexto">En   el de la derecha (Antiguo) el corte se realiza mediante presi&oacute;n por un muelle   que lleva en el interior el cilindro. Este muelle ejerce una fuerza de hasta 500   Kg. Dado que normalmente se ponen hasta tres cuchillas  en paralelo, el eje de   corte soporta hasta 1500 Kg de esfuerzo lo cual repercute en el afilado del   corte, en los ejes de apoyo del cilindro y en los cojinetes,</span></p>
+    <p class="EstiloTexto"><span style="EstiloTexto">El mecanismo de la derecha tiene una gu&iacute;a que permite ajustar el filo en la posici&oacute;n de corte. Es un mecanismo fijo, es decir, no cede en el proceso de   corte como el anterior y por lo tanto no necesita ejercer presi&oacute;n sobre el   cilindro. Por esta raz&oacute;n,&nbsp; los cojinetes no sufren, el filo no se desgasta con   tanta rapidez y los ejes de apoyo no se romper&aacute;n por el sobreesfuerzo. Este   sistema tambi&eacute;n nos permite tener cuchillas m&aacute;s delgadas, mejorando de esta   manera el corte y haci&eacute;ndolo mas preciso.</span></p>
+    <p ><img src="index_archivos/image700.png" alt="" width="284" height="596" /></span></p>    
+    <p>&nbsp;</p>
+    <p class="EstiloTextoTitulo"><span style="EstiloTextoTitulo">3&ndash;   Soluci&oacute;n a la rotura de un eje</span></p>
+     <p class="EstiloTexto"><span style="EstiloTexto">Esta   propuesta de soluci&oacute;n, se hizo por la rotura de un eje. El mecanismo lleva   integrado un enchavetado para aumentar la resistencia del conjunto.</span></p>    
+    <img src="index_archivos/image562.png" alt="" width="458" height="376" />
+	<p >&nbsp;</p>
+	 <p class="EstiloTexto"><span style="EstiloTexto">Dado el importante coste que supone una pieza de del tama&ntilde;o de la que se ha dise&ntilde;ado (El di&aacute;metro del pi&ntilde;on es de 500 mm y el del eje de 180mm) Es importante asegurarse de su resistencia con un estudio por elementos finitos que tenemos a continuaci&oacute;n.</span></p>
+	<p>
+      <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=7,0,0,0" width="560" height="321" id="FLVPlayer">
+        <param name="movie" value="FLVPlayer_Progressive.swf" />
+        <param name="salign" value="lt" />
+        <param name="quality" value="high" />
+        <param name="scale" value="noscale" />
+        <param name="FlashVars" value="&MM_ComponentVersion=1&skinName=Corona_Skin_3&streamName=index_archivos/ejeataque&autoPlay=false&autoRewind=false" />
+        <embed src="FLVPlayer_Progressive.swf" flashvars="&MM_ComponentVersion=1&skinName=Corona_Skin_3&streamName=index_archivos/ejeataque&autoPlay=false&autoRewind=false" quality="high" scale="noscale" width="560" height="321" name="FLVPlayer" salign="LT" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" />        
+</object>
+</p>
+    <p>&nbsp;</p>
+    <p>
+      <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=7,0,0,0" width="560" height="304" id="FLVPlayer1">
+        <param name="movie" value="FLVPlayer_Progressive.swf" />
+        <param name="salign" value="lt" />
+        <param name="quality" value="high" />
+        <param name="scale" value="noscale" />
+        <param name="FlashVars" value="&MM_ComponentVersion=1&skinName=Corona_Skin_3&streamName=index_archivos/ruedadentada&autoPlay=false&autoRewind=false" />
+        <embed src="FLVPlayer_Progressive.swf" flashvars="&MM_ComponentVersion=1&skinName=Corona_Skin_3&streamName=index_archivos/ruedadentada&autoPlay=false&autoRewind=false" quality="high" scale="noscale" width="560" height="304" name="FLVPlayer1" salign="LT" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" />        
+</object>
+    </p></td>
+  </tr>
+  <tr>
+    <td colspan="7">&nbsp;</td>
+  </tr>
+</table>
+</body>
+</html>

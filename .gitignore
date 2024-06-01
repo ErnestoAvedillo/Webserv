@@ -14,7 +14,6 @@ manuals
 .DS_Store
 Resources/Filetypes/Makefile
 Test.cpp
-www/*
 # Prerequisites
 *.d
 
