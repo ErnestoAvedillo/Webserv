@@ -19,7 +19,7 @@ PINK		:=	\033[1;95m
 CYAN		:=	\033[1;96m
 CLEAN_CAR	=	\033[2K\r
 
-NAME := Websrv
+NAME := Webserv
 
 DIRSRC := ./mandatory/src/
 
