@@ -6,7 +6,7 @@
 #    By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/01 15:03:29 by eavedill          #+#    #+#              #
-#    Updated: 2024/06/01 15:42:45 by eavedill         ###   ########.fr        #
+#    Updated: 2024/05/05 14:41:11 by eavedill         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,8 +16,7 @@ GREEN		:=	\033[1;92m
 YELLOW		:=	\033[1;93m
 BLUE		:=	\033[1;94m
 PINK		:=	\033[1;95m
-CYAN		:=	\033[1;96m
-CLEAN_CAR	=	\033[2K\r
+CIAN		:=	\033[1;96m
 
 NAME := Websrv
 
@@ -25,7 +24,7 @@ DIRSRC := ./mandatory/src/
 
 DIRINC := ./mandatory/inc/
 
-OBJDST_DIR :=	./mandatory/obj/
+OBJDST_DIR :=	./mandatory/objdst_dir/
 
 SRCS := $(wildcard $(DIRSRC)*.cpp) 
 
@@ -36,7 +35,7 @@ DSTS := $(SRCS:$(DIRSRC)%.cpp=$(OBJDST_DIR)%.d)
 
 RM := rm -rfd
 
-CC:= c++
+CC:= g++
 
 
 ifeq (,$(findstring "Linux",$(shell uname -s)))
@@ -46,36 +45,31 @@ ifeq (,$(findstring "Darwin",$(shell uname -s)))
 	SYSTEM := -DMAC
 endif
 
+FLAGS := -Wall -Werror -Wextra -std=c++98 $(SYSTEM) -g #-fsanitize=address -pedantic 
 
-FLAGS := -Wall -Werror -Wextra -std=c++11 $(SYSTEM) -g -fsanitize=address #-pedantic 
-
-all:	print_system $(NAME)  
-
-print_system:
-	@printf "$(YELLOW)$(CLEAN_CAR)System compiles $(NAME) with $(shell uname -s)$(RESET)\n"
+all:	print_system $(NAME) Makefile 
 
 $(NAME): $(DSTS) $(OBJS) 
-	@printf "$(CLEAN_CAR)Linking: $(NAME)\n"
+	@printf "\rLinking: $(NAME)                                                  \n"
 	@$(CC) $(FLAGS) -I $(DIRINC) $(OBJS) -o $(NAME)
 
-$(OBJDST_DIR)%.o: $(DIRSRC)%.cpp $(OBJDST_DIR)%.d Makefile
+$(OBJDST_DIR)%.o: $(DIRSRC)%.cpp $(OBJDST_DIR)%.d
 	@mkdir -p $(OBJDST_DIR)
-	@printf "$(GREEN)$(CLEAN_CAR)Compiling $*.o: $(notdir $<)$(RESET)"
+	@printf "$(GREEN)\rCompiling $*.o: $(notdir $<).                             $(RESET)"
 	@$(CC) $(FLAGS) -c $(DIRSRC)$*.cpp -o $(OBJDST_DIR)$*.o 
 
 $(OBJDST_DIR)%.d: $(DIRSRC)%.cpp
 	@mkdir -p $(OBJDST_DIR)
-	@printf "$(BLUE)$(CLEAN_CAR)Creating Dependencies $*.d: $(notdir $<). with flag $(SYSTEM)$(RESET)"
+	@printf "$(BLUE)\rCreating Dependencies $*.d: $(notdir $<). with flag $(SYSTEM)                       $(RESET)"
 	@set -e; rm -f $@; \
 	$(CC) -M $(FLAGS) $< > $@.$$$$; \
 	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
 	rm -f $@.$$$$
 
 print:
-	@echo "$(RESET)NAME: $(NAME)"
-	@echo "FLAGS: $(YELLOW)$(FLAGS)$(RESET)"
-	@echo "SRCS: $(YELLOW)$(SRCS)$(RESET)"
-	@echo "INCS: $(YELLOW)$(INCS)$(RESET)"
+	@echo NAME: $(NAME)
+	@echo SRCS: $(SRCS)
+	@echo INCS: $(INCS)
 	@echo OBJS: $(OBJS)
 	@echo DSTS: $(DSTS)
 	@echo OBJDST_DIR: $(OBJDST_DIR)
@@ -84,15 +78,17 @@ print:
 	@echo FLAG SISTEMA: $(SYSTEM)
 
 clean:
-	@printf "$(RED)$(CLEAN_CAR)Removing objects folder $(OBJDST_DIR)$(RESET)\n"
+	@printf "$(RED)Removing objects folder $(OBJDST_DIR).$(RESET)\n"
 	$(RM) $(OBJDST_DIR)
 
 fclean: clean
-	@printf "$(RED)$(CLEAN_CAR)Removing executable object $(NAME)$(RESET)\n"
+	@printf "$(RED)\rRemoving executable object $(NAME).$(RESET)\n"
 	$(RM) $(NAME)
 
 re: fclean all
 
+print_system:
+	@printf "\n$(YELLOW)System compiles $(NAME) with $(shell uname -s)$(RESET)\n"
 
 
 PHONY: all clean fclean re print lnx print_system
