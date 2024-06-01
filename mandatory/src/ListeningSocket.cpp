@@ -94,9 +94,9 @@ ListeningSocket::ListeningSocket(int myPort, Server *srv)
 }
 ListeningSocket::ListeningSocket(Server *srv)
 {
-	this->server = srv;
 	this->client = new Client(srv);
 	this->receiver = new Receive();
+	this->server = srv;
 }
 
 ListeningSocket::~ListeningSocket()
