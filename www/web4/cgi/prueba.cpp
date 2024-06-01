@@ -26,14 +26,18 @@ int main(int av, char **ac) {
 	//char* args[] = {ac[1], NULL};
 	std::string program = ac[1];
 	std::vector<char *> args;
-	args.push_back(program.data());
+	args.push_back(ac[1]);
+	for (int i = 2; i < av; i++)
+	{
+		args.push_back(ac[i]);
+	}		
 	int pid = fork();
 	if (pid == 0)
 	{
 		dup2(fd[1], STDOUT_FILENO);
 		close(fd[0]);
 		//close(fd[1]);
-		if(execve(program.c_str(), args.data(), NULL)==-1) {
+		if(execve(ac[1], args.data(), NULL)==-1) {
 			std::cerr << "Error: " << errno << std::endl;
 			exit (-1);
 		}
