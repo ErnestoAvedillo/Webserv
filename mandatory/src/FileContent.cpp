@@ -78,54 +78,55 @@ bool FileContent::setFileName(const std::string &file_name)
 {
 	std::vector<std::string> tmp;
 	bool filefound = false;
-
+	std::cout << "File name: " << file_name << std::endl;
 	if (file_name.find("?") != std::string::npos)
 	{
 		tmp = splitString(file_name, '?');
 		fileName = tmp[0];
+		std::cout << "File name: " << fileName << std::endl;
 		args = splitString(tmp[1], '&');
-		if (stat(fileName.c_str(), &fileStat) == 0)
-		{
-			filefound = true;
-		}
-		else
-		{
-			std::cout << "File <"<< fileName << "> not found: " << filefound << std::endl;
+	}
+	else
+	{
+		fileName = file_name;
+	}
+	if (stat(fileName.c_str(), &fileStat) == 0)
+	{
+		filefound = true;
+	}
+	else
+	{
+		std::cout << "File <"<< fileName << "> not found: " << filefound << std::endl;
 
-		}
-		if(fileName.find(CGIFolder) != std::string::npos)
+	}
+	if(fileName.find(CGIFolder) != std::string::npos)
+	{
+		if(filefound)
 		{
-			if(filefound)
+			std::cout << "CGI file found: " << fileName << std::endl;
+			isCGI = true;
+			std::map <std::string, std::string>::iterator it = this->server->findCGIExtension(this->getFileExtension());
+			if(it != this->server->CGIEnd())
 			{
-				isCGI = true;
-				std::map <std::string, std::string>::iterator it = this->server->findCGIExtension(this->getFileExtension());
-				if(it != this->server->CGIEnd())
+				if(it->second.size() != 0)
 				{
-					if(it->second.size() != 0)
-					{
-						cgiModule->setFileName(it->second);
-						args.insert(args.begin(), fileName);
-					}
+					cgiModule->setFileName(it->second);
+					args.insert(args.begin(), fileName);
 				}
-				else
-				{
-					cgiModule->setFileName(fileName);
-					cgiModule->setArgs(args);
-				}
-				isFileOpen = true;
 			}
 			else
 			{
-				std::cerr << "CGI file not found: " << fileName << std::endl;
-
+				cgiModule->setFileName(fileName);
+				cgiModule->setArgs(args);
 			}
+			isFileOpen = true;
 		}
 		else
 		{
-			std::cerr << "CGI folder not found: " << fileName << std::endl;
+			std::cerr << "CGI file not found: " << fileName << std::endl;
 		}
 	}
-	else
+	if(!isCGI)
 	{
 		if(stat(fileName.c_str(), &fileStat))
 		{
