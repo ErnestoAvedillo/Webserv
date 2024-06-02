@@ -48,7 +48,7 @@ class Server {
 		std::string errorPage;
 		std::string root;
 		std::string index;
-		std::string cgiExtension;
+		std::map <std::string, std::string> cgiExtension;
 		std::string cgiFolder;
 		std::vector<Location *> locations;
 		void	setDefaultData();
@@ -82,10 +82,13 @@ class Server {
 		std::string	getErrorPage();
 		std::string	getRoot();
 		std::string	getIndex();
-		std::string	getCGIExtension();
+		std::string	getCGIExtension(const std::string &);
 		std::string	getCGIFolder();
+		std::map<std::string, std::string>::iterator findCGIExtension(const std::string &);
+		std::map<std::string, std::string>::iterator CGIBegin();
+		std::map<std::string, std::string>::iterator CGIEnd();
 
-		void	setPorts(std::string const &ports);
+		void setPorts(std::string const &ports);
 		void	print();
 		//std::vector<class Location> getLocations();
 };

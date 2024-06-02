@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2024/06/01 17:44:14 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/02 18:26:27 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,14 +17,16 @@ Client::Client(){}
 
 Client::Client(Server *srv)
 {
+	this->fileContent = new FileContent(srv);
 	this->server = srv;
-	this->fileContent.setCGIFolder(srv->getCGIFolder());
+	this->fileContent->setCGIFolder(srv->getCGIFolder());
 }
 
 Client::Client( Receive *receive, Server *srv)
 {
+	this->fileContent = new FileContent(srv);
 	this->server = srv;
-	this->fileContent.setCGIFolder(srv->getCGIFolder());
+	this->fileContent->setCGIFolder(srv->getCGIFolder());
 	this->loadCompleteClient(receive);
 }
 
@@ -42,6 +44,7 @@ Client &Client::operator=(Client const &rsh)
 
 Client::~Client()
 {
+	delete this->fileContent;
 }
 
 void Client::addKeyReq(std::string const &key, std::string const &value)
@@ -179,19 +182,19 @@ std::string Client::getFilePath()
 std::string Client::getFileContent()
 {
 	std::string content;
-		content = this->fileContent.getContent();
+		content = this->fileContent->getContent();
 	return (content);
 }
 
 std::string Client::getAnswerToSend()
 {	
 	std::string answer;
-	std::string filePath = this->fileContent.getFileName();
+	std::string filePath = this->fileContent->getFileName();
 	std::string file_content = getFileContent();
-	if (this->fileContent.getFirstFragment())
+	if (this->fileContent->getFirstFragment())
 	{
 		answer += header.generateHeader() + file_content;
-		this->fileContent.setFirstFragment(false);
+		this->fileContent->setFirstFragment(false);
 	}
 	else
 		answer += file_content;
@@ -200,18 +203,18 @@ std::string Client::getAnswerToSend()
 
 bool Client::isSendComplete()
 {
-	return this->fileContent.isSendComplete();
+	return this->fileContent->isSendComplete();
 }
 
 void Client::loadDataHeader(Receive *receiver)
 {
 	if (this->Request[REQ_TYPE] == "GET")
 	{	
-		if (fileContent.setFileName(this->Request[REQ_FILE]))
+		if (this->fileContent->setFileName(this->Request[REQ_FILE]))
 		{
 		header.setContentType(this->Request[REQ_FILE]);
-			header.setLastModified(fileContent.getLastModified());
-				header.setContentLength(fileContent.getContentSize());
+			header.setLastModified(this->fileContent->getLastModified());
+				header.setContentLength(this->fileContent->getContentSize());
 			header.setStatus("200 OK");
 			header.setServer(server->getServerName());
 		}

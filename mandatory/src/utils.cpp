@@ -140,3 +140,13 @@ void replaceString(std::string& mainString, const std::string& searchString, con
 		pos += replaceString.length();
 	}
 }
+
+int count_chars(const std::string& str, char c) {
+	int count = 0;
+	for (size_t i = 0; i < str.size(); i++) {
+		if (str[i] == c) {
+			count++;
+		}
+	}
+	return count;
+}

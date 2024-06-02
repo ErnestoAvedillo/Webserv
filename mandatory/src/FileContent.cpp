@@ -1,7 +1,8 @@
 #include "../inc/FileContent.hpp"
 
-FileContent::FileContent()
+FileContent::FileContent(Server *srv)
 {
+	server = srv;
 	fileName = "";
 	sendComplete = false;
 	isFileOpen = false;
@@ -10,8 +11,9 @@ FileContent::FileContent()
 	CGIFolder = "";
 	this->cgiModule = new CGI();
 }
-FileContent::FileContent(const std::string &MyfileName) 
+FileContent::FileContent(const std::string &MyfileName, Server *srv) 
 {
+	server = srv;
 	isFileOpen = this->setFileName(MyfileName);
 	sendComplete = false;
 	isFistFragment = true;
@@ -96,18 +98,32 @@ bool FileContent::setFileName(const std::string &file_name)
 			if(filefound)
 			{
 				isCGI = true;
+				std::map <std::string, std::string>::iterator it = this->server->findCGIExtension(this->getFileExtension());
+				if(it != this->server->CGIEnd())
+				{
+					if(it->second.size() != 0)
+					{
+						cgiModule->setFileName(it->second);
+						args.insert(args.begin(), fileName);
+					}
+				}
+				else
+				{
+					cgiModule->setFileName(fileName);
+					cgiModule->setArgs(args);
+				}
+				isFileOpen = true;
 			}
 			else
 			{
-				std::cout << "CGI file not found: " << fileName << std::endl;
+				std::cerr << "CGI file not found: " << fileName << std::endl;
+
 			}
 		}
 		else
 		{
-			std::cout << "CGI folder not found: " << fileName << std::endl;
+			std::cerr << "CGI folder not found: " << fileName << std::endl;
 		}
-		cgiModule->setFileName(fileName);
-		cgiModule->setArgs(args);
 	}
 	else
 	{
@@ -118,7 +134,7 @@ bool FileContent::setFileName(const std::string &file_name)
 		}
 		else
 		{
-			std::cout << "File not found en stat: " << fileName << std::endl;
+			std::cerr << "File not found en stat: " << fileName << std::endl;
 
 		}
 	}
@@ -184,4 +200,11 @@ void FileContent::setCGIFolder(const std::string &folder)
 std::string FileContent::getCGIFolder()
 {
 	return CGIFolder;
+}
+
+
+std::string FileContent::getFileExtension()
+{
+	std::string ext = fileName.substr(fileName.find_last_of(".") + 1);
+	return ext;
 }

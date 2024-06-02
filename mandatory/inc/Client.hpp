@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 12:46:28 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/01 17:18:00 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/02 18:58:27 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,6 @@
 class Server;
 #include "../inc/Server.hpp"
 
-#include "../inc/FileContent.hpp"
 #include "../inc/toString.hpp"
 #include "../inc/colors.h"
 
@@ -34,11 +33,13 @@ class Server;
 #include "Header.hpp"
 #include "Receive.hpp"
 
+class FileContent;
+#include "../inc/FileContent.hpp"
 class Client
 {
 private:
 	std::map<std::string, std::string> Request;
-	FileContent fileContent;
+	FileContent *fileContent;
 	Server *server;
 	Header header;
 public:
@@ -63,7 +64,6 @@ public:
 	std::string	normalizePath(std::string path);
 	std::string getFileContent();
 	bool isSendComplete();
-	void getExtension();
 	void loadCompleteClient(Receive *receiver);
 	void loadDataHeader(Receive *receiver);
 };

@@ -6,10 +6,16 @@
 #include <time.h>
 #include <filesystem>
 #include <vector>
+#include <map>
 #include "../inc/colors.h"
 #include "../inc/CGI.hpp"
+#include "../inc/Server.hpp"
 
 #define MAX_SENT_BYTES 8192
+
+class Client;
+#include "../inc/Client.hpp"
+
 class FileContent
 {
 private:
@@ -24,10 +30,11 @@ private:
 	std::string CGIFolder;
 	struct stat fileStat;
 	CGI *cgiModule;
+	Server *server;
 
 public:
-	FileContent();
-	FileContent(const std::string &);
+	FileContent(Server *);
+	FileContent(const std::string &, Server *);
 	~FileContent();
 	int openFile();
 	bool setFileName(const std::string &);
@@ -42,4 +49,5 @@ public:
 	void setCGIFile(bool);
 	void setCGIFolder(const std::string &);
 	std::string getCGIFolder();
+	std::string getFileExtension();
 };
