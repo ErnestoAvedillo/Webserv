@@ -7,10 +7,6 @@ std::string Server::getServerName() { return this->serverName; }
 std::string Server::getErrorPage() { return this->errorPage; }
 std::string Server::getRoot() { return this->root; }
 std::string Server::getIndex() { return this->index; }
-std::string Server::getCGIExtension(const std::string &str) { return this->cgiExtension[str]; }
-std::map <std::string, std::string>::iterator Server::findCGIExtension(const std::string &str) { return this->cgiExtension.find(str);}
-std::map <std::string, std::string>::iterator Server::CGIBegin() { return this->cgiExtension.begin();}
-std::map <std::string, std::string>::iterator Server::CGIEnd() { return this->cgiExtension.end();}
 
 ListeningSocket *Server::getPort(int i) {
 	std::map<int, ListeningSocket *>::iterator it = this->port.find(i);
@@ -46,5 +42,5 @@ std::vector<int>	Server::getServerFds()
 
 std::string Server::getCGIFolder()
 {
-	return this->cgiFolder;
+	return this->cgiModule->getCGIFolder();
 }

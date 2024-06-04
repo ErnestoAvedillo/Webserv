@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2024/06/02 18:26:27 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/04 13:33:15 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,14 +19,12 @@ Client::Client(Server *srv)
 {
 	this->fileContent = new FileContent(srv);
 	this->server = srv;
-	this->fileContent->setCGIFolder(srv->getCGIFolder());
 }
 
 Client::Client( Receive *receive, Server *srv)
 {
 	this->fileContent = new FileContent(srv);
 	this->server = srv;
-	this->fileContent->setCGIFolder(srv->getCGIFolder());
 	this->loadCompleteClient(receive);
 }
 

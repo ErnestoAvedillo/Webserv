@@ -26,8 +26,6 @@ private:
 	bool isFistFragment;
 	bool isFileOpen;
 	bool sendComplete;
-	bool isCGI;
-	std::string CGIFolder;
 	struct stat fileStat;
 	CGI *cgiModule;
 	Server *server;

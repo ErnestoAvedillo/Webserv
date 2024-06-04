@@ -10,7 +10,8 @@
 # include <algorithm>
 # include "utils.hpp"
 # include "Location.hpp"
-#include "../inc/toString.hpp"
+# include "../inc/toString.hpp"
+# include "CGI.hpp"
 
 #define VAR_PORT	"port"
 #define VAR_HOST	"host"
@@ -48,18 +49,20 @@ class Server {
 		std::string errorPage;
 		std::string root;
 		std::string index;
-		std::map <std::string, std::string> cgiExtension;
-		std::string cgiFolder;
 		std::vector<Location *> locations;
+		CGI *cgiModule;
 		void	setDefaultData();
 
 	public:
-		Server();
+		// Server();
 		Server(std::string const &);
 		~Server();
 		Server(Server const &);
 		Server &operator=(Server const &);
+		//---- Server Methods ------//
 		int		loadData(std::string const &);
+		CGI		*cgiModuleClone();
+		//---- Server setters ------//
 		void	setPort(std::string const &);
 		void	setHost(std::string const &);
 		void	setServerName(std::string const &);
@@ -71,6 +74,9 @@ class Server {
 		void	setCGIFolder(std::string const &);
 		void	addLocation(std::string const &);
 		void	setIsDefault(std::string const &);
+		void	setPorts(std::string const &ports);
+
+		//---- Server getters ------//
 		ListeningSocket *getListening(int i);
 		std::vector<int> getServerFds();
 
@@ -84,11 +90,7 @@ class Server {
 		std::string	getIndex();
 		std::string	getCGIExtension(const std::string &);
 		std::string	getCGIFolder();
-		std::map<std::string, std::string>::iterator findCGIExtension(const std::string &);
-		std::map<std::string, std::string>::iterator CGIBegin();
-		std::map<std::string, std::string>::iterator CGIEnd();
 
-		void setPorts(std::string const &ports);
 		void	print();
 		//std::vector<class Location> getLocations();
 };

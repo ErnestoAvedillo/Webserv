@@ -7,9 +7,7 @@ FileContent::FileContent(Server *srv)
 	sendComplete = false;
 	isFileOpen = false;
 	isFistFragment = true;
-	isCGI = false;
-	CGIFolder = "";
-	this->cgiModule = new CGI();
+	this->cgiModule = srv->cgiModuleClone();
 }
 FileContent::FileContent(const std::string &MyfileName, Server *srv) 
 {
@@ -17,12 +15,13 @@ FileContent::FileContent(const std::string &MyfileName, Server *srv)
 	isFileOpen = this->setFileName(MyfileName);
 	sendComplete = false;
 	isFistFragment = true;
-	isCGI = false;
-	CGIFolder = "";
-	this->cgiModule = new CGI();
+	this->cgiModule = srv->cgiModuleClone();
 }
 
-FileContent::~FileContent() {}
+FileContent::~FileContent() 
+{
+	delete cgiModule;
+}
 
 int FileContent::openFile()
 {
@@ -36,34 +35,34 @@ int FileContent::openFile()
 std::string FileContent::getContent() 
 {
 	std::string errorReturn = "Error: " + fileName + " File not found";
-	if (isCGI)
-	{
-		std::cout << "is a CGI file: " << fileName << std::endl;
-		sendComplete = true;
-		return cgiModule->execute();
-	}
-	else
-	{
-		std::cout << "is not a CGI file: " << fileName << std::endl;
-	}
 	if (isFileOpen)
 	{
-		content = "";
-		char buffer[MAX_SENT_BYTES];
-		if(file.read(buffer, MAX_SENT_BYTES))
+		if (cgiModule->getIsCGI())
 		{
-			if(file.eof())
-			{
-				file.close();
-				sendComplete = true;
-			}
-			content.append(buffer, file.gcount());
-			return content;
+			std::cout << "is a CGI file: " << fileName << std::endl;
+			sendComplete = true;
+			return cgiModule->execute();
 		}
 		else
 		{
-			file.close();
-			content.append(buffer, file.gcount());
+			std::cout << "is a normal file: " << fileName << std::endl;
+			content = "";
+			char buffer[MAX_SENT_BYTES];
+			if(file.read(buffer, MAX_SENT_BYTES))
+			{
+				if(file.eof())
+				{
+					file.close();
+					sendComplete = true;
+				}
+				content.append(buffer, file.gcount());
+				return content;
+			}
+			else
+			{
+				file.close();
+				content.append(buffer, file.gcount());
+			}
 		}
 	}
 	else
@@ -76,70 +75,33 @@ std::string FileContent::getContent()
 
 bool FileContent::setFileName(const std::string &file_name)
 {
-	std::vector<std::string> tmp;
+	std::string tmp = file_name.substr(0, file_name.find("?"));
 	bool filefound = false;
 	std::cout << "File name: " << file_name << std::endl;
-	if (file_name.find("?") != std::string::npos)
-	{
-		tmp = splitString(file_name, '?');
-		fileName = tmp[0];
-		std::cout << "File name: " << fileName << std::endl;
-		args = splitString(tmp[1], '&');
-	}
-	else
-	{
-		fileName = file_name;
-	}
-	if (stat(fileName.c_str(), &fileStat) == 0)
+	if (stat(tmp.c_str(), &fileStat) == 0)
 	{
 		filefound = true;
 	}
 	else
 	{
-		std::cout << "File <"<< fileName << "> not found: " << filefound << std::endl;
-
+		std::cout << "File <" << file_name << "> not found: " << filefound << std::endl;
+		return false;
 	}
-	if(fileName.find(CGIFolder) != std::string::npos)
+	if (cgiModule->setIsCGI(file_name))
 	{
-		if(filefound)
-		{
-			std::cout << "CGI file found: " << fileName << std::endl;
-			isCGI = true;
-			std::map <std::string, std::string>::iterator it = this->server->findCGIExtension(this->getFileExtension());
-			if(it != this->server->CGIEnd())
-			{
-				if(it->second.size() != 0)
-				{
-					cgiModule->setFileName(it->second);
-					args.insert(args.begin(), fileName);
-				}
-			}
-			else
-			{
-				cgiModule->setFileName(fileName);
-				cgiModule->setArgs(args);
-			}
-			isFileOpen = true;
-		}
-		else
-		{
-			std::cerr << "CGI file not found: " << fileName << std::endl;
-		}
+		cgiModule->setFileName(file_name);
+		isFileOpen = true;
 	}
-	if(!isCGI)
+	else
 	{
 		if(stat(fileName.c_str(), &fileStat))
 		{
 			fileName = file_name;
 			isFileOpen = this->openFile();
 		}
-		else
-		{
-			std::cerr << "File not found en stat: " << fileName << std::endl;
 
-		}
 	}
-	if (isFileOpen)
+	if (!isFileOpen)
 	{
 		std::cerr << "File not open: " << fileName << std::endl;
 	}
@@ -181,31 +143,4 @@ std::string FileContent::getLastModified()
 size_t FileContent::getContentSize()
 {
 	return fileStat.st_size;
-}
-
-bool FileContent::isCGIFile()
-{
-	return isCGI;
-}
-
-void FileContent::setCGIFile(bool isCGI)
-{
-	this->isCGI = isCGI;
-}
-
-void FileContent::setCGIFolder(const std::string &folder)
-{
-	CGIFolder = folder;
-}
-
-std::string FileContent::getCGIFolder()
-{
-	return CGIFolder;
-}
-
-
-std::string FileContent::getFileExtension()
-{
-	std::string ext = fileName.substr(fileName.find_last_of(".") + 1);
-	return ext;
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/27 14:24:35 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/01 17:42:59 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/04 13:13:26 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,31 +45,32 @@ std::map<std::string, void (Server::*)(const std::string &)> getServerMethods()
 	return serverMethods;
 }
 
-void	Server::setDefaultData()
-{
-	this->isDefault = false;
-	this->port[443] = new ListeningSocket((size_t)443, this);
-	this->maxClientBodySize = 1024;
-	this->Host = "DefaultHost";
-	this->serverName = "DefaultServer";
-	this->errorPage = "/Error";
-	this->root = "/";
-	this->index = "index.html";
-}
+// void	Server::setDefaultData()
+// {
+// 	this->isDefault = false;
+// 	this->port[443] = new ListeningSocket((size_t)443, this);
+// 	this->maxClientBodySize = 1024;
+// 	this->Host = "DefaultHost";
+// 	this->serverName = "DefaultServer";
+// 	this->errorPage = "/Error";
+// 	this->root = "/";
+// 	this->index = "index.html";
+// }
 
-Server::Server()
-{
-	//this->setDefaultData();
-	std::map<int, ListeningSocket*>::iterator itb = this->port.begin();
-	std::map<int, ListeningSocket*>::iterator ite = this->port.end();
-	while (itb != ite){
-		itb->second->startListening();
-		itb++;
-	}
-}
+// Server::Server()
+// {
+// 	//this->setDefaultData();
+// 	std::map<int, ListeningSocket*>::iterator itb = this->port.begin();
+// 	std::map<int, ListeningSocket*>::iterator ite = this->port.end();
+// 	while (itb != ite){
+// 		itb->second->startListening();
+// 		itb++;
+// 	}
+// }
 
 Server::Server(std::string const &str) 
 {
+	this->cgiModule = new CGI();
 	if(this->loadData(str) == -1)
 	{
 		std::cerr << CHR_RED << "Error: No se ha podido cargar la configuración del servidor. Parámetros por defecto establecidos." << RESET << std::endl;
@@ -77,7 +78,10 @@ Server::Server(std::string const &str)
 	}
 }
 
-Server::~Server() {}
+Server::~Server() 
+{
+	delete cgiModule;
+}
 
 Server::Server(Server const &copy) {
 	*this = copy;
@@ -138,6 +142,11 @@ int Server::loadData(std::string const &content) {
 		}
 	}
 	return 0;
+}
+
+CGI *Server::cgiModuleClone()
+{
+	return this->cgiModule->clone();
 }
 
 void	Server::print()

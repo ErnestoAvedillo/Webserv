@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/25 17:42:25 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/30 19:36:28 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/04 13:27:20 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,19 +19,38 @@
 #include <sys/wait.h>
 #include <errno.h>
 #include "../inc/utils.hpp"
+#include <map>
+#include "colors.h"
 
 class CGI {
 private:
-	std::string file_name;
+	std::string CGIFolder;
+	std::string fileName;
+	bool isCGI;
 	std::vector <std::string> args;
+	std::map<std::string, std::string> CGIExtensions;
+
 public:
 	CGI();
-	CGI(const std::string& str);
+	CGI(const std::string &, const std::string &);
+	CGI(const CGI &);
 	~CGI();
+	//------ Setters and Getters ------//
+	//setters
+	void setCGIFolder(const std::string &);
 	void setFileName(const std::string& str);
+	bool setIsCGI(const std::string& str);
+	void setArgs(const std::string &);
+	void setCGIMapExtensions(std::string const &cgi_extension);
+	//getters
 	std::string getFileName();
-	void setArgs(const std::vector <std::string>&);
+	bool getIsCGI();
+	std::string getCGIFolder();
 	std::vector <std::string> getArgs();
+	std::string getCGIExtension(const std::string &);
+	std::string getFileExtension();
+	std::map<std::string, std::string>::iterator findCGIExtension(const std::string &);
+	//------ OTHER Methods ------//
 	std::string execute();
-	
+	CGI *clone();
 };

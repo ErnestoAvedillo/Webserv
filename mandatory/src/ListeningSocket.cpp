@@ -103,6 +103,7 @@ ListeningSocket::~ListeningSocket()
 {
 	stopListening();
 	delete this->client;
+	delete this->receiver;
 }
 
 bool ListeningSocket::startListening()

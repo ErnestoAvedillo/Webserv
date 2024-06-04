@@ -50,6 +50,8 @@ void WebServer::launchServers()
 	this->eventLoop();
 }
 
+bool WebServer::ExitFlag = false;
+
 void	WebServer::eventLoop()
 {
 	#ifdef __APPLE__
@@ -57,12 +59,13 @@ void	WebServer::eventLoop()
 	#elif __linux__
 		struct epoll_event evList[MAX_EVENTS];
 	#endif
+	signal(SIGINT, &WebServer::exit_handler);
 	int currfd = 0;
 	int fd;
 	int type_event;
 	int flag;
 	int num_events = 0;
-	while (1)
+	while (!WebServer::ExitFlag)
 	{
 		num_events = waitEvent(evList);
 		if (num_events == -1)
@@ -120,5 +123,14 @@ void	WebServer::eventLoop()
 				std::cerr << "Unknown event " << type_event << std::endl;
 			}
 		}
+	}
+}
+
+void WebServer::exit_handler(int signum)
+{
+	if (signum == SIGINT)
+	{
+		std::cerr << "Exiting..." << std::endl;
+		WebServer::ExitFlag = true;
 	}
 }

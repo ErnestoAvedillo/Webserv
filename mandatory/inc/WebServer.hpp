@@ -52,7 +52,7 @@ class WebServer {
 		std::vector<Server *>	servers;
 		std::map<std::string, std::string>	mimeTypes;
 		std::map<int, std::string>	errorPages;
-		
+
 		int kq;
 		void	processConfigFile();
 	public:
@@ -62,26 +62,17 @@ class WebServer {
 		WebServer &operator=(WebServer const &copy);
 
 		void	loadConfigFile(std::string configFile);
-		
 		void	launchServers();
-		
-		
-//		void	createSocket();
-//		void	Set();
 		void	eventLoop();
-		
-		// int getConnection(int fd);
-		// int	addConnection(int fd);
-		// int	removeConnection(int fd);
 		struct sockaddr_in convertHost(std::string hostname, int port);
-
 		void removeEventFd(int fd, int type);
 		void addEvent(int fd, int type);
 		void addEventSet();
-		//Functions changing with Operating sistem.
 		void createQueue ();
 		int acceptNewEvent(int curfd);
-		#ifdef __APPLE__
+		static bool ExitFlag;
+		static void exit_handler(int signum);
+#ifdef __APPLE__
 			int waitEvent(struct kevent *evList);
 			void modifEvent(struct kevent eventList, int typeRem, int typeAdd);
 		#elif __linux__

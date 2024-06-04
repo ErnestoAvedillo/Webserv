@@ -6,44 +6,12 @@ void Server::setErrorPage(std::string const &error_page) { this->errorPage = err
 void Server::setClientMaxBodySize(std::string const &max_client_body_size) { this->maxClientBodySize = stringToSizeT(max_client_body_size); }
 void Server::setRoot(std::string const &root) { this->root = root; }
 void Server::setIndex(std::string const &index) { this->index = index; }
-void Server::setCGIFolder(std::string const &cgi_folder) { this->cgiFolder = cgi_folder; }
+void Server::setCGIFolder(std::string const &str) { this->cgiModule->setCGIFolder(str); }
 void Server::addLocation(std::string const &content) { this->locations.push_back(new Location(content)); }
 
-void Server::setCGIExtension(std::string const &cgi_extension) 
+void Server::setCGIExtension(std::string const &str) 
 {
-	std::vector<std::string> aux;
-	
-	if (cgi_extension.size() == 0)
-		return;
-	else
-	if (cgi_extension.find(",") != std::string::npos)
-	{
-		aux = splitString(cgi_extension, ',');
-	}
-	else
-	{
-		aux.push_back(cgi_extension);
-	}
-	for (size_t i = 0; i < aux.size(); i++)
-	{
-		if (aux[i].size() == 0)
-			continue;
-		int n = count_chars(aux[i], ':');
-		if (n > 1)
-		{
-			std::cerr << RED << "Error:: Wrong syntaxis " << RESET << aux[i] << std::endl;
-			continue;
-		}
-		else if (n == 0)
-		{
-			this->cgiExtension[aux[i]] = ""; //Si no hay programa de ejecución, se asume que es un CGI ejecutable.
-		}
-		else
-		{
-			std::vector<std::string> aux2 = splitString(aux[i], ':');
-			this->cgiExtension[aux2[0]] = aux2[1];
-		}
-	}
+	this->cgiModule->setCGIMapExtensions(str);
 }
 
 void Server::setIsDefault(std::string const &is_default)
