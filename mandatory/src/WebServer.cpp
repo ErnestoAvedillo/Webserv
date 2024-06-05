@@ -7,6 +7,10 @@ WebServer::WebServer()
 
 WebServer::~WebServer()
 {
+	for (size_t i = 0; i < this->servers.size(); i++)
+		delete this->servers[i];
+    for (std::map<int, ListeningSocket *>::iterator it = serverSocket.begin(); it != serverSocket.end(); ++it)
+		delete it->second;
 	std::cerr << "WebServer destroyed" << std::endl;
 }
 
@@ -70,7 +74,8 @@ void	WebServer::eventLoop()
 		num_events = waitEvent(evList);
 		if (num_events == -1)
 		{
-			throw("Error: could not wait for events");
+			//throw("Error: could not wait for events");
+			continue ;
 		}
 		std::cout << "Event " << num_events << std::endl;
 		for (int i = 0; i < num_events; i++)
