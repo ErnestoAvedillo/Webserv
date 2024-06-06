@@ -71,12 +71,10 @@ void	WebServer::eventLoop()
 	int num_events = 0;
 	while (!WebServer::ExitFlag)
 	{
+		std::cout << "continue " << std::endl;
 		num_events = waitEvent(evList);
 		if (num_events == -1)
-		{
-			//throw("Error: could not wait for events");
 			continue ;
-		}
 		std::cout << "Event " << num_events << std::endl;
 		for (int i = 0; i < num_events; i++)
 		{
@@ -104,7 +102,7 @@ void	WebServer::eventLoop()
 			else if (type_event == (READ_EVENT))
 			{
 				if (this->acceptedSocket[currfd]->receive() == true)
-				{	
+				{
 					this->acceptedSocket[currfd]->loadRequest();
 					#ifdef __APPLE__
 						modifEvent(evList[i], READ_EVENT, WRITE_EVENT);
@@ -112,7 +110,18 @@ void	WebServer::eventLoop()
 						modifEvent(evList[i], WRITE_EVENT);
 					#endif
 				}
-				else 
+				else if (!this->acceptedSocket[currfd]->end && i == num_events - 1)
+				{
+					// Send http message 
+					std::cout << "Send http message" << std::endl;
+					std::string msg = "HTTP/1.1 206 Partial Content\r\n\r\n";
+					if (send(currfd, msg.c_str(), msg.size(), 0) < 0)
+					{
+						std::cerr << "Error send" << std::endl;
+					}
+					continue;
+				}
+				else
 					continue;
 			}
 			else if (type_event == (WRITE_EVENT))
