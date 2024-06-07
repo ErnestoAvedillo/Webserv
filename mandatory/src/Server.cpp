@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/27 14:24:35 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/04 13:13:26 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/07 17:34:40 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ std::map<std::string, int> var_names_server()
 	varnames[VAR_CGI_FOLDER] = 0;
 	varnames[VAR_CLIENT_MAX_BODY_SIZE] = 0;
 	varnames[VAR_LOCATIONS] = 0;
+	varnames[VAR_AUTOINDEX] = 0;
 	return varnames;
 }
 
@@ -41,7 +42,9 @@ std::map<std::string, void (Server::*)(const std::string &)> getServerMethods()
 	serverMethods[VAR_CGI_EXTENSION] = &Server::setCGIExtension;
 	serverMethods[VAR_CGI_FOLDER] = &Server::setCGIFolder;
 	serverMethods[VAR_CLIENT_MAX_BODY_SIZE] = &Server::setClientMaxBodySize;
-	serverMethods[VAR_LOCATIONS] = &Server::addLocation;
+	serverMethods[VAR_LOCATIONS] = &Server::addLocation;\
+	serverMethods[VAR_AUTOINDEX] = &Server::setAutoindex;
+
 	return serverMethods;
 }
 

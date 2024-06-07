@@ -23,6 +23,7 @@
 #define VAR_CGI_FOLDER	"CGI_folder"
 #define VAR_CLIENT_MAX_BODY_SIZE	"client_max_body_size"
 #define VAR_LOCATIONS	"location"
+#define VAR_AUTOINDEX	"autoindex"
 
 #ifdef __APPLE__
 	#define READ_EVENT EVFILT_READ
@@ -49,6 +50,7 @@ class Server {
 		std::string errorPage;
 		std::string root;
 		std::string index;
+		bool autoIndex;
 		std::vector<Location *> locations;
 		CGI *cgiModule;
 		void	setDefaultData();
@@ -75,6 +77,7 @@ class Server {
 		void	addLocation(std::string const &);
 		void	setIsDefault(std::string const &);
 		void	setPorts(std::string const &ports);
+		void	setAutoindex(std::string const &);
 
 		//---- Server getters ------//
 		ListeningSocket *getListening(int i);
@@ -90,7 +93,7 @@ class Server {
 		std::string	getIndex();
 		std::string	getCGIExtension(const std::string &);
 		std::string	getCGIFolder();
-
+		bool getAutoindex();
 		void	print();
 		//std::vector<class Location> getLocations();
 };

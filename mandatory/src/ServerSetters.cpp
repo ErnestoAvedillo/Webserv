@@ -101,3 +101,15 @@ void Server::setPort(std::string const &port)
 		}
 	}
 }
+
+
+void Server::setAutoindex(std::string const &theAutoIndex)
+{
+	if (theAutoIndex == "on")
+		this->autoIndex = true;
+	else if (theAutoIndex == "off")
+		this->autoIndex = false;
+	else
+		throw std::runtime_error("Error: Valor de autoindex no reconocido.");
+}
+
