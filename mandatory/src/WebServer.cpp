@@ -71,11 +71,10 @@ void	WebServer::eventLoop()
 	int num_events = 0;
 	while (!WebServer::ExitFlag)
 	{
-		std::cout << "continue " << std::endl;
 		num_events = waitEvent(evList);
 		if (num_events == -1)
 			continue ;
-		std::cout << "Event " << num_events << std::endl;
+		std::cerr << "Event " << num_events << std::endl;
 		for (int i = 0; i < num_events; i++)
 		{
 			#ifdef __APPLE__
@@ -87,7 +86,7 @@ void	WebServer::eventLoop()
 				type_event = evList[i].events;
 				flag = evList[i].events;
 			#endif
-			if (serverSocket.find(currfd) != serverSocket.end())//&& acceptedSocket.find(currfd) == acceptedSocket.end())
+			if (serverSocket.find(currfd) != serverSocket.end())
 			{
 				fd = acceptNewEvent(currfd);
 				if (fd == -1)
@@ -99,6 +98,10 @@ void	WebServer::eventLoop()
 				acceptedSocket.erase(currfd);
 				break ;
 			}
+			// else if (type_event & EPOLLOUT && type_event & EPOLLIN)
+			// {
+			// 	std::cerr << "READWRITE" << std::endl;
+			// }
 			else if (type_event == (READ_EVENT))
 			{
 				if (this->acceptedSocket[currfd]->receive() == true)
@@ -109,17 +112,6 @@ void	WebServer::eventLoop()
 					#elif __linux__
 						modifEvent(evList[i], WRITE_EVENT);
 					#endif
-				}
-				else if (!this->acceptedSocket[currfd]->end && i == num_events - 1)
-				{
-					// Send http message 
-					std::cout << "Send http message" << std::endl;
-					std::string msg = "HTTP/1.1 206 Partial Content\r\n\r\n";
-					if (send(currfd, msg.c_str(), msg.size(), 0) < 0)
-					{
-						std::cerr << "Error send" << std::endl;
-					}
-					continue;
 				}
 				else
 					continue;

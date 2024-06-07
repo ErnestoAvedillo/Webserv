@@ -34,7 +34,6 @@
 
 #define BACKLOG 10
 #define MAX_CLIENTS 100
-#define MAX_MSG_SIZE 1024
 #define MAX_EVENTS 200
 //  The backlog parameter defines the maximum length for the queue of pending
 //      connections.  If a connection request arrives with the queue full, the

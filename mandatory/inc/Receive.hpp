@@ -4,7 +4,7 @@
 #include <string>
 #include <sys/socket.h>
 
-#define MAX_MSG_SIZE 1024
+#define MAX_MSG_SIZE 8192//2 4 8 16 32 64 128 256 512 1024 2048 4096 8192 16384 32768 65536
 class Receive {
     private:
         std::string buffer;

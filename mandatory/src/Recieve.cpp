@@ -1,6 +1,8 @@
 #include "../inc/Receive.hpp"
 #include <iostream>
 #include <fstream>
+#include <string>
+#include <cstring>
 
 Receive::Receive() : buffer(""), request(""), body(""), isbody(false), maxSize(0), sizeSent(0), isform(false)
 {
@@ -53,20 +55,10 @@ bool Receive::receiveHeader(int fd)
 {
     char buf[MAX_MSG_SIZE] = {0};
     int ret;
-    this->buffer.clear();
-    ret = recv(fd, buf, MAX_MSG_SIZE, 0);
-    if (ret < 0)
+   
+    while ((ret = recv(fd, buf, MAX_MSG_SIZE, 0)) > 0)
     {
-        std::cerr << "Failed to read from client" << std::endl;
-        return false;
-    }
-    else if (ret == 0)
-    {
-        std::cerr << "Client disconnected" << std::endl;
-        return true;
-    }
-    if (ret)
-    {
+        this->buffer.clear();
         this->buffer.append(buf, ret);
         if (buffer.find("\r\n\r\n") != std::string::npos)
         {
@@ -75,6 +67,8 @@ bool Receive::receiveHeader(int fd)
             {
                 std::string contentLength = request.substr(request.find("Content-Length: ") + 16, request.find("\r\n", request.find("Content-Length: ")));
                 this->maxSize = std::stoi(contentLength);
+                std::string boundary = request.substr(request.find("boundary=") + 9, request.find("\r\n", request.find("boundary=")) - 1);
+                this->boundary = boundary;
             }
             else
                 return true;
@@ -91,6 +85,14 @@ bool Receive::receiveHeader(int fd)
         }
         else
             request += this->buffer;
+        std::memset(buf, 0, MAX_MSG_SIZE);
+    }
+    if (ret < 0) // This is not handle as an error 
+        return false;
+    else if (ret == 0)
+    {
+        std::cerr << "Client disconnected" << std::endl;
+        return false;
     }
     return false;
 }
@@ -98,21 +100,12 @@ bool Receive::receiveHeader(int fd)
 bool Receive::receiveBody(int fd)
 {
     char buf[MAX_MSG_SIZE] = {0};
-    this->buffer.clear();
-    int ret = recv(fd, buf, MAX_MSG_SIZE, 0);
-    if (ret < 0)
+    int ret = 0;
+    while ((ret = recv(fd, buf, MAX_MSG_SIZE, 0)) > 0)
     {
-        std::cerr << "Failed to read from client" << std::endl;
-        return false;
-    }
-    else if (ret == 0)
-    {
-        std::cerr << "Client disconnected" << std::endl;
-        return true;
-    }
-    if (ret)
-    {
+        
         this->sizeSent += ret;
+        this->buffer.clear();
         this->buffer = std::string(buf, ret);
         if (this->sizeSent >= this->maxSize)
         {
@@ -122,6 +115,14 @@ bool Receive::receiveBody(int fd)
         }
         else
             this->body += this->buffer;
+        std::memset(buf, 0, MAX_MSG_SIZE); 
+    }
+    if (ret < 0) // This is not handle as an error 
+        return false;
+    else if (ret == 0)
+    {
+        std::cerr << "Client disconnected" << std::endl;
+        return false;
     }
     return false;
 }
