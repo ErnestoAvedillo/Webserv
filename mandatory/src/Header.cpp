@@ -68,5 +68,16 @@ void Header::setContentLength(size_t contentLength)
 
 void Header::setContentType(std::string contentType)
 {
-	ContentType = contentType;
+	size_t point = contentType.find_last_of(".");
+	std::string extension = contentType.substr(point + 1, contentType.size());
+
+	/* Create once only */
+	std::map<std::string, std::string> Mimetype = create_filetypes();
+
+	std::cout << "found extension " << extension << std::endl;
+	if (Mimetype.find(extension) != Mimetype.end())
+		ContentType = Mimetype[extension];
+	else
+		ContentType = "text/html";
+
 }

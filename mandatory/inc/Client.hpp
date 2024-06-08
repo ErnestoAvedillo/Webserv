@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 12:46:28 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/21 14:22:43 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/02 18:58:27 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,6 @@
 class Server;
 #include "../inc/Server.hpp"
 
-#include "../inc/FileContent.hpp"
 #include "../inc/toString.hpp"
 #include "../inc/colors.h"
 
@@ -32,17 +31,20 @@ class Server;
 #define REQ_CONTENT "Content-Type"
 
 #include "Header.hpp"
+#include "Receive.hpp"
 
+class FileContent;
+#include "../inc/FileContent.hpp"
 class Client
 {
 private:
 	std::map<std::string, std::string> Request;
-	FileContent fileContent;
+	FileContent *fileContent;
 	Server *server;
 	Header header;
 public:
 	Client();
-	Client(std::string const &, Server *);
+	Client(Receive *, Server *);
 	Client(Server *);
 	Client &operator=(Client const &);
 	~Client();
@@ -56,14 +58,13 @@ public:
 	void clearClient();
 	void deleteClient(std::string const &);
 	void updateClient(std::string const &, std::string const &);
-	void loadCompleteClient(const std::string &);
 	std::string getAnswerToSend();
 	std::string getFilePath();
 	std::string getFileContent(std::string filename);
 	std::string	normalizePath(std::string path);
 	std::string getFileContent();
 	bool isSendComplete();
-	void getExtension();
-	void loadDataHeader();
+	void loadCompleteClient(Receive *receiver);
+	void loadDataHeader(Receive *receiver);
 };
 

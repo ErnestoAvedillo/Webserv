@@ -3,33 +3,35 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/05/04 12:49:08 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/25 15:52:20 by eavedill         ###   ########.fr       */
+/*   Created: Invalid date        by                   #+#    #+#             */
+/*   Updated: 2024/06/04 13:33:15 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/Client.hpp"
 
-Client::Client(){}
+Client::Client() {}
 
 Client::Client(Server *srv)
 {
+	this->fileContent = new FileContent(srv);
 	this->server = srv;
 }
 
-Client::Client(std::string const &str, Server *srv)
+Client::Client(Receive *receive, Server *srv)
 {
+	this->fileContent = new FileContent(srv);
 	this->server = srv;
-	this->loadCompleteClient(str);
+	this->loadCompleteClient(receive);
 }
 
 Client &Client::operator=(Client const &rsh)
 {
 	std::map<std::string, std::string>::const_iterator itb = rsh.Request.begin();
 	std::map<std::string, std::string>::const_iterator ite = rsh.Request.end();
-	while(itb != ite)
+	while (itb != ite)
 	{
 		this->Request[itb->first] = itb->second;
 		itb++;
@@ -39,6 +41,7 @@ Client &Client::operator=(Client const &rsh)
 
 Client::~Client()
 {
+	delete this->fileContent;
 }
 
 void Client::addKeyReq(std::string const &key, std::string const &value)
@@ -94,8 +97,11 @@ void Client::updateClient(std::string const &key, std::string const &value)
 	this->Request[key] = value;
 }
 
-void Client::loadCompleteClient( std::string const &str)
+void Client::loadCompleteClient(Receive *receiver)
 {
+	std::string str = receiver->getRequest();
+	if (str.length() == 0)
+		return;
 	std::vector<std::string> lines = splitString(str, '\n');
 	std::vector<std::string> parts = splitString(lines[0], ' ');
 	if (parts.size() == 3)
@@ -105,29 +111,33 @@ void Client::loadCompleteClient( std::string const &str)
 		this->addKeyVers(parts[2]);
 	}
 	for (size_t i = 1; i < lines.size(); i++)
-			this->addKeyReq(lines[i].substr(0, lines[i].find(":")), lines[i].substr(lines[i].find(":") + 1, lines.size()));
-	this->loadDataHeader();
+		this->addKeyReq(lines[i].substr(0, lines[i].find(":")), lines[i].substr(lines[i].find(":") + 1, lines.size()));
+	this->loadDataHeader(receiver);
 }
 
+// std::string getExtension(std::string filePath)
+// {
+// 	size_t point = filePath.find_last_of(".");
+// 	std::string extension = filePath.substr(point + 1, filePath.size());
 
-void Client::getExtension()
-{
-	size_t point = this->Request[REQ_FILE].find_last_of(".");
-	std::string extension = this->Request[REQ_FILE].substr(point + 1, this->Request[REQ_FILE].size());
+// 	std::map<std::string, std::string> Mimetype = create_filetypes();
 
-	/* Create once only */
-	std::map<std::string, std::string> Mimetype = create_filetypes();
-	if (Mimetype.find(extension) != Mimetype.end())
-		header.setContentType(Mimetype[extension]);
-	else
-		header.setContentType("text/html");
-
-}
+// 	if (Mimetype.find(extension) != Mimetype.end())
+// 	{
+// 		std::cout << CHR_BLUE << "found extension " << extension << ": " << Mimetype[extension] << RESET << std::endl;
+// 		return(Mimetype[extension]);
+// 	}
+// 	else
+// 	{
+// 		std::cout << CHR_MGENTA << "NOT found extension " << extension << RESET << std::endl;
+// 		return("text/html");
+// 	}
+// }
 
 /*
 Normalize the path, removes .., adds ./ at teh beggining if necessary, removes / at the end, removes duplicate /.
 */
-std::string	Client::normalizePath(std::string path)
+std::string Client::normalizePath(std::string path)
 {
 	while (path.find("..") != std::string::npos)
 		path.erase(path.find(".."), 2);
@@ -155,7 +165,7 @@ std::string	Client::normalizePath(std::string path)
 
 std::string Client::getFilePath()
 {
-	std::string filePath = normalizePath(server->getRoot()) +  this->Request[REQ_FILE];
+	std::string filePath = normalizePath(server->getRoot()) + this->Request[REQ_FILE];
 	if (filePath.at(filePath.size() - 1) == '/')
 		filePath += server->getIndex();
 	filePath = filePath.substr(0, filePath.find("?"));
@@ -164,19 +174,20 @@ std::string Client::getFilePath()
 
 std::string Client::getFileContent()
 {
-	std::string content = this->fileContent.getContent();
+	std::string content;
+	content = this->fileContent->getContent();
 	return (content);
 }
 
 std::string Client::getAnswerToSend()
-{	
+{
 	std::string answer;
-	std::string filePath = this->fileContent.getFileName();
+	std::string filePath = this->fileContent->getFileName();
 	std::string file_content = getFileContent();
-	if (this->fileContent.getFirstFragment())
+	if (this->fileContent->getFirstFragment())
 	{
 		answer += header.generateHeader() + file_content;
-		this->fileContent.setFirstFragment(false);
+		this->fileContent->setFirstFragment(false);
 	}
 	else
 		answer += file_content;
@@ -185,19 +196,68 @@ std::string Client::getAnswerToSend()
 
 bool Client::isSendComplete()
 {
-	return this->fileContent.isSendComplete();
+	return this->fileContent->isSendComplete();
 }
 
-void Client::loadDataHeader()
+void Client::loadDataHeader(Receive *receiver)
 {
-	if (fileContent.setFileName(this->Request[REQ_FILE]))
+	if (this->Request[REQ_TYPE] == "GET")
 	{
-		header.setLastModified(fileContent.getLastModified());
-		this->getExtension();
-		header.setContentLength(fileContent.getContentSize());
-		header.setStatus("200 OK");
+		if (this->fileContent->setFileName(this->Request[REQ_FILE]))
+		{
+			header.setContentType(this->Request[REQ_FILE]);
+			header.setLastModified(this->fileContent->getLastModified());
+			header.setContentLength(this->fileContent->getContentSize());
+			header.setStatus("200 OK");
+			header.setServer(server->getServerName());
+		}
+		else
+			header.setStatus("404 Not Found");
+	}
+	else if (this->Request[REQ_TYPE] == "POST")
+	{
+		if (receiver->getRequest().find("POST") != std::string::npos && receiver->getisform() == false)
+		{
+			std::string body = receiver->getBody().substr(receiver->getBody().find("\r\n\r\n") + 4);
+			std::string postheader = receiver->getBody().substr(0, receiver->getBody().find("\r\n\r\n") + 4);
+
+			std::vector<std::string> lines = splitString(postheader, '\n');
+			for (size_t i = 0; i < lines.size(); i++)
+			{
+				if (lines[i].find("filename=") != std::string::npos)
+				{
+					std::string filename = lines[i].substr(lines[i].find("filename=") + 10, lines[i].size());
+					filename = filename.substr(0, filename.find("\""));
+					this->Request[REQ_FILE] += "/" + filename;
+					if (access(this->Request[REQ_FILE].c_str(), F_OK) == 0)
+					{
+						header.setStatus("403 Forbidden");
+						return;
+					}
+					std::cout << "filename: " << this->Request[REQ_FILE] << std::endl;
+					std::fstream file(this->Request[REQ_FILE], std::ios::out | std::ios::binary | std::ios::app);
+					file.write(body.c_str(), body.size());
+					file.close();
+					header.setStatus("201 Created");
+					return;
+				}
+			}
+		}
+		else
+			std::cout << "form: " << receiver->getBody() << std::endl;
+		header.setServer(server->getServerName());
+	}
+	else if (this->Request[REQ_TYPE] == "DELETE")
+	{
+		if (std::remove(this->Request[REQ_FILE].c_str()) == 0)
+			header.setStatus("200 OK");
+		else
+			header.setStatus("404 Not Found");
 		header.setServer(server->getServerName());
 	}
 	else
-		header.setStatus("404 Not Found");
+	{
+		header.setStatus("405 Method Not Allowed");
+		header.setServer(server->getServerName());
+	}
 }

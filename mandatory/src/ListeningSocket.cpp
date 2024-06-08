@@ -7,6 +7,7 @@ ListeningSocket::ListeningSocket(int myPort, Server *srv)
 	this->port = myPort;
 	this->server = srv;
 	this->client = new Client(srv);
+	this->receiver = new Receive();
 	this->socketFd = -1;
 	this->startListening();
 
@@ -14,8 +15,8 @@ ListeningSocket::ListeningSocket(int myPort, Server *srv)
 ListeningSocket::ListeningSocket(Server *srv)
 {
 	this->client = new Client(srv);
+	this->receiver = new Receive();
 	this->server = srv;
-	
 }
 
 ListeningSocket::~ListeningSocket()
@@ -87,19 +88,22 @@ ListeningSocket::ListeningSocket(int myPort, Server *srv)
 	port = myPort;
 	server = srv;
 	this->client = new Client(srv);
+	this->receiver = new Receive();
 	socketFd = -1;
 	this->startListening();
 }
 ListeningSocket::ListeningSocket(Server *srv)
 {
-	this->server = srv;
 	this->client = new Client(srv);
+	this->receiver = new Receive();
+	this->server = srv;
 }
 
 ListeningSocket::~ListeningSocket()
 {
 	stopListening();
 	delete this->client;
+	delete this->receiver;
 }
 
 bool ListeningSocket::startListening()
@@ -167,25 +171,53 @@ int ListeningSocket::getFd()
 bool ListeningSocket::sendData(int clientSocketFd)
 {
 	std::string answer = this->client->getAnswerToSend();
-	n = send(clientSocketFd, answer.c_str(), answer.size(), 0);
-	if (n < 0)
+	// std::cout << "answer: " << answer.size() << std::endl;
+	if ((send(clientSocketFd, answer.c_str(), answer.size(), 0)) < 0)
 	{
 		std::cerr << "Failed to write to client" << std::endl;
 	}
 	return this->client->isSendComplete();
 }
 
+bool ListeningSocket::receive()
+{
+	bool ret = receiver->receive(this->socketFd);
+	return(ret);
+}
+
 ListeningSocket *ListeningSocket::clone(int fd)
 {
 	ListeningSocket *newSocket = new ListeningSocket(this->server);
 	newSocket->socketFd = fd;
-	newSocket->n = this->n;
 	return newSocket;
 }
 
-void ListeningSocket::loadRequest(char *buff)
+// void print_visible(const std::string& str) {
+//     for (char ch : str) {
+//         switch (ch) {
+//             case '\n':
+//                 std::cout << "\\n";
+//                 break;
+//             case '\r':
+//                 std::cout << "\\r";
+//                 break;
+//             case '\t':
+//                 std::cout << "\\t";
+//                 break;
+//             default:
+//                 if (std::isprint(static_cast<unsigned char>(ch))) {
+//                     std::cout << ch;
+//                 } else {
+//                     std::cout << "\\x" << std::hex << std::uppercase << static_cast<int>(static_cast<unsigned char>(ch));
+//                     std::cout << std::dec;  // Reset to decimal for future use
+//                 }
+//         }
+//     }
+// }
+
+void ListeningSocket::loadRequest()
 {
-	this->client->loadCompleteClient(buff);
+	this->client->loadCompleteClient(this->receiver);
 }
 
 std::string ListeningSocket::getServerName()

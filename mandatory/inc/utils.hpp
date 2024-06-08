@@ -28,3 +28,4 @@ void pauseRequest(std::string message);
 template <typename T>
 std::string itos (T n);
 void replaceString(std::string &mainString, const std::string &searchString, const std::string &replaceString);
+int count_chars(const std::string &str, char c);

@@ -1,6 +1,5 @@
 #include "../inc/Server.hpp"
 
-
 size_t Server::getClientBodySize() { return this->maxClientBodySize; }
 bool Server::getIsDefault() { return this->isDefault; }
 std::string Server::getHost() { return this->Host; }
@@ -39,4 +38,9 @@ std::vector<int>	Server::getServerFds()
 		itb++;
 	}
 	return fd;
+}
+
+std::string Server::getCGIFolder()
+{
+	return this->cgiModule->getCGIFolder();
 }

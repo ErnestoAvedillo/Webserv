@@ -6,7 +6,13 @@ void Server::setErrorPage(std::string const &error_page) { this->errorPage = err
 void Server::setClientMaxBodySize(std::string const &max_client_body_size) { this->maxClientBodySize = stringToSizeT(max_client_body_size); }
 void Server::setRoot(std::string const &root) { this->root = root; }
 void Server::setIndex(std::string const &index) { this->index = index; }
+void Server::setCGIFolder(std::string const &str) { this->cgiModule->setCGIFolder(str); }
 void Server::addLocation(std::string const &content) { this->locations.push_back(new Location(content)); }
+
+void Server::setCGIExtension(std::string const &str) 
+{
+	this->cgiModule->setCGIMapExtensions(str);
+}
 
 void Server::setIsDefault(std::string const &is_default)
 {
