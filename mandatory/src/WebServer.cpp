@@ -54,7 +54,6 @@ void WebServer::launchServers()
 	for (size_t i = 0; i < this->servers.size(); i++)
 	{
 		sk = this->servers[i]->getServerFds();
-		// std::cout << "Server " << i << " has " << sk.size() << " sockets" << std::endl;
 		for(size_t j = 0; j < sk.size(); j++)
 		{
 			ListeningSocket *tmp = this->servers[i]->getListening(sk[j]);

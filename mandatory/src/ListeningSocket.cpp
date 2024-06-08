@@ -10,7 +10,8 @@ ListeningSocket::ListeningSocket(int myPort, Server *srv)
 	this->receiver = new Receive();
 	this->socketFd = -1;
 	if (this->startListening())
-		std::cout << CHR_GREEN <<  getLocalTime() << " [NOTICE]" << CHR_BLUE " | " RESET << "Listening on port: " CHR_GREEN<< myPort <<RESET " with file descriptor " << this->socketFd << std::endl;
+		printLog("NOTICE", "Listening on port: " CHR_GREEN + std::to_string(myPort) + RESET " with file descriptor " CHR_GREEN + std::to_string(this->socketFd));
+		// std::cout << CHR_GREEN <<  getLocalTime() << " [NOTICE]" << CHR_BLUE " | " RESET << "Listening on port: " CHR_GREEN<< myPort <<RESET " with file descriptor " << this->socketFd << std::endl;
 }
 ListeningSocket::ListeningSocket(Server *srv)
 {
