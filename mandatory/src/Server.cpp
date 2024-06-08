@@ -6,7 +6,7 @@
 /*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/27 14:24:35 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/08 03:45:33 by jcheel-n         ###   ########.fr       */
+/*   Updated: 2024/06/08 16:11:52 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,11 +113,11 @@ int Server::loadData(std::string const &content) {
 	std::string straux;
 	std::map<std::string, int> varnames = var_names_server();
 
-	std::istringstream fileContentStream(content.substr(8, content.length() - 1));
+	std::istringstream fileContentStream(content.substr(9, content.length() - 1));
 	while (std::getline(fileContentStream, line,';'))
 	{
 		line.erase(std::remove(line.begin(), line.end(), '\n'), line.end());
-		if(line == "}")
+		if(line.length() == 0 || line == "}" || line == "{")
 			continue;
 		std::map<std::string, int>::iterator it = varnames.begin();
 		while (it != varnames.end())
@@ -134,7 +134,7 @@ int Server::loadData(std::string const &content) {
 		if(line.length() == 0 || line == "}" || line == "{" )
 			continue;
 		else if (it == varnames.end())
-			std::cerr << "Error: Unrecognized variable " << line.substr(0, line.find(":")) << std::endl;
+			std::cerr << "Error: Unrecognized variable " << line.substr(0, line.find(":")) << "$" << std::endl;
 		else
 		{
 			straux = line.substr(line.find(":") + 1, line.size());
@@ -173,7 +173,6 @@ void Server::createListeningSockets()
 	for (size_t i = 0; i < this->ports.size(); i++)
 	{
 		ls = new ListeningSocket(stringToSizeT(ports[i]), this);
-		std::cout << "Listening on port: " CHR_GREEN<< ports[i] <<RESET " with file descriptor " << ls->getFd() << std::endl;
 		this->port[ls->getFd()] = ls;
 	}
 }
