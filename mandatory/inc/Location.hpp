@@ -11,7 +11,7 @@
 #define VAR_LOC_RETURN "return"
 #define VAR_LOC_INDEX "index"
 #define VAR_LOC_ALLOW_METHODS "allow_methods"
-#define VAR_LOC_AUTOINDEX "auto_index"
+#define VAR_LOC_AUTOINDEX "autoindex"
 #define VAR_LOC_ALIAS "alias"
 #define STR_START "location:{"
 class Location 

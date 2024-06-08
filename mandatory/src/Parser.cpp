@@ -12,7 +12,7 @@ bool Parser::checkPorts(std::vector<std::string> const &ports)
 
 bool Parser::checkPort(std::string port)
 {
-	if (isNumber(port))
+	if (!isNumber(port))
 	{
 		std::cerr << "Error: Port \"" << port << "\" not a number." << std::endl;
 		return false;
@@ -78,11 +78,17 @@ bool Parser::checkRoot(std::string root)
 	return true;
 }
 
-bool Parser::checkIndex(std::string index)
+bool Parser::checkIndex(std::string index, std::string root)
 {
 	if (index.length() == 0)
 	{
 		std::cerr << "Error: Index not defined" << std::endl;
+		return false;
+	}
+
+	if (isFilePermissions(root + "/" + index, R_OK) == false)
+	{
+		std::cerr << "Error: Index \"" << index << "\" not a valid file." << std::endl;
 		return false;
 	}
 	return true;

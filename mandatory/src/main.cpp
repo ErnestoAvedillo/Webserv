@@ -6,7 +6,7 @@
 /*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/07 11:21:58 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/08 02:34:47 by jcheel-n         ###   ########.fr       */
+/*   Updated: 2024/06/08 03:20:52 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,8 @@ int main(int av, char **ac)
 	// webServer.initalizer();
 
 	webServer.processConfigFile();
-	webServer.parseInfo();
+	if (!webServer.parseInfo())
+		return 1;
 	webServer.launchServers();
 	return 0;
 }

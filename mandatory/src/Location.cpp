@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
+/*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/29 17:38:18 by eavedill          #+#    #+#             */
-/*   Updated: 2024/04/29 18:45:45 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/08 03:46:23 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ Location::Location()
 Location::Location(std::string const &content)
 {
 	std::cout << "Location constructor" << std::endl;
-	std::cout << content << std::endl;
+	std::cout << "Location : " << content << std::endl;
 	this->loadData(content);
 }
 // Copy constructor
@@ -96,39 +96,33 @@ Location::Location(const Location& other)
 		std::string line;
 		std::string straux;
 		std::map<std::string, int> varnames = var_names_location();
-		if (std::count(content.begin(), content.end(), '{') - std::count(content.begin(), content.end(), '}') != 0)
-		{
-			std::cerr << "Error: Llaves no balanceadas" << std::endl;
-			return -1;
-		}
-		if (content.find(start_string) != 0)
-		{
-			std::cerr << "Error: La configuración de location debe empezar con \"" + start_string + "\"" << std::endl;
-			return -1;
-		}
 
-		std::istringstream fileContentStream(content.substr(start_string.length(), content.length() - 1));
+		std::istringstream fileContentStream(content);
 		while (std::getline(fileContentStream, line, ';'))
 		{
+			line.erase(std::remove(line.begin(), line.end(), '\n'), line.end());
 			if (line == "}")
 				continue;
 			std::map<std::string, int>::iterator it = varnames.begin();
 			while (it != varnames.end())
 			{
-				if (line.find(it->first) != std::string::npos)
+				if (line.substr(0 , line.find(":") ) == it->first)
 				{
 					if (it->second == 1)
-						std::cout << "Error: " << it->first << " ha sido ya asignado." << std::endl;
+						std::cerr << "Error: duplicated variable " << it->first << std::endl;
 					it->second = 1;
 					break;
 				}
 				it++;
 			}
-			if (it == varnames.end())
-				std::cout << "Error: Variable no reconocida: " << line.substr(0, line.find(":")) << std::endl;
+			if (line.length() == 0 || line == "}" || line == "{")
+				continue;
+			else if (it == varnames.end())
+				std::cerr << "Error: Unrecognized variable " << line.substr(0, line.find(":")) << "$" << std::endl;
 			else
 			{
 				straux = line.substr(line.find(":") + 1, line.size());
+				std::cout << "straux: " << it->first << std::endl;
 				(this->*getLocationMethods()[it->first])(straux);
 			}
 		}

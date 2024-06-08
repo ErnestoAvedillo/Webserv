@@ -6,7 +6,7 @@
 
 Receive::Receive() : buffer(""), request(""), body(""), isbody(false), maxSize(0), sizeSent(0), isform(false)
 {
-    std::cerr << "Receive created" << std::endl;
+    // std::cerr << "Receive created" << std::endl;
 }
 
 Receive::~Receive()

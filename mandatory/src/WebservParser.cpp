@@ -145,8 +145,8 @@ void WebServer::processConfigFile() // WebServer processConfigFile
 
 static bool checkVariables(Server *server)
 {
-	// if (Parser::checkPorts(server->getPorts()) == false)
-	// 	exit(1);
+	if (Parser::checkPorts(server->getPorts()) == false)
+		exit(1);
 	if (Parser::checkHost(server->getHost()) == false)
 		exit(1);
 	if (Parser::checkServerName(server->getServerName()) == false)
@@ -155,7 +155,7 @@ static bool checkVariables(Server *server)
 		exit(1);
 	if (Parser::checkRoot(server->getRoot()) == false)
 		exit (1);
-	if (Parser::checkIndex(server->getIndex()) == false)
+	if (Parser::checkIndex(server->getIndex(), server->getRoot()) == false)
 		exit(1);
 	return true;
 }
@@ -166,6 +166,19 @@ bool WebServer::parseInfo()
 	{
 		checkVariables(this->servers[i]);
 		this->servers[i]->print();
+	}
+	std::vector<std::string> ports;
+	for (size_t i = 0; i < this->servers.size(); i++)
+	{
+		for (size_t j = 0; j < this->servers[i]->getPorts().size(); j++)
+		{
+			if (std::find(ports.begin(), ports.end(), this->servers[i]->getPorts()[j]) != ports.end())
+			{
+				std::cerr << "Error: Port " << this->servers[i]->getPorts()[j] << " duplicated" << std::endl;
+				return false;
+			}
+			ports.push_back(this->servers[i]->getPorts()[j]);
+		}
 	}
 	return (true);
 	

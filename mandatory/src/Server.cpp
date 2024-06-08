@@ -6,7 +6,7 @@
 /*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/27 14:24:35 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/08 03:01:44 by jcheel-n         ###   ########.fr       */
+/*   Updated: 2024/06/08 03:45:33 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,11 +71,10 @@ std::map<std::string, void (Server::*)(const std::string &)> ServerSetters()
 Server::Server(std::string &str) 
 {
 	this->cgiModule = new CGI();
-	std::cout << "Server: " << str << std::endl;
 	while (str.find("location") != std::string::npos)
 	{
-		std::string aux = str.substr(str.find("location"));
-		std::string location  = aux.substr(8, aux.find("}") - 8);
+		std::string aux = str.substr(str.find("location:{"));
+		std::string location  = aux.substr(10, aux.find("}") - 10);
 		str.erase(str.find("location"), aux.find("}") + 1);
 		this->addLocation(location);
 	}
@@ -123,7 +122,7 @@ int Server::loadData(std::string const &content) {
 		std::map<std::string, int>::iterator it = varnames.begin();
 		while (it != varnames.end())
 		{
-			if (line.find(it->first) != std::string::npos)
+			if (line.substr(0 , line.find(":") ) == it->first)
 			{
 				if (it->second == 1)
 					std::cerr << "Error: duplicated variable " << it->first << std::endl;
@@ -135,7 +134,7 @@ int Server::loadData(std::string const &content) {
 		if(line.length() == 0 || line == "}" || line == "{" )
 			continue;
 		else if (it == varnames.end())
-			std::cerr << "Error: Unrecognized variable " << line.substr(0, line.find(":")) << "$" << std::endl;
+			std::cerr << "Error: Unrecognized variable " << line.substr(0, line.find(":")) << std::endl;
 		else
 		{
 			straux = line.substr(line.find(":") + 1, line.size());

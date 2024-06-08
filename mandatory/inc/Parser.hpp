@@ -13,5 +13,5 @@ class Parser
 		static bool checkServerName(std::string serverName);
 		static bool checkErrorPage(std::string errorPage);
 		static bool checkRoot(std::string root);
-		static bool checkIndex(std::string index);
+		static bool checkIndex(std::string index, std::string root);
 };
