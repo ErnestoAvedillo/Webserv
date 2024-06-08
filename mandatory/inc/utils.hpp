@@ -7,6 +7,15 @@
 #include <netinet/in.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include "colors.h"
+#include <iostream>
+#include <netinet/in.h>
+#include <cstdlib>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <string>
+#include <vector>
+#include <sstream>
 
 template <typename T>
 bool isrange(T value, T min, T max);
@@ -29,3 +38,7 @@ template <typename T>
 std::string itos (T n);
 void replaceString(std::string &mainString, const std::string &searchString, const std::string &replaceString);
 int count_chars(const std::string &str, char c);
+
+std::string getTime();
+std::string getLocalTime();
+void printLog(std::string type ,std::string message);

@@ -9,8 +9,8 @@ ListeningSocket::ListeningSocket(int myPort, Server *srv)
 	this->client = new Client(srv);
 	this->receiver = new Receive();
 	this->socketFd = -1;
-	this->startListening();
-
+	if (this->startListening())
+		std::cout << CHR_GREEN <<  getLocalTime() << " [NOTICE]" << CHR_BLUE " | " RESET << "Listening on port: " CHR_GREEN<< myPort <<RESET " with file descriptor " << this->socketFd << std::endl;
 }
 ListeningSocket::ListeningSocket(Server *srv)
 {
@@ -58,7 +58,7 @@ bool ListeningSocket::startListening()
 	// Bind the socket to the server address
 	if (bind(socketFd, (struct sockaddr *)&serverAddress, sizeof(serverAddress)) < 0)
 	{
-		std::cerr << "Failed to bind socket to address of port " << port << std::endl;
+		printLog("ERROR", "Failed to bind socket to address of port " CHR_RED + std::to_string(port) + RESET);
 		return false;
 	}
 
