@@ -3,7 +3,7 @@
 
 Header::Header()
 {
-	Version = "1.1 ";
+	Version = "1.1";
 	ContentLength = 0;
 	ContentType = "text/html";
 	this->setDate();
@@ -15,6 +15,7 @@ std::string Header::generateHeader() const
 {
 	std::string header;
 	
+	std::cout << "Version: $" << Version << "$" << std::endl;
 	header = "HTTP/" + Version + " " + Status + "\r\n"; 
 	header += "Server: " + Server + "\r\n";
 	header += "Date: " + Date + "\r\n";
@@ -24,6 +25,7 @@ std::string Header::generateHeader() const
 		header += "Content-length: " + toString(ContentLength) + "\r\n";
 	header += "Content-Type: " + ContentType + "\r\n";
 	header += "\r\n";
+	std::cout << "header: " << header << std::endl;
 	return header;
 }
 
