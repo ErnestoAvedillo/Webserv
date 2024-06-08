@@ -6,7 +6,7 @@
 /*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/29 17:38:18 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/08 03:46:23 by jcheel-n         ###   ########.fr       */
+/*   Updated: 2024/06/08 15:03:37 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@ std::map<std::string, int> var_names_location()
 	varnames[VAR_LOC_ALLOW_METHODS] = 0;
 	varnames[VAR_LOC_AUTOINDEX] = 0;
 	varnames[VAR_LOC_ALIAS] = 0;
+	varnames[VAR_LOC_CGI_PATH] = 0;
+	varnames[VAR_LOC_CGI_EXTENSION] = 0;
 	return varnames;
 }
 // Method to get the methods of the location
@@ -36,6 +38,8 @@ std::map<std::string, void (Location::*)(const std::string&)> getLocationMethods
 	locationMethods[VAR_LOC_ALLOW_METHODS] = &Location::setAllowMethods;
 	locationMethods[VAR_LOC_AUTOINDEX] = &Location::setAutoindex;
 	locationMethods[VAR_LOC_ALIAS] = &Location::setAlias;
+	locationMethods[VAR_LOC_CGI_PATH] = &Location::setCgiPath;
+	locationMethods[VAR_LOC_CGI_EXTENSION] = &Location::setCgiExtension;
 	return locationMethods;
 }
 
@@ -88,6 +92,8 @@ Location::Location(const Location& other)
 	void Location::setAllowMethods(const std::string &allow) { allow_methods = allow; }
 	void Location::setAutoindex(const std::string &autoidx) { autoindex = autoidx; }
 	void Location::setAlias(const std::string &als) { alias = als; }
+	void Location::setCgiPath(const std::string &cgi_path) { this->cgi_path = cgi_path; }
+	void Location::setCgiExtension(const std::string &cgi_ext) { this->cgi_extension = cgi_ext; }
 
 // Load data from a string configuration
 	int Location::loadData(const std::string &content)
@@ -122,7 +128,7 @@ Location::Location(const Location& other)
 			else
 			{
 				straux = line.substr(line.find(":") + 1, line.size());
-				std::cout << "straux: " << it->first << std::endl;
+				std::cout << "straux: " << straux << std::endl;
 				(this->*getLocationMethods()[it->first])(straux);
 			}
 		}
@@ -139,4 +145,6 @@ void Location::print()
 	std::cout << "Allow Methods: " << allow_methods << std::endl;
 	std::cout << "Autoindex: " << autoindex << std::endl;
 	std::cout << "Alias: " << alias << std::endl;
+	std::cout << "Cgi Path: " << cgi_path << std::endl;
+	std::cout << "Cgi Extension: " << cgi_extension << std::endl;
 }
