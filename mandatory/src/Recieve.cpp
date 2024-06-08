@@ -60,9 +60,10 @@ bool Receive::receiveHeader(int fd)
     {
         this->buffer.clear();
         this->buffer.append(buf, ret);
-        if (buffer.find("\r\n\r\n") != std::string::npos)
+        std::string tmp = request + this->buffer;
+        if (tmp.find("\r\n\r\n") != std::string::npos || tmp.find("\n\n") != std::string::npos)
         {
-            request += this->buffer.substr(0, this->buffer.find("\r\n\r\n"));
+            request += tmp.substr(0, tmp.find("\r\n\r\n"));
             if (request.find("Content-Length: ") != std::string::npos)
             {
                 std::string contentLength = request.substr(request.find("Content-Length: ") + 16, request.find("\r\n", request.find("Content-Length: ")));
@@ -84,7 +85,7 @@ bool Receive::receiveHeader(int fd)
             return false;
         }
         else
-            request += this->buffer;
+            request += tmp;
         std::memset(buf, 0, MAX_MSG_SIZE);
     }
     if (ret < 0) // This is not handle as an error 

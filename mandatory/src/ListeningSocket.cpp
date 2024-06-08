@@ -174,6 +174,7 @@ bool ListeningSocket::sendData(int clientSocketFd)
 {
 	std::string answer = this->client->getAnswerToSend();
 	// std::cout << "answer: " << answer.size() << std::endl;
+	// std::cout << "answer: " << answer << std::endl;
 	if ((send(clientSocketFd, answer.c_str(), answer.size(), 0)) < 0)
 	{
 		std::cerr << "Failed to write to client" << std::endl;
@@ -219,6 +220,8 @@ ListeningSocket *ListeningSocket::clone(int fd)
 
 void ListeningSocket::loadRequest()
 {
+	// std::cout << "-------------Request-------------" << std::endl;
+	// std::cout << receiver->getRequest() << std::endl;
 	this->client->loadCompleteClient(this->receiver);
 }
 
