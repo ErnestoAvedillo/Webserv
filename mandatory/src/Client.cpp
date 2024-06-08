@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
+/*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2024/06/04 13:33:15 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/08 23:38:01 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -242,6 +242,11 @@ void Client::loadDataHeader(Receive *receiver)
 					return;
 				}
 			}
+		}
+		else if (receiver->getisform())
+		{
+			std::cout << "form: " << receiver->getBody() << std::endl;
+			header.setStatus("201 Created");
 		}
 		else
 			std::cout << "form: " << receiver->getBody() << std::endl;
