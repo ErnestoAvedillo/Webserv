@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/27 14:24:35 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/25 15:54:52 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/08 03:01:44 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,66 +21,75 @@ std::map<std::string, int> var_names_server()
 	varnames[VAR_ERROR_PAGE] = 0;
 	varnames[VAR_ROOT] = 0;
 	varnames[VAR_INDEX] = 0;
+	varnames[VAR_CGI_EXTENSION] = 0;
+	varnames[VAR_CGI_FOLDER] = 0;
 	varnames[VAR_CLIENT_MAX_BODY_SIZE] = 0;
 	varnames[VAR_LOCATIONS] = 0;
 	return varnames;
 }
 
-std::map<std::string, void (Server::*)(const std::string &)> getServerMethods()
+std::map<std::string, void (Server::*)(const std::string &)> ServerSetters()
 {
 	std::map<std::string, void (Server::*)(const std::string &)> serverMethods;
 
-	serverMethods[VAR_PORT] = &Server::setPort;
+	serverMethods[VAR_PORT] = &Server::setPorts;
 	serverMethods[VAR_HOST] = &Server::setHost;
 	serverMethods[VAR_SERVER_NAME] = &Server::setServerName;
 	serverMethods[VAR_ERROR_PAGE] = &Server::setErrorPage;
 	serverMethods[VAR_ROOT] = &Server::setRoot;
 	serverMethods[VAR_INDEX] = &Server::setIndex;
+	serverMethods[VAR_CGI_EXTENSION] = &Server::setCGIExtension;
+	serverMethods[VAR_CGI_FOLDER] = &Server::setCGIFolder;
 	serverMethods[VAR_CLIENT_MAX_BODY_SIZE] = &Server::setClientMaxBodySize;
-	serverMethods[VAR_LOCATIONS] = &Server::addLocation;
+	// serverMethods[VAR_LOCATIONS] = &Server::addLocation;
 	return serverMethods;
 }
 
-void	Server::setDefaultData()
-{
-	this->isDefault = false;
-	this->port[443] = new ListeningSocket((size_t)443, this);
-	this->maxClientBodySize = 1024;
-	this->Host = "DefaultHost";
-	this->serverName = "DefaultServer";
-	this->errorPage = "/Error";
-	this->root = "/";
-	this->index = "index.html";
-}
+// void	Server::setDefaultData()
+// {
+// 	this->isDefault = false;
+// 	this->port[443] = new ListeningSocket((size_t)443, this);
+// 	this->maxClientBodySize = 1024;
+// 	this->Host = "DefaultHost";
+// 	this->serverName = "DefaultServer";
+// 	this->errorPage = "/Error";
+// 	this->root = "/";
+// 	this->index = "index.html";
+// }
 
-Server::Server()
+// Server::Server()
+// {
+// 	//this->setDefaultData();
+// 	std::map<int, ListeningSocket*>::iterator itb = this->port.begin();
+// 	std::map<int, ListeningSocket*>::iterator ite = this->port.end();
+// 	while (itb != ite){
+// 		itb->second->startListening();
+// 		itb++;
+// 	}
+// }
+
+Server::Server(std::string &str) 
 {
-	//this->setDefaultData();
-	std::map<int, ListeningSocket*>::iterator itb = this->port.begin();
-	std::map<int, ListeningSocket*>::iterator ite = this->port.end();
-	while (itb != ite){
-		itb->second->startListening();
-		itb++;
+	this->cgiModule = new CGI();
+	std::cout << "Server: " << str << std::endl;
+	while (str.find("location") != std::string::npos)
+	{
+		std::string aux = str.substr(str.find("location"));
+		std::string location  = aux.substr(8, aux.find("}") - 8);
+		str.erase(str.find("location"), aux.find("}") + 1);
+		this->addLocation(location);
 	}
-}
-
-Server::Server(std::string const &str) 
-{
-	//this->setDefaultData();
 	if(this->loadData(str) == -1)
 	{
 		std::cerr << CHR_RED << "Error: No se ha podido cargar la configuración del servidor. Parámetros por defecto establecidos." << RESET << std::endl;
 		exit(1);
 	}
-//	std::map<int, ListeningSocket*>::iterator itb = this->port.begin();
-//	std::map<int, ListeningSocket*>::iterator ite = this->port.end();
-//	while (itb != ite) {
-//		itb->second->startListening();
-//		itb++;
-//	}
 }
 
-Server::~Server() {}
+Server::~Server() 
+{
+	delete cgiModule;
+}
 
 Server::Server(Server const &copy) {
 	*this = copy;
@@ -96,7 +105,6 @@ Server &Server::operator=(Server const &copy) {
 		this->errorPage = copy.errorPage;
 		this->root = copy.root;
 		this->index = copy.index;
-		//this->locations = copy.locations;
 	}
 	return *this;
 }
@@ -105,20 +113,11 @@ int Server::loadData(std::string const &content) {
 	std::string line;
 	std::string straux;
 	std::map<std::string, int> varnames = var_names_server();
-	if (std::count(content.begin(), content.end(), '{') - std::count(content.begin(), content.end(), '}') != 0)
-	{
-		std::cerr << "Error: Llaves no balanceadas" << std::endl;
-		return -1;
-	}
-	if(content.find("server:{") != 0)
-	{
-		std::cerr << "Error: La configuración del servidor debe empezar con \"server:{\"" << std::endl;
-		return -1;
-	}
-	
+
 	std::istringstream fileContentStream(content.substr(8, content.length() - 1));
 	while (std::getline(fileContentStream, line,';'))
 	{
+		line.erase(std::remove(line.begin(), line.end(), '\n'), line.end());
 		if(line == "}")
 			continue;
 		std::map<std::string, int>::iterator it = varnames.begin();
@@ -127,21 +126,28 @@ int Server::loadData(std::string const &content) {
 			if (line.find(it->first) != std::string::npos)
 			{
 				if (it->second == 1)
-					std::cerr << "Error: " << it->first << " ha sido ya asignado." << std::endl;
+					std::cerr << "Error: duplicated variable " << it->first << std::endl;
 				it->second = 1;
 				break;
 			}
 			it++;
 		}
-		if (it == varnames.end())
-			std::cerr << "Error: Variable no reconocida: " << line.substr(0, line.find(":")) << std::endl;
+		if(line.length() == 0 || line == "}" || line == "{" )
+			continue;
+		else if (it == varnames.end())
+			std::cerr << "Error: Unrecognized variable " << line.substr(0, line.find(":")) << "$" << std::endl;
 		else
 		{
 			straux = line.substr(line.find(":") + 1, line.size());
-			(this->*getServerMethods()[it->first])(straux);
+			(this->*ServerSetters()[it->first])(straux);
 		}
 	}
 	return 0;
+}
+
+CGI *Server::cgiModuleClone()
+{
+	return this->cgiModule->clone();
 }
 
 void	Server::print()
@@ -162,3 +168,13 @@ void	Server::print()
 	std::cout << "-----------------------------------------------" << std::endl;
 }
 
+void Server::createListeningSockets()
+{
+	ListeningSocket *ls;
+	for (size_t i = 0; i < this->ports.size(); i++)
+	{
+		ls = new ListeningSocket(stringToSizeT(ports[i]), this);
+		std::cout << "Listening on port: " CHR_GREEN<< ports[i] <<RESET " with file descriptor " << ls->getFd() << std::endl;
+		this->port[ls->getFd()] = ls;
+	}
+}

@@ -1,26 +1,27 @@
 #include "../inc/FileContent.hpp"
 
-FileContent::FileContent()
+FileContent::FileContent(Server *srv)
 {
+	server = srv;
 	fileName = "";
 	sendComplete = false;
 	isFileOpen = false;
 	isFistFragment = true;
+	this->cgiModule = srv->cgiModuleClone();
 }
-FileContent::FileContent(const std::string &MyfileName) 
+FileContent::FileContent(const std::string &MyfileName, Server *srv) 
 {
-	if (stat(fileName.c_str(), &fileStat) < 0)
-		isFileOpen = false;
-	else
-	{
-		this->setFileName(MyfileName);
-		isFileOpen = true;
-	}
+	server = srv;
+	isFileOpen = this->setFileName(MyfileName);
 	sendComplete = false;
 	isFistFragment = true;
+	this->cgiModule = srv->cgiModuleClone();
 }
 
-FileContent::~FileContent() {}
+FileContent::~FileContent() 
+{
+	delete cgiModule;
+}
 
 int FileContent::openFile()
 {
@@ -36,22 +37,32 @@ std::string FileContent::getContent()
 	std::string errorReturn = "Error: " + fileName + " File not found";
 	if (isFileOpen)
 	{
-		content = "";
-		char buffer[MAX_SENT_BYTES];
-		if(file.read(buffer, MAX_SENT_BYTES))
+		if (cgiModule->getIsCGI())
 		{
-			if(file.eof())
-			{
-				file.close();
-				sendComplete = true;
-			}
-			content.append(buffer, file.gcount());
-			return content;
+			std::cout << "is a CGI file: " << fileName << std::endl;
+			sendComplete = true;
+			return cgiModule->execute();
 		}
 		else
 		{
-			file.close();
-			content.append(buffer, file.gcount());
+			std::cout << "is a normal file: " << fileName << std::endl;
+			content = "";
+			char buffer[MAX_SENT_BYTES];
+			if(file.read(buffer, MAX_SENT_BYTES))
+			{
+				if(file.eof())
+				{
+					file.close();
+					sendComplete = true;
+				}
+				content.append(buffer, file.gcount());
+				return content;
+			}
+			else
+			{
+				file.close();
+				content.append(buffer, file.gcount());
+			}
 		}
 	}
 	else
@@ -64,11 +75,32 @@ std::string FileContent::getContent()
 
 bool FileContent::setFileName(const std::string &file_name)
 {
-	if (file_name.find("?") != std::string::npos)
-		fileName = file_name.substr(0, file_name.find("?"));
+	std::string tmp = file_name.substr(0, file_name.find("?"));
+	bool filefound = false;
+	std::cout << "File name: " << file_name << std::endl;
+	if (stat(tmp.c_str(), &fileStat) == 0)
+	{
+		filefound = true;
+	}
 	else
-		fileName = file_name;
-	isFileOpen = this->openFile();
+	{
+		std::cout << "File <" << file_name << "> not found: " << filefound << std::endl;
+		return false;
+	}
+	if (cgiModule->setIsCGI(file_name))
+	{
+		cgiModule->setFileName(file_name);
+		isFileOpen = true;
+	}
+	else
+	{
+		if(stat(fileName.c_str(), &fileStat))
+		{
+			fileName = file_name;
+			isFileOpen = this->openFile();
+		}
+
+	}
 	if (!isFileOpen)
 	{
 		std::cerr << "File not open: " << fileName << std::endl;

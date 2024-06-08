@@ -7,6 +7,10 @@ WebServer::WebServer()
 
 WebServer::~WebServer()
 {
+	for (size_t i = 0; i < this->servers.size(); i++)
+		delete this->servers[i];
+    for (std::map<int, ListeningSocket *>::iterator it = serverSocket.begin(); it != serverSocket.end(); ++it)
+		delete it->second;
 	std::cerr << "WebServer destroyed" << std::endl;
 }
 
@@ -24,12 +28,18 @@ WebServer &WebServer::operator=(WebServer const &copy)
 	return *this;
 }
 
+void WebServer::createListeningSockets()
+{
+	for (size_t i = 0; i < this->servers.size(); i++)
+		this->servers[i]->createListeningSockets();
+}
+
 void WebServer::launchServers()
 {
+	std::cout << "Launching servers..." << std::endl;
+	
+	this->createListeningSockets();
 	std::vector<int> sk ;
-	for (size_t i = 0; i < MAX_CLIENTS; i++) {
-    	client_events[i] = 0; // Initialize all elements to zero
-	}
     try
     {
 	    this->createQueue();
@@ -37,13 +47,14 @@ void WebServer::launchServers()
     }
     catch(const std::exception& e)
     {
-        std::cerr << CHR_RED"ERROR: " << e.what() << RESET << '\n';
+        std::cerr << CHR_RED"Error: " << e.what() << RESET << '\n';
         exit(1);
     }
-    
+
 	for (size_t i = 0; i < this->servers.size(); i++)
 	{
 		sk = this->servers[i]->getServerFds();
+		// std::cout << "Server " << i << " has " << sk.size() << " sockets" << std::endl;
 		for(size_t j = 0; j < sk.size(); j++)
 		{
 			ListeningSocket *tmp = this->servers[i]->getListening(sk[j]);
@@ -53,7 +64,7 @@ void WebServer::launchServers()
 	this->eventLoop();
 }
 
-
+bool WebServer::ExitFlag = false;
 
 void	WebServer::eventLoop()
 {
@@ -62,19 +73,18 @@ void	WebServer::eventLoop()
 	#elif __linux__
 		struct epoll_event evList[MAX_EVENTS];
 	#endif
-	char buf[MAX_MSG_SIZE] = {0};
+	signal(SIGINT, &WebServer::exit_handler);
 	int currfd = 0;
 	int fd;
 	int type_event;
 	int flag;
 	int num_events = 0;
-	while (1)
+	while (!WebServer::ExitFlag)
 	{
 		num_events = waitEvent(evList);
 		if (num_events == -1)
-		{
-			throw("Error: could not wait for events");
-		}
+			continue ;
+		std::cerr << "Event " << num_events << std::endl;
 		for (int i = 0; i < num_events; i++)
 		{
 			#ifdef __APPLE__
@@ -96,16 +106,25 @@ void	WebServer::eventLoop()
 			{
 				delete acceptedSocket[currfd];
 				acceptedSocket.erase(currfd);
+				break ;
 			}
+			// else if (type_event & EPOLLOUT && type_event & EPOLLIN)
+			// {
+			// 	std::cerr << "READWRITE" << std::endl;
+			// }
 			else if (type_event == (READ_EVENT))
 			{
-				recv(currfd, buf, sizeof(buf) * MAX_MSG_SIZE, 0);
-				this->acceptedSocket[currfd]->loadRequest(buf);
-				#ifdef __APPLE__
-					modifEvent(evList[i], READ_EVENT, WRITE_EVENT);
-				#elif __linux__
-					modifEvent(evList[i], WRITE_EVENT);
-				#endif
+				if (this->acceptedSocket[currfd]->receive() == true)
+				{
+					this->acceptedSocket[currfd]->loadRequest();
+					#ifdef __APPLE__
+						modifEvent(evList[i], READ_EVENT, WRITE_EVENT);
+					#elif __linux__
+						modifEvent(evList[i], WRITE_EVENT);
+					#endif
+				}
+				else
+					continue;
 			}
 			else if (type_event == (WRITE_EVENT))
 			{
@@ -120,5 +139,14 @@ void	WebServer::eventLoop()
 				std::cerr << "Unknown event " << type_event << std::endl;
 			}
 		}
+	}
+}
+
+void WebServer::exit_handler(int signum)
+{
+	if (signum == SIGINT)
+	{
+		std::cerr << "Exiting..." << std::endl;
+		WebServer::ExitFlag = true;
 	}
 }

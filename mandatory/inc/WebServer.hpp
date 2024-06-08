@@ -31,10 +31,10 @@
 # include <netdb.h>
 # include <arpa/inet.h>
 # include "colors.h"
+# include "Parser.hpp"
 
 #define BACKLOG 10
 #define MAX_CLIENTS 100
-#define MAX_MSG_SIZE 1024
 #define MAX_EVENTS 200
 //  The backlog parameter defines the maximum length for the queue of pending
 //      connections.  If a connection request arrives with the queue full, the
@@ -42,11 +42,9 @@
 
 class WebServer {
 	private:
-		
-		
 		std::ifstream		configFile;
 		std::string			configFilename;
-		std::string 		fileContent;
+		std::string 		configFileString;
 		/* Socket Configuration */
 		std::map<int, ListeningSocket *>	serverSocket;
 		std::map<int, ListeningSocket *>	acceptedSocket;
@@ -54,38 +52,30 @@ class WebServer {
 		std::vector<Server *>	servers;
 		std::map<std::string, std::string>	mimeTypes;
 		std::map<int, std::string>	errorPages;
-		
-		
+
 		int kq;
-		int client_events[MAX_CLIENTS];
-		void	processConfigFile();
 	public:
 		WebServer();
 		~WebServer();
 		WebServer(WebServer const &copy);
 		WebServer &operator=(WebServer const &copy);
 
+		void createListeningSockets();
+		bool	checkSyntax();
+		bool	parseInfo();
+		void	processConfigFile();
 		void	loadConfigFile(std::string configFile);
-		
 		void	launchServers();
-		
-		
-//		void	createSocket();
-//		void	Set();
 		void	eventLoop();
-		
-		// int getConnection(int fd);
-		// int	addConnection(int fd);
-		// int	removeConnection(int fd);
 		struct sockaddr_in convertHost(std::string hostname, int port);
-
 		void removeEventFd(int fd, int type);
 		void addEvent(int fd, int type);
 		void addEventSet();
-		//Functions changing with Operating sistem.
 		void createQueue ();
 		int acceptNewEvent(int curfd);
-		#ifdef __APPLE__
+		static bool ExitFlag;
+		static void exit_handler(int signum);
+#ifdef __APPLE__
 			int waitEvent(struct kevent *evList);
 			void modifEvent(struct kevent eventList, int typeRem, int typeAdd);
 		#elif __linux__

@@ -25,6 +25,7 @@
 #include <string.h>
 #include "Client.hpp"
 #include "Server.hpp"
+#include "Receive.hpp"
 
 
 #define MAX_CONNECTIONS 10
@@ -33,6 +34,9 @@ class Server;
 
 class Client;
 
+class Receive;
+
+
 // #define MAX_EVENTS 10
 class ListeningSocket
 {
@@ -40,9 +44,9 @@ private:
 	Server *server;
 	int port;
 	int socketFd;
-	int n;
-	// char *buffer;
 	Client *client;
+	Receive *receiver;
+
 	//void handleConnection(int clientSocketFd);
 
 public:
@@ -55,8 +59,9 @@ public:
 	int getPort();
 	int getFd();
 	bool sendData(int);
-	void loadRequest(char *buff);
+	void loadRequest();
 	std::string getServerName();
 	ListeningSocket *clone(int fd);
 	Client *getClientPtr();
+	bool receive();
 };

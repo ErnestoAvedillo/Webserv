@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Header.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/20 16:05:31 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/21 06:44:31 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/05/26 12:59:58 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include <map>
 #include <iostream>
 #include <ctime>
-#include "../inc/toString.hpp"
+#include "../inc/utils.hpp"
 
 class Header 
 {

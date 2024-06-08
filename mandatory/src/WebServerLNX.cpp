@@ -30,7 +30,8 @@ void	WebServer::addEventSet()
 
 int WebServer::waitEvent(struct epoll_event *evList)
 {
-	int num_events = epoll_wait(this->kq, evList, MAX_EVENTS, -1);
+	int timeout = -1;
+	int num_events = epoll_wait(this->kq, evList, MAX_EVENTS, timeout);
 	return num_events;
 }
 

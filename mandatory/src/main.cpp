@@ -6,7 +6,7 @@
 /*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/07 11:21:58 by eavedill          #+#    #+#             */
-/*   Updated: 2024/05/16 21:23:08 by jcheel-n         ###   ########.fr       */
+/*   Updated: 2024/06/08 02:34:47 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,16 +14,20 @@
 
 int main(int av, char **ac)
 {
-		if (av != 2)
+	if (av != 2)
 	{
-		std::cerr << "Error: No se ha pasado el archivo de configuración" << std::endl;
+		std::cerr << "usage: ./Webserv <filename>" << std::endl;
 		return 1;
 	}
 	WebServer webServer;
 	webServer.loadConfigFile(ac[1]);
-	// webServer.checkConfig();
+	if (!webServer.checkSyntax())
+		return 1;
+
 	// webServer.initalizer();
-	// webServer.parseInfo();
+
+	webServer.processConfigFile();
+	webServer.parseInfo();
 	webServer.launchServers();
 	return 0;
 }
