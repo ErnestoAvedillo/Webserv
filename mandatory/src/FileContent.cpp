@@ -9,7 +9,7 @@ FileContent::FileContent(Server *srv)
 	isFistFragment = true;
 	this->cgiModule = srv->cgiModuleClone();
 }
-FileContent::FileContent(const std::string &MyfileName, Server *srv) 
+FileContent::FileContent(std::string &MyfileName, Server *srv) 
 {
 	server = srv;
 	isFileOpen = this->setFileName(MyfileName);
@@ -73,7 +73,7 @@ std::string FileContent::getContent()
 	return content;
 }
 
-bool FileContent::setFileName(const std::string &file_name)
+bool FileContent::setFileName(std::string &file_name)
 {
 	std::string tmp = file_name.substr(0, file_name.find("?"));
 	bool filefound = false;
@@ -81,6 +81,7 @@ bool FileContent::setFileName(const std::string &file_name)
 	if (stat(tmp.c_str(), &fileStat) == 0)
 	{
 		filefound = true;
+		file_name = tmp;
 	}
 	else
 	{
