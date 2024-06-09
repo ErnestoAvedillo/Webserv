@@ -6,7 +6,7 @@
 /*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/29 17:38:18 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/08 15:03:37 by jcheel-n         ###   ########.fr       */
+/*   Updated: 2024/06/09 01:28:10 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,6 @@ Location::Location()
 Location::Location(std::string const &content)
 {
 	std::cout << "Location constructor" << std::endl;
-	std::cout << "Location : " << content << std::endl;
 	this->loadData(content);
 }
 // Copy constructor
@@ -128,7 +127,6 @@ Location::Location(const Location& other)
 			else
 			{
 				straux = line.substr(line.find(":") + 1, line.size());
-				std::cout << "straux: " << straux << std::endl;
 				(this->*getLocationMethods()[it->first])(straux);
 			}
 		}
