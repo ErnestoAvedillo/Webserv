@@ -2,6 +2,11 @@
 
 bool Parser::checkPorts(std::vector<std::string> const &ports)
 {
+	if (ports.size() == 0)
+	{
+		std::cerr << "Error: Ports not defined" << std::endl;
+		return false;
+	}
 	for (size_t i = 0; i < ports.size(); i++)
 	{
 		if (checkPort(ports[i]) == false)
@@ -12,6 +17,11 @@ bool Parser::checkPorts(std::vector<std::string> const &ports)
 
 bool Parser::checkPort(std::string port)
 {
+	if (port.length() == 0)
+	{
+		std::cerr << "Error: Port not defined" << std::endl;
+		return false;
+	}
 	if (!isNumber(port))
 	{
 		std::cerr << "Error: Port \"" << port << "\" not a number." << std::endl;
@@ -35,6 +45,12 @@ bool Parser::checkPort(std::string port)
 bool Parser::checkHost(std::string host)
 {
 	//!!!!!!!!!! Check when is a string if it a defined host name!!!!!!!!!!!!!!
+	if (host.length() == 0)
+	{
+		std::cerr << "Error: Host not defined" << std::endl;
+		return false;
+	}
+
 	if (validIPAddress(host))
 	{
 		std::cerr << "Error: Host \"" << host << "\" not a valid IP address." << std::endl;
@@ -45,21 +61,13 @@ bool Parser::checkHost(std::string host)
 
 bool Parser::checkServerName(std::string serverName)
 {
-	if (serverName.length() == 0)
-	{
-		std::cerr << "Error: ServerName not defined" << std::endl;
-		return false;
-	}
+	(void)serverName;
 	return true;
 }
 
 bool Parser::checkErrorPage(std::string errorPage)
 {
-	if (errorPage.length() == 0)
-	{
-		std::cerr << "Error: ErrorPage not defined" << std::endl;
-		return false;
-	}
+	(void)errorPage;
 	return true;
 }
 
@@ -80,11 +88,13 @@ bool Parser::checkRoot(std::string root)
 
 bool Parser::checkIndex(std::string index, std::string root)
 {
+	// if (index.length() == 0)
+	// {
+	// 	std::cerr << "Error: Index not defined" << std::endl;
+	// 	return false;
+	// }
 	if (index.length() == 0)
-	{
-		std::cerr << "Error: Index not defined" << std::endl;
-		return false;
-	}
+		return true;
 
 	if (isFilePermissions(root + "/" + index, R_OK) == false)
 	{
