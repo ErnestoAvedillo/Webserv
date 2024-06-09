@@ -44,7 +44,7 @@ class Location
 		const std::string& getReturn() const ;
 		const std::string& getIndex() const;
 		const std::string& getAllowMethods() const;
-		const std::string& getAutoindex() const ;
+		const std::string& getAutoIndex() const ;
 		const std::string& getAlias() const ;
 
 		// Setter methods

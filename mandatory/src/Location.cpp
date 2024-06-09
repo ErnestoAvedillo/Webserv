@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/29 17:38:18 by eavedill          #+#    #+#             */
-/*   Updated: 2024/04/29 18:45:45 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/09 12:43:11 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ Location::Location(const Location& other)
 	const std::string &Location::getReturn() const { return return_; }
 	const std::string &Location::getIndex() const { return index; }
 	const std::string &Location::getAllowMethods() const { return allow_methods; }
-	const std::string &Location::getAutoindex() const { return autoindex; }
+	const std::string &Location::getAutoIndex() const { return autoindex; }
 	const std::string &Location::getAlias() const { return alias; }
 
 	// Setter methods

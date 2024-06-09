@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 18:22:26 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/07 19:17:52 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/09 12:56:54 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ std::string Attributes::getName()
 
 bool Attributes::getIsDir() 
 {
-	return this->attributes.st_mode && S_IFDIR;
+	return this->attributes.st_mode & S_IFDIR;
 }
 
 std::string Attributes::getSize() 

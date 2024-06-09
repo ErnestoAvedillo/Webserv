@@ -10,8 +10,9 @@
 #include "../inc/colors.h"
 #include "../inc/CGI.hpp"
 #include "../inc/Server.hpp"
+#include "../inc/ListDir.hpp"
 
-#define MAX_SENT_BYTES 8192
+//#define MAX_SENT_BYTES 8192
 
 class Client;
 #include "../inc/Client.hpp"
@@ -29,6 +30,7 @@ private:
 	struct stat fileStat;
 	CGI *cgiModule;
 	Server *server;
+	ListDir *listDir;
 
 public:
 	FileContent(Server *);
@@ -43,9 +45,4 @@ public:
 	bool getFirstFragment();
 	std::string getLastModified();
 	size_t getContentSize();
-	bool isCGIFile();
-	void setCGIFile(bool);
-	void setCGIFolder(const std::string &);
-	std::string getCGIFolder();
-	std::string getFileExtension();
 };

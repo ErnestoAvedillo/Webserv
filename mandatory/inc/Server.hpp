@@ -93,7 +93,7 @@ class Server {
 		std::string	getIndex();
 		std::string	getCGIExtension(const std::string &);
 		std::string	getCGIFolder();
-		bool getAutoindex();
+		bool getAutoIndex();
 		void	print();
 		//std::vector<class Location> getLocations();
 };

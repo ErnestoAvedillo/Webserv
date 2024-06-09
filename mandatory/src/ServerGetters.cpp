@@ -45,7 +45,7 @@ std::string Server::getCGIFolder()
 	return this->cgiModule->getCGIFolder();
 }
 
-bool Server::getAutoindex()
+bool Server::getAutoIndex()
 {
 	return this->autoIndex;
 }

@@ -62,8 +62,12 @@ bool Receive::receiveHeader(int fd)
     }
     else if (ret == 0)
     {
-        std::cerr << "Client disconnected" << std::endl;
+        std::cerr << "Client disconnected 1" << std::endl;
         return true;
+    }
+    else
+    {
+        std::cerr << "Received: " << buf << std::endl;
     }
     if (ret)
     {
@@ -107,7 +111,7 @@ bool Receive::receiveBody(int fd)
     }
     else if (ret == 0)
     {
-        std::cerr << "Client disconnected" << std::endl;
+        std::cerr << "Client disconnected 2" << std::endl;
         return true;
     }
     if (ret)

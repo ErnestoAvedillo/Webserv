@@ -91,18 +91,21 @@ void	WebServer::eventLoop()
 			#endif
 			if (serverSocket.find(currfd) != serverSocket.end())//&& acceptedSocket.find(currfd) == acceptedSocket.end())
 			{
+				std::cout << "Accepting new connection" << std::endl;
 				fd = acceptNewEvent(currfd);
 				if (fd == -1)
 					continue;
 			}
 			else if (flag & END_EVENT || flag & ERR_EVENT)
 			{
+				std::cout << "Closing connection" << std::endl;
 				delete acceptedSocket[currfd];
 				acceptedSocket.erase(currfd);
 				break ;
 			}
 			else if (type_event == (READ_EVENT))
 			{
+				std::cout << "Reading data" << std::endl;
 				if (this->acceptedSocket[currfd]->receive() == true)
 				{	
 					this->acceptedSocket[currfd]->loadRequest();
@@ -117,6 +120,7 @@ void	WebServer::eventLoop()
 			}
 			else if (type_event == (WRITE_EVENT))
 			{
+				std::cout << "Sending data" << std::endl;
 				if (acceptedSocket[currfd]->sendData(currfd))
 				{
 					delete acceptedSocket[currfd];

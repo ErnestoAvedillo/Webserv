@@ -8,6 +8,9 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#define MAX_SENT_BYTES 8192
+
+
 template <typename T>
 bool isrange(T value, T min, T max);
 bool isNumber(std::string str);

@@ -3,24 +3,36 @@
 FileContent::FileContent(Server *srv)
 {
 	server = srv;
-	fileName = "";
 	sendComplete = false;
 	isFileOpen = false;
 	isFistFragment = true;
 	this->cgiModule = srv->cgiModuleClone();
+	fileName = "";
+	if(server->getAutoIndex())
+	{
+		listDir = new ListDir("./");
+		isFileOpen = true;
+	}
 }
 FileContent::FileContent(const std::string &MyfileName, Server *srv) 
 {
 	server = srv;
-	isFileOpen = this->setFileName(MyfileName);
 	sendComplete = false;
 	isFistFragment = true;
 	this->cgiModule = srv->cgiModuleClone();
+	if(server->getAutoIndex())
+	{
+		listDir = new ListDir(MyfileName);
+		isFileOpen = true;
+	}
+	else
+		isFileOpen = this->setFileName(MyfileName);
 }
 
 FileContent::~FileContent() 
 {
 	delete cgiModule;
+	delete listDir;
 }
 
 int FileContent::openFile()
@@ -42,6 +54,14 @@ std::string FileContent::getContent()
 			std::cout << "is a CGI file: " << fileName << std::endl;
 			sendComplete = true;
 			return cgiModule->execute();
+		}
+		else if (server->getAutoIndex())
+		{
+			std::cout << "is an autoindex file: " << fileName << std::endl;
+			content = listDir->getContentToList();
+			content = content + listDir->getDirFileList();
+			sendComplete = listDir->getsIsSendComlete();
+
 		}
 		else
 		{
