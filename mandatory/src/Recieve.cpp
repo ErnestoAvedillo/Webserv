@@ -67,7 +67,7 @@ bool Receive::receiveHeader(int fd)
     }
     else
     {
-        std::cerr << "Received: " << buf << std::endl;
+        std::cerr << "Received from fd = " << fd << std::endl;
     }
     if (ret)
     {

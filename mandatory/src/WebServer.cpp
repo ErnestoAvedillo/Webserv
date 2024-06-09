@@ -72,15 +72,18 @@ void	WebServer::eventLoop()
 	while (!WebServer::ExitFlag)
 	{
 		num_events = waitEvent(evList);
+		for (int i = 0; i < num_events; i++)
+		{
+			std::cout << "Event received " << i << " with fd = " << evList[i].data.fd << std::endl;
+		}
 		if (num_events == -1)
 		{
 			//throw("Error: could not wait for events");
 			continue ;
 		}
-		std::cout << "Event " << num_events << std::endl;
 		for (int i = 0; i < num_events; i++)
 		{
-			#ifdef __APPLE__
+			#ifdef __APPLE__make
 				currfd = evList[i].ident;
 				type_event = evList[i].filter;
 				flag = evList[i].flags;
@@ -93,8 +96,8 @@ void	WebServer::eventLoop()
 			{
 				std::cout << "Accepting new connection" << std::endl;
 				fd = acceptNewEvent(currfd);
-				if (fd == -1)
-					continue;
+//				if (fd == -1)
+//					continue;
 			}
 			else if (flag & END_EVENT || flag & ERR_EVENT)
 			{
@@ -107,7 +110,8 @@ void	WebServer::eventLoop()
 			{
 				std::cout << "Reading data" << std::endl;
 				if (this->acceptedSocket[currfd]->receive() == true)
-				{	
+				{
+					std::cout << "Received Data" << std::endl;
 					this->acceptedSocket[currfd]->loadRequest();
 					#ifdef __APPLE__
 						modifEvent(evList[i], READ_EVENT, WRITE_EVENT);
@@ -116,7 +120,10 @@ void	WebServer::eventLoop()
 					#endif
 				}
 				else 
+				{
+					std::cout << "Not received Data" << std::endl;
 					continue;
+				}
 			}
 			else if (type_event == (WRITE_EVENT))
 			{

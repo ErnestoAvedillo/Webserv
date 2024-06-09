@@ -27,45 +27,6 @@ void Server::setIsDefault(std::string const &is_default)
 	}
 }
 
-void Server::setPorts(std::string const &ports)
-{
-	std::string aux;
-	std::istringstream portStream(ports);
-	if(this->ports.size() != 0)
-		this->ports.clear();
-	while (std::getline(portStream, aux, ','))
-	{
-		if (aux.find(":") != std::string::npos)
-		{
-			std::vector<std::string> aux2 = splitString(aux, ':');
-			if (aux2.size() != 2)
-			{
-				std::cerr << "Error: Wrong set of ports defined" << std::endl;
-				exit(1);
-			}
-			if (isNumber(aux2[0]) == false || isNumber(aux2[1]) == false)
-			{
-				std::cerr << "Error: Port not a number." << std::endl;
-				exit(1);
-			}
-			for (size_t i = stringToSizeT(aux2[0]); i <= stringToSizeT(aux2[1]); i++)
-			{
-				this->ports.push_back(toString(i));
-			}
-			
-		}
-		else
-		{
-			if (isNumber(aux) == false)
-			{
-				std::cerr << "Error: Port not a number." << std::endl;
-				exit(1);
-			}
-			this->ports.push_back(aux);
-		}
-	}
-}
-
 void Server::setPort(std::string const &port)
 {
 	ListeningSocket *ls;

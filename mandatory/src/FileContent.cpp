@@ -10,8 +10,12 @@ FileContent::FileContent(Server *srv)
 	fileName = "";
 	if(server->getAutoIndex())
 	{
-		listDir = new ListDir("./");
+		listDir = new ListDir(srv->getRoot());
 		isFileOpen = true;
+	}
+	else
+	{
+		listDir = nullptr;
 	}
 }
 FileContent::FileContent(const std::string &MyfileName, Server *srv) 
@@ -22,17 +26,22 @@ FileContent::FileContent(const std::string &MyfileName, Server *srv)
 	this->cgiModule = srv->cgiModuleClone();
 	if(server->getAutoIndex())
 	{
+		fileName = MyfileName;
 		listDir = new ListDir(MyfileName);
 		isFileOpen = true;
 	}
 	else
+	{
+		listDir = nullptr;
 		isFileOpen = this->setFileName(MyfileName);
+	}
 }
 
 FileContent::~FileContent() 
 {
 	delete cgiModule;
-	delete listDir;
+	if (listDir)
+		delete listDir;
 }
 
 int FileContent::openFile()
@@ -47,6 +56,7 @@ int FileContent::openFile()
 std::string FileContent::getContent() 
 {
 	std::string errorReturn = "Error: " + fileName + " File not found";
+
 	if (isFileOpen)
 	{
 		if (cgiModule->getIsCGI())
@@ -55,13 +65,12 @@ std::string FileContent::getContent()
 			sendComplete = true;
 			return cgiModule->execute();
 		}
-		else if (server->getAutoIndex())
+		else if (server->getAutoIndex() && this->fileStat.st_mode & S_IFDIR)
 		{
 			std::cout << "is an autoindex file: " << fileName << std::endl;
 			content = listDir->getContentToList();
-			content = content + listDir->getDirFileList();
 			sendComplete = listDir->getsIsSendComlete();
-
+			return content;
 		}
 		else
 		{
@@ -97,7 +106,6 @@ bool FileContent::setFileName(const std::string &file_name)
 {
 	std::string tmp = file_name.substr(0, file_name.find("?"));
 	bool filefound = false;
-	std::cout << "File name: " << file_name << std::endl;
 	if (stat(tmp.c_str(), &fileStat) == 0)
 	{
 		filefound = true;

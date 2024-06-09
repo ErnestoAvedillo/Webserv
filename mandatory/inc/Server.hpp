@@ -76,7 +76,6 @@ class Server {
 		void	setCGIFolder(std::string const &);
 		void	addLocation(std::string const &);
 		void	setIsDefault(std::string const &);
-		void	setPorts(std::string const &ports);
 		void	setAutoindex(std::string const &);
 
 		//---- Server getters ------//
