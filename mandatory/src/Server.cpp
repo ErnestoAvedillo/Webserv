@@ -88,6 +88,8 @@ Server::Server(std::string &str)
 Server::~Server() 
 {
 	delete cgiModule;
+	for (size_t i = 0; i < this->locations.size(); i++)
+		delete this->locations[i];
 }
 
 Server::Server(Server const &copy) {
