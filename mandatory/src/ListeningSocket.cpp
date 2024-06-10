@@ -131,7 +131,7 @@ bool ListeningSocket::startListening()
 	// Set up the server address
 	sockaddr_in serverAddress;
 	serverAddress.sin_family = AF_INET;
-	serverAddress.sin_addr.s_addr = INADDR_ANY;
+	serverAddress.sin_addr.s_addr = this->server->getHostAddr();
 	serverAddress.sin_port = htons(port);
 	// Bind the socket to the server address
 	if (bind(socketFd, (struct sockaddr *)&serverAddress, sizeof(serverAddress)) < 0)

@@ -75,6 +75,7 @@ class WebServer {
 		int acceptNewEvent(int curfd);
 		static bool ExitFlag;
 		static void exit_handler(int signum);
+		bool checkVariables(Server *server);
 #ifdef __APPLE__
 			int waitEvent(struct kevent *evList);
 			void modifEvent(struct kevent eventList, int typeRem, int typeAdd);

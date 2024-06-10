@@ -143,12 +143,16 @@ void WebServer::processConfigFile() // WebServer processConfigFile
 	}
 }
 
-static bool checkVariables(Server *server)
+bool WebServer::checkVariables(Server *server)
 {
 	if (Parser::checkPorts(server->getPorts()) == false)
 		exit(1);
 	if (Parser::checkHost(server->getHost()) == false)
 		exit(1);
+	else
+	{
+		server->setHostAddr(Parser::isValidHost(server->getHost()));
+	}
 	if (Parser::checkServerName(server->getServerName()) == false)
 		exit(1);
 	if (Parser::checkErrorPage(server->getErrorPage()) == false)

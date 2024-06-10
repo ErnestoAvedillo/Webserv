@@ -51,6 +51,7 @@ class Server {
 		std::string index;
 		std::vector<Location *> locations;
 		CGI *cgiModule;
+		in_addr_t hostAddr;
 		void	setDefaultData();
 
 	public:
@@ -75,6 +76,8 @@ class Server {
 		void	addLocation(std::string const &);
 		void	setIsDefault(std::string const &);
 		void	setPorts(std::string const &ports);
+		void	setHostAddr(in_addr_t );
+		
 		//---- Server getters ------//
 		ListeningSocket *getListening(int i);
 		std::vector<std::string> getPorts();
@@ -90,6 +93,9 @@ class Server {
 		std::string	getIndex();
 		std::string	getCGIExtension(const std::string &);
 		std::string	getCGIFolder();
+		in_addr_t getHostAddr();
+		std::vector<Location *> getLocations();
+
 
 		void	print();
 		void createListeningSockets();
