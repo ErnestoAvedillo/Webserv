@@ -63,8 +63,8 @@ in_addr_t Parser::isValidHost(std::string hostname)
 	addr = (struct sockaddr_in *)res->ai_addr;
 	in_addr = addr->sin_addr.s_addr;
 
-	printf("IP address in in_addr_t (network byte order): %u\n", in_addr);
-	printf("IP address in in_addr_t (host byte order): %u\n", ntohl(in_addr));
+	// printf("IP address in in_addr_t (network byte order): %u\n", in_addr);
+	// printf("IP address in in_addr_t (host byte order): %u\n", ntohl(in_addr));
 
 	freeaddrinfo(res);
 	return in_addr;

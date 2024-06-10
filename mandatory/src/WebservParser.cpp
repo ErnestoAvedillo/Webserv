@@ -54,7 +54,11 @@ static bool endWithSemicolon(std::string &fileString)
 	while (std::getline(fileStream, line))
 	{
 		i++;
-		if (line.length() == 0 || (!line.empty() && (line.back() == ';' || line.back() == '}' || line.back() == '{')))
+		// if (line.length() == 0 || (!line.empty() && (line.back() == ';' || line.back() == '}' || line.back() == '{')))
+		if (line.length() == 0)
+			continue;
+		char lastCharIter = line[line.length() - 1];
+		if (!line.empty() && (lastCharIter == ';' || lastCharIter == '}' || lastCharIter == '{'))
 			continue;
 		else
 		{

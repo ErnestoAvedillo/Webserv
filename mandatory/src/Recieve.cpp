@@ -67,7 +67,7 @@ bool Receive::receiveHeader(int fd)
             if (request.find("Content-Length: ") != std::string::npos)
             {
                 std::string contentLength = request.substr(request.find("Content-Length: ") + 16, request.find("\r\n", request.find("Content-Length: ")));
-                this->maxSize = std::stoi(contentLength);
+                this->maxSize = std::atoi(contentLength.c_str());
                 std::string boundary = request.substr(request.find("boundary=") + 9, request.find("\r\n", request.find("boundary=")) - 1);
                 this->boundary = boundary;
             }

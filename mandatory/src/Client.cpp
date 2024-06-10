@@ -6,7 +6,7 @@
 /*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2024/06/08 23:38:01 by jcheel-n         ###   ########.fr       */
+/*   Updated: 2024/06/10 23:00:27 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -235,7 +235,7 @@ void Client::loadDataHeader(Receive *receiver)
 						return;
 					}
 					std::cout << "filename: " << this->Request[REQ_FILE] << std::endl;
-					std::fstream file(this->Request[REQ_FILE], std::ios::out | std::ios::binary | std::ios::app);
+					std::fstream file(this->Request[REQ_FILE].c_str(), std::ios::out | std::ios::binary | std::ios::app);
 					file.write(body.c_str(), body.size());
 					file.close();
 					header.setStatus("201 Created");

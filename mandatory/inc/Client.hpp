@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
+/*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 12:46:28 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/02 18:58:27 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/10 22:54:57 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 #include <sstream>
 #include <cstring>
 #include "../inc/utils.hpp"
+#include <string>
 
 class Server;
 #include "../inc/Server.hpp"
