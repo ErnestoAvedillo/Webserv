@@ -47,7 +47,7 @@ ifeq (,$(findstring "Darwin",$(shell uname -s)))
 endif
 
 
-FLAGS := -Wall -Werror -Wextra -std=c++98 $(SYSTEM) -g -fsanitize=address #-pedantic 
+FLAGS := -Wall -Werror -Wextra -std=c++11 $(SYSTEM) -g #-fsanitize=address #-pedantic 
 
 all:	print_system $(NAME)  
 
