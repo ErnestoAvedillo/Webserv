@@ -1,0 +1,8 @@
+services:
+  linux:
+    image: webserv_img
+    build:
+      context: /home/$USER/GITHUB/Webserv
+      dockerfile: ./docker/Dockerfile
+    container_name: webserv
+    restart: always
