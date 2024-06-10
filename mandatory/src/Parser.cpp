@@ -42,9 +42,39 @@ bool Parser::checkPort(std::string port)
 	return true;
 }
 
+in_addr_t Parser::isValidHost(std::string hostname)
+{
+	struct addrinfo hints, *res;
+    struct sockaddr_in *addr;	
+	in_addr_t in_addr;
+
+	std::memset(&hints, 0, sizeof(hints));
+    
+	hints.ai_family = AF_INET; // IPv4
+
+    int status = getaddrinfo(hostname.c_str(), NULL, &hints, &res);
+    if (status != 0)
+	{
+		std::cerr << "getaddrinfo: " << gai_strerror(status);
+        return 0;
+    }
+
+    addr = (struct sockaddr_in *)res->ai_addr;
+    in_addr = addr->sin_addr.s_addr;
+
+    printf("IP address in in_addr_t (network byte order): %u\n", in_addr);
+    printf("IP address in in_addr_t (host byte order): %u\n", ntohl(in_addr));
+
+    freeaddrinfo(res);
+	return in_addr;
+}
+
 bool Parser::checkHost(std::string host)
 {
 	//!!!!!!!!!! Check when is a string if it a defined host name!!!!!!!!!!!!!!
+	if (!isValidHost(host))
+		return (false);
+
 	if (host.length() == 0)
 	{
 		std::cerr << "Error: Host not defined" << std::endl;
