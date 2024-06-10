@@ -11,6 +11,8 @@ WebServer::~WebServer()
 		delete this->servers[i];
     for (std::map<int, ListeningSocket *>::iterator it = serverSocket.begin(); it != serverSocket.end(); ++it)
 		delete it->second;
+	for (std::map<int, ListeningSocket *>::iterator it = acceptedSocket.begin(); it != acceptedSocket.end(); ++it)
+		delete it->second;
 	std::cerr << "WebServer destroyed" << std::endl;
 }
 
@@ -95,7 +97,7 @@ void	WebServer::eventLoop()
 				type_event = evList[i].events;
 				flag = evList[i].events;
 			#endif
-			if (serverSocket.find(currfd) != serverSocket.end())
+			if (serverSocket.find(currfd) != serverSocket.end() && acceptedSocket.find(currfd) == acceptedSocket.end())
 			{
 				fd = acceptNewEvent(currfd);
 				if (fd == -1)
@@ -123,12 +125,22 @@ void	WebServer::eventLoop()
 					#endif
 				}
 				else
+				{
+					if (i == num_events - 1)
+					{
+						std::cerr << "DELETE 2" << std::endl;
+						delete acceptedSocket[currfd];
+						acceptedSocket.erase(currfd);
+					}
 					continue;
+				}
 			}
 			else if (type_event == (WRITE_EVENT))
 			{
 				if (acceptedSocket[currfd]->sendData(currfd))
 				{
+					std::cerr << "DELETE " << currfd << std::endl;
+					std::cout << "Curffd " << currfd << std::endl; 
 					delete acceptedSocket[currfd];
 					acceptedSocket.erase(currfd);
 				}

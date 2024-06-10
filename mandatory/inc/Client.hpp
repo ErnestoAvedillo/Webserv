@@ -17,6 +17,7 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <cstring>
 #include "../inc/utils.hpp"
 
 class Server;

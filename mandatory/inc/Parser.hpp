@@ -5,6 +5,9 @@
 # include <sys/socket.h>
 # include <netdb.h>
 # include "../inc/utils.hpp"
+# include <iostream>
+# include <cstring> // Required for memset
+
 
 class Parser
 {

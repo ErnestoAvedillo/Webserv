@@ -16,6 +16,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <ctime>
 
 template <typename T>
 bool isrange(T value, T min, T max);
