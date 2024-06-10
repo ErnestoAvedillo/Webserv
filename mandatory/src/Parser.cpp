@@ -49,23 +49,24 @@ in_addr_t Parser::isValidHost(std::string hostname)
 	in_addr_t in_addr;
 
 	std::memset(&hints, 0, sizeof(hints));
-    
+    std::memset(&in_addr, 0, sizeof(in_addr));
 	hints.ai_family = AF_INET; // IPv4
-
-    int status = getaddrinfo(hostname.c_str(), NULL, &hints, &res);
-    if (status != 0)
+	hints.ai_socktype = SOCK_STREAM; // Or SOCK_DGRAM for UDP	
+	hints.ai_flags = AI_PASSIVE;
+	
+	int status = getaddrinfo(hostname.c_str(), NULL, &hints, &res);
+	if (status != 0)
 	{
-		std::cerr << "getaddrinfo: " << gai_strerror(status);
-        return -1;
-    }
+		std::cerr << gai_strerror(status) << std::endl;
+		return 0;
+	}
+	addr = (struct sockaddr_in *)res->ai_addr;
+	in_addr = addr->sin_addr.s_addr;
 
-    addr = (struct sockaddr_in *)res->ai_addr;
-    in_addr = addr->sin_addr.s_addr;
+	printf("IP address in in_addr_t (network byte order): %u\n", in_addr);
+	printf("IP address in in_addr_t (host byte order): %u\n", ntohl(in_addr));
 
-    // printf("IP address in in_addr_t (network byte order): %u\n", in_addr);
-    // printf("IP address in in_addr_t (host byte order): %u\n", ntohl(in_addr));
-
-    freeaddrinfo(res);
+	freeaddrinfo(res);
 	return in_addr;
 }
 
@@ -76,10 +77,11 @@ bool Parser::checkHost(std::string host)
 		std::cerr << "Error: Host not defined" << std::endl;
 		return false;
 	}
-
-	if (!isValidHost(host) && errno)
+	if (!isValidHost(host) && host != "0.0.0.0")
+	{
+		std::cerr << "Error: invalid host <" << host << ">" << std::endl;
 		return (false);
-
+	}
 	return true;
 }
 

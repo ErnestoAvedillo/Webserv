@@ -147,12 +147,10 @@ bool WebServer::checkVariables(Server *server)
 {
 	if (Parser::checkPorts(server->getPorts()) == false)
 		exit(1);
-	if (Parser::checkHost(server->getHost()) == false)
+	if (Parser::checkHost(server->getHost()) == false && server->getHost() != "0.0.0.0")
 		exit(1);
 	else
-	{
 		server->setHostAddr(Parser::isValidHost(server->getHost()));
-	}
 	if (Parser::checkServerName(server->getServerName()) == false)
 		exit(1);
 	if (Parser::checkErrorPage(server->getErrorPage()) == false)
