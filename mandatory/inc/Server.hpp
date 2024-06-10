@@ -76,8 +76,8 @@ class Server {
 		void	addLocation(std::string const &);
 		void	setIsDefault(std::string const &);
 		void	setPorts(std::string const &ports);
-		void	setHostAddr(in_addr_t );
-		
+		void    setHostAddr(in_addr_t Addr);
+
 		//---- Server getters ------//
 		ListeningSocket *getListening(int i);
 		std::vector<std::string> getPorts();

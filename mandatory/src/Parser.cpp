@@ -56,14 +56,14 @@ in_addr_t Parser::isValidHost(std::string hostname)
     if (status != 0)
 	{
 		std::cerr << "getaddrinfo: " << gai_strerror(status);
-        return 0;
+        return -1;
     }
 
     addr = (struct sockaddr_in *)res->ai_addr;
     in_addr = addr->sin_addr.s_addr;
 
-    printf("IP address in in_addr_t (network byte order): %u\n", in_addr);
-    printf("IP address in in_addr_t (host byte order): %u\n", ntohl(in_addr));
+    // printf("IP address in in_addr_t (network byte order): %u\n", in_addr);
+    // printf("IP address in in_addr_t (host byte order): %u\n", ntohl(in_addr));
 
     freeaddrinfo(res);
 	return in_addr;
@@ -71,21 +71,15 @@ in_addr_t Parser::isValidHost(std::string hostname)
 
 bool Parser::checkHost(std::string host)
 {
-	//!!!!!!!!!! Check when is a string if it a defined host name!!!!!!!!!!!!!!
-	if (!isValidHost(host))
-		return (false);
-
 	if (host.length() == 0)
 	{
 		std::cerr << "Error: Host not defined" << std::endl;
 		return false;
 	}
 
-	if (validIPAddress(host))
-	{
-		std::cerr << "Error: Host \"" << host << "\" not a valid IP address." << std::endl;
-		return false;
-	}
+	if (!isValidHost(host) && errno)
+		return (false);
+
 	return true;
 }
 

@@ -28,6 +28,8 @@ void Server::setIndex(std::string const &index) { this->index = index; }
 void Server::setCGIFolder(std::string const &str) { this->cgiModule->setCGIFolder(str); }
 void Server::addLocation(std::string const &content) { this->locations.push_back(new Location(content)); }
 
+void Server::setHostAddr(in_addr_t Addr) { this->hostAddr = Addr; }
+
 void Server::setCGIExtension(std::string const &str) 
 {
 	this->cgiModule->setCGIMapExtensions(str);
