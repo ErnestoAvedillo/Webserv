@@ -2,7 +2,15 @@ services:
   linux:
     image: webserv_img
     build:
-      context: /home/$USER/GITHUB/Webserv
+      context: /Users/josephcheel/GITHUB/WebServer_Parser/
       dockerfile: ./docker/Dockerfile
     container_name: webserv
     restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - my-network
+
+networks:
+  my-network:
+    driver: bridge
