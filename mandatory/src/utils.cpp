@@ -114,18 +114,6 @@ std::string removeBlanksAndTabs(const std::string& input) {
 	return result;
 }
 
-template <typename T>
-std::string itos (T n)
-{
-	std::string str;
-	std::stringstream ss;
-	
-	ss << n;
-	ss >> str;
-
-	return  str;
-}
-
 void replaceString(std::string& mainString, const std::string& searchString, const std::string& replaceString) {
 	size_t pos = 0;
 	while ((pos = mainString.find(searchString, pos)) != std::string::npos) {

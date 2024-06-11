@@ -6,7 +6,7 @@
 /*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 12:46:28 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/10 22:54:57 by jcheel-n         ###   ########.fr       */
+/*   Updated: 2024/06/11 14:43:14 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,6 @@
 
 class Server;
 #include "../inc/Server.hpp"
-
-#include "../inc/toString.hpp"
 #include "../inc/colors.h"
 
 #define REQ_TYPE "Type"
