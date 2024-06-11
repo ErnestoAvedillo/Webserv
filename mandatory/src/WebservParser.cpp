@@ -116,11 +116,16 @@ bool WebServer::checkSyntax()
 
 void WebServer::loadConfigFile(std::string filename) // WebServer loadConfigFile
 {
+	if (!isFilePermissions(filename, R_OK))
+	{
+		std::cerr << "Error: <" << filename <<  "> not a valid file" << std::endl;
+		exit(1);
+	}
 	this->configFilename = filename;
 	this->configFile.open(this->configFilename.c_str());
 	if (!this->configFile.is_open())
 	{
-		std::cerr << "Error: No se ha podido abrir el archivo de configuración" << std::endl;
+		std::cerr << "Error: File not found" << std::endl;
 		exit(1);
 	}
 	this->configFileString = std::string((std::istreambuf_iterator<char>(configFile)),std::istreambuf_iterator<char>());
