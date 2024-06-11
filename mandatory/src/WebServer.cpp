@@ -55,6 +55,7 @@ void WebServer::launchServers()
 	std::cout << "\e[4;37m    Date & time    \t\t\t\t\t\t\tport\tfd" << RESET << std::endl;
 
 	this->createListeningSockets();
+	std::cout << std::endl;
 	try
 	{
 		this->createQueue();
