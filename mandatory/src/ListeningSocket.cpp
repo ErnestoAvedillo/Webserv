@@ -9,12 +9,14 @@ ListeningSocket::ListeningSocket(int myPort, Server *srv)
 	this->client = new Client(srv);
 	this->receiver = new Receive();
 	this->socketFd = -1;
-	this->startListening();
-
+	if (this->startListening())
+		printLog("NOTICE", "Listening on port: " CHR_GREEN + std::to_string(myPort) + RESET " with file descriptor " CHR_GREEN + std::to_string(this->socketFd));
+		// std::cout << CHR_GREEN <<  getLocalTime() << " [NOTICE]" << CHR_BLUE " | " RESET << "Listening on port: " CHR_GREEN<< myPort <<RESET " with file descriptor " << this->socketFd << std::endl;
 }
 ListeningSocket::ListeningSocket(Server *srv)
 {
 	this->client = new Client(srv);
+	this->receiver = new Receive();
 	this->receiver = new Receive();
 	this->server = srv;
 }
@@ -23,6 +25,7 @@ ListeningSocket::~ListeningSocket()
 {
 	stopListening();
 	delete this->client;
+	delete this->receiver;
 }
 
 bool ListeningSocket::startListening()
@@ -51,13 +54,13 @@ bool ListeningSocket::startListening()
 	// Set up the server address
 	sockaddr_in serverAddress;
 	serverAddress.sin_family = AF_INET;
-	serverAddress.sin_addr.s_addr = INADDR_ANY;
+	serverAddress.sin_addr.s_addr = this->server->getHostAddr();
 	serverAddress.sin_port = htons(port);
 
 	// Bind the socket to the server address
 	if (bind(socketFd, (struct sockaddr *)&serverAddress, sizeof(serverAddress)) < 0)
 	{
-		std::cerr << "Failed to bind socket to address of port " << port << std::endl;
+		printLog("ERROR", "Failed to bind socket to address of port " CHR_RED + std::to_string(port) + RESET);
 		return false;
 	}
 
@@ -129,7 +132,7 @@ bool ListeningSocket::startListening()
 	// Set up the server address
 	sockaddr_in serverAddress;
 	serverAddress.sin_family = AF_INET;
-	serverAddress.sin_addr.s_addr = INADDR_ANY;
+	serverAddress.sin_addr.s_addr = this->server->getHostAddr();
 	serverAddress.sin_port = htons(port);
 	// Bind the socket to the server address
 	if (bind(socketFd, (struct sockaddr *)&serverAddress, sizeof(serverAddress)) < 0)
@@ -171,8 +174,8 @@ int ListeningSocket::getFd()
 bool ListeningSocket::sendData(int clientSocketFd)
 {
 	std::string answer = this->client->getAnswerToSend();
-	// std::cout << "answer: " << answer.size() << std::endl;
-	if ((send(clientSocketFd, answer.c_str(), answer.size(), 0)) < 0)
+	int n = send(clientSocketFd, answer.c_str(), answer.size(), 0);
+	if (n < 0)
 	{
 		std::cerr << "Failed to write to client" << std::endl;
 	}

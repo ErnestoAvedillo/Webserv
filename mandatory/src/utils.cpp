@@ -1,11 +1,4 @@
-#include <iostream>
-#include <netinet/in.h>
-#include <cstdlib>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <string>
-#include <vector>
-#include <sstream>
+#include "../inc/utils.hpp"
 
 template <typename T>
 bool isrange(T value, T min, T max)
@@ -45,10 +38,10 @@ bool validIPAddress(std::string ip)
 		count++;
 	}
 	
-	if (count != 3 || !isNumber(ip) || !isrange(std::atoi(ip.c_str()), 0, 255))
+	if (count != 4 || !isNumber(ip) || !isrange(std::atoi(ip.c_str()), 0, 255))
 		return false;
 	
-	return count == 3;
+	return count == 4;
 }
 
 
@@ -149,4 +142,55 @@ int count_chars(const std::string& str, char c) {
 		}
 	}
 	return count;
+}
+
+std::string getTime()
+{
+	std::time_t currentTime = std::time(NULL);
+
+	// Convert the current time to a string in the desired format
+	std::tm* timeInfo = std::gmtime(&currentTime);
+	char buffer[80];
+	std::strftime(buffer, sizeof(buffer), "%A, %d-%b-%y %H:%M:%S GMT", timeInfo);
+
+	// Set the date in the header
+	return(buffer);
+};
+
+// std::string getLocalTime()
+// {
+// 	std::time_t currentTime = std::time(NULL);
+
+//     // Convert the current time to a string in the desired format using local time
+//     std::tm* timeInfo = std::localtime(&currentTime);
+//     char buffer[80];
+//     std::strftime(buffer, sizeof(buffer), "%A, %d-%b-%y %H:%M:%S %Z", timeInfo);
+
+//     // Return the formatted date string
+//     return std::string(buffer);
+// }
+
+std::string getLocalTime()
+{
+    std::time_t currentTime = std::time(NULL);
+
+    // Convert the current time to a string in the desired format using local time
+    std::tm* timeInfo = std::localtime(&currentTime);
+    char buffer[20];
+    std::strftime(buffer, sizeof(buffer), "%Y/%m/%d %H:%M:%S", timeInfo);
+
+    // Return the formatted date string
+    return std::string(buffer);
+}
+
+void printLog(std::string type ,std::string message)
+{
+	if (type == "ERROR")
+		std::cout << CHR_YELLOW << getLocalTime() << " [" << type << "]" << "\t\t" RESET << message << RESET << std::endl;
+	else if (type == "WARNING")
+		std::cout << CHR_YELLOW << getLocalTime() << " [" << type << "]" << "\t\t" RESET << message << RESET << std::endl;
+	else if (type == "NOTICE")
+		std::cout << CHR_GREEN << getLocalTime() << " [" << type << "]" << "\t\t" RESET << message << RESET << std::endl;
+	else if (type == "DEBUG")
+		std::cout << getLocalTime() << " [" << type << "]" << CHR_BLUE " | " RESET << message << std::endl;
 }

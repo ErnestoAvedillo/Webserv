@@ -11,6 +11,8 @@ WebServer::~WebServer()
 		delete this->servers[i];
     for (std::map<int, ListeningSocket *>::iterator it = serverSocket.begin(); it != serverSocket.end(); ++it)
 		delete it->second;
+	for (std::map<int, ListeningSocket *>::iterator it = acceptedSocket.begin(); it != acceptedSocket.end(); ++it)
+		delete it->second;
 	std::cerr << "WebServer destroyed" << std::endl;
 }
 
@@ -28,8 +30,17 @@ WebServer &WebServer::operator=(WebServer const &copy)
 	return *this;
 }
 
+void WebServer::createListeningSockets()
+{
+	for (size_t i = 0; i < this->servers.size(); i++)
+		this->servers[i]->createListeningSockets();
+}
+
 void WebServer::launchServers()
 {
+	std::cout << "Launching servers..." << std::endl;
+	
+	this->createListeningSockets();
 	std::vector<int> sk ;
     try
     {
@@ -38,10 +49,10 @@ void WebServer::launchServers()
     }
     catch(const std::exception& e)
     {
-        std::cerr << CHR_RED"ERROR: " << e.what() << RESET << '\n';
+        std::cerr << CHR_RED"Error: " << e.what() << RESET << '\n';
         exit(1);
     }
-    
+
 	for (size_t i = 0; i < this->servers.size(); i++)
 	{
 		sk = this->servers[i]->getServerFds();
@@ -77,10 +88,8 @@ void	WebServer::eventLoop()
 			std::cout << "Event received " << i << " with fd = " << evList[i].data.fd << std::endl;
 		}
 		if (num_events == -1)
-		{
-			//throw("Error: could not wait for events");
 			continue ;
-		}
+		std::cerr << "Event " << num_events << std::endl;
 		for (int i = 0; i < num_events; i++)
 		{
 			#ifdef __APPLE__make
@@ -92,7 +101,7 @@ void	WebServer::eventLoop()
 				type_event = evList[i].events;
 				flag = evList[i].events;
 			#endif
-			if (serverSocket.find(currfd) != serverSocket.end())//&& acceptedSocket.find(currfd) == acceptedSocket.end())
+			if (serverSocket.find(currfd) != serverSocket.end())
 			{
 				std::cout << "Accepting new connection" << std::endl;
 				fd = acceptNewEvent(currfd);
@@ -110,12 +119,15 @@ void	WebServer::eventLoop()
 				acceptedSocket.erase(currfd);
 				break ;
 			}
+			// else if (type_event & EPOLLOUT && type_event & EPOLLIN)
+			// {
+			// 	std::cerr << "READWRITE" << std::endl;
+			// }
 			else if (type_event == (READ_EVENT))
 			{
-				std::cout << "Reading data" << std::endl;
 				if (this->acceptedSocket[currfd]->receive() == true)
 				{
-					std::cout << "Received Data" << std::endl;
+
 					this->acceptedSocket[currfd]->loadRequest();
 					#ifdef __APPLE__
 						modifEvent(evList[i], READ_EVENT, WRITE_EVENT);
@@ -123,17 +135,14 @@ void	WebServer::eventLoop()
 						modifEvent(evList[i], WRITE_EVENT);
 					#endif
 				}
-				else 
-				{
-					std::cout << "Not received Data" << std::endl;
-					continue;
-				}
 			}
 			else if (type_event == (WRITE_EVENT))
 			{
 				std::cout << "Sending data" << std::endl;
 				if (acceptedSocket[currfd]->sendData(currfd))
 				{
+					std::cerr << "DELETE " << currfd << std::endl;
+					std::cout << "Curffd " << currfd << std::endl; 
 					delete acceptedSocket[currfd];
 					acceptedSocket.erase(currfd);
 				}

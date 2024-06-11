@@ -11,8 +11,10 @@
 #define VAR_LOC_RETURN "return"
 #define VAR_LOC_INDEX "index"
 #define VAR_LOC_ALLOW_METHODS "allow_methods"
-#define VAR_LOC_AUTOINDEX "auto_index"
+#define VAR_LOC_AUTOINDEX "autoindex"
 #define VAR_LOC_ALIAS "alias"
+#define VAR_LOC_CGI_PATH "cgi_path"
+#define VAR_LOC_CGI_EXTENSION "cgi_ext"
 #define STR_START "location:{"
 class Location 
 {
@@ -24,6 +26,8 @@ class Location
 		std::string allow_methods; 
 		std::string autoindex;
 		std::string alias;
+		std::string cgi_path;
+		std::string cgi_extension;
 		int loadData(const std::string &data);
 
 	public:
@@ -55,7 +59,8 @@ class Location
 		void setAllowMethods(const std::string& );
 		void setAutoindex(const std::string&);
 		void setAlias(const std::string&);
-
+		void setCgiPath(const std::string &cgi_path);
+		void setCgiExtension(const std::string &cgi_ext);
 		// Load data from a string configuration
 		void print();
 };

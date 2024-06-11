@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/27 14:24:35 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/11 07:33:48 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/11 22:26:51 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,11 +29,11 @@ std::map<std::string, int> var_names_server()
 	return varnames;
 }
 
-std::map<std::string, void (Server::*)(const std::string &)> getServerMethods()
+std::map<std::string, void (Server::*)(const std::string &)> ServerSetters()
 {
 	std::map<std::string, void (Server::*)(const std::string &)> serverMethods;
 
-	serverMethods[VAR_PORT] = &Server::setPort;
+	serverMethods[VAR_PORT] = &Server::setPorts;
 	serverMethods[VAR_HOST] = &Server::setHost;
 	serverMethods[VAR_SERVER_NAME] = &Server::setServerName;
 	serverMethods[VAR_ERROR_PAGE] = &Server::setErrorPage;
@@ -82,6 +82,13 @@ Server::Server(std::string const &str)
 	index = "";
 	autoIndex = false;
 	this->cgiModule = new CGI();
+	while (str.find("location") != std::string::npos)
+	{
+		std::string aux = str.substr(str.find("location:{"));
+		std::string location  = aux.substr(10, aux.find("}") - 10);
+		//str.erase(str.find("location"), aux.find("}") + 1);
+		this->addLocation(location);
+	}
 	if(this->loadData(str) == -1)
 	{
 		std::cerr << CHR_RED << "Error: No se ha podido cargar la configuración del servidor. Parámetros por defecto establecidos." << RESET << std::endl;
@@ -116,40 +123,33 @@ int Server::loadData(std::string const &content) {
 	std::string line;
 	std::string straux;
 	std::map<std::string, int> varnames = var_names_server();
-	if (std::count(content.begin(), content.end(), '{') - std::count(content.begin(), content.end(), '}') != 0)
-	{
-		std::cerr << "Error: Llaves no balanceadas" << std::endl;
-		return -1;
-	}
-	if(content.find("server:{") != 0)
-	{
-		std::cerr << "Error: La configuración del servidor debe empezar con \"server:{\"" << std::endl;
-		return -1;
-	}
-	
-	std::istringstream fileContentStream(content.substr(8, content.length() - 1));
+
+	std::istringstream fileContentStream(content.substr(9, content.length() - 1));
 	while (std::getline(fileContentStream, line,';'))
 	{
-		if(line == "}")
+		line.erase(std::remove(line.begin(), line.end(), '\n'), line.end());
+		if(line.length() == 0 || line == "}" || line == "{")
 			continue;
 		std::map<std::string, int>::iterator it = varnames.begin();
 		while (it != varnames.end())
 		{
-			if (line.find(it->first) != std::string::npos)
+			if (line.substr(0 , line.find(":") ) == it->first)
 			{
 				if (it->second == 1)
-					std::cerr << "Error: " << it->first << " ha sido ya asignado." << std::endl;
+					std::cerr << "Error: duplicated variable " << it->first << std::endl;
 				it->second = 1;
 				break;
 			}
 			it++;
 		}
-		if (it == varnames.end())
-			std::cerr << "Error: Variable no reconocida: " << line.substr(0, line.find(":")) << std::endl;
+		if(line.length() == 0 || line == "}" || line == "{" )
+			continue;
+		else if (it == varnames.end())
+			std::cerr << "Error: Unrecognized variable " << line.substr(0, line.find(":")) << "$" << std::endl;
 		else
 		{
 			straux = line.substr(line.find(":") + 1, line.size());
-			(this->*getServerMethods()[it->first])(straux);
+			(this->*ServerSetters()[it->first])(straux);
 		}
 	}
 	return 0;
@@ -178,3 +178,12 @@ void	Server::print()
 	std::cout << "-----------------------------------------------" << std::endl;
 }
 
+void Server::createListeningSockets()
+{
+	ListeningSocket *ls;
+	for (size_t i = 0; i < this->ports.size(); i++)
+	{
+		ls = new ListeningSocket(stringToSizeT(ports[i]), this);
+		this->port[ls->getFd()] = ls;
+	}
+}

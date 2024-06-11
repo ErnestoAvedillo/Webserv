@@ -6,14 +6,14 @@
 /*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2024/06/09 23:05:34 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/11 22:25:11 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
 #include "../inc/Client.hpp"
 
-Client::Client(){}
+Client::Client() {}
 
 Client::Client(Server *srv)
 {
@@ -32,7 +32,7 @@ Client &Client::operator=(Client const &rsh)
 {
 	std::map<std::string, std::string>::const_iterator itb = rsh.Request.begin();
 	std::map<std::string, std::string>::const_iterator ite = rsh.Request.end();
-	while(itb != ite)
+	while (itb != ite)
 	{
 		this->Request[itb->first] = itb->second;
 		itb++;
@@ -120,6 +120,10 @@ void Client::loadCompleteClient(Receive *receiver)
 // {
 // 	size_t point = filePath.find_last_of(".");
 // 	std::string extension = filePath.substr(point + 1, filePath.size());
+// std::string getExtension(std::string filePath)
+// {
+// 	size_t point = filePath.find_last_of(".");
+// 	std::string extension = filePath.substr(point + 1, filePath.size());
 
 // 	std::map<std::string, std::string> Mimetype = create_filetypes();
 
@@ -139,7 +143,7 @@ void Client::loadCompleteClient(Receive *receiver)
 /*
 Normalize the path, removes .., adds ./ at teh beggining if necessary, removes / at the end, removes duplicate /.
 */
-std::string	Client::normalizePath(std::string path)
+std::string Client::normalizePath(std::string path)
 {
 	while (path.find("..") != std::string::npos)
 		path.erase(path.find(".."), 2);
@@ -167,7 +171,7 @@ std::string	Client::normalizePath(std::string path)
 
 std::string Client::getFilePath()
 {
-	std::string filePath = normalizePath(server->getRoot()) +  this->Request[REQ_FILE];
+	std::string filePath = normalizePath(server->getRoot()) + this->Request[REQ_FILE];
 	if (filePath.at(filePath.size() - 1) == '/')
 		filePath += server->getIndex();
 	filePath = filePath.substr(0, filePath.find("?"));
@@ -182,7 +186,7 @@ std::string Client::getFileContent()
 }
 
 std::string Client::getAnswerToSend()
-{	
+{
 	std::string answer;
 	std::string filePath = this->fileContent->getFileName();
 	std::string file_content = getFileContent();
@@ -205,12 +209,12 @@ bool Client::isSendComplete()
 void Client::loadDataHeader(Receive *receiver)
 {
 	if (this->Request[REQ_TYPE] == "GET")
-	{	
+	{
 		if (this->fileContent->setFileName(this->Request[REQ_FILE]))
 		{
-		header.setContentType(this->Request[REQ_FILE]);
+			header.setContentType(this->Request[REQ_FILE]);
 			header.setLastModified(this->fileContent->getLastModified());
-				header.setContentLength(this->fileContent->getContentSize());
+			header.setContentLength(this->fileContent->getContentSize());
 			header.setStatus("200 OK");
 			header.setServer(server->getServerName());
 		}
@@ -223,33 +227,35 @@ void Client::loadDataHeader(Receive *receiver)
 		{
 			std::string body = receiver->getBody().substr(receiver->getBody().find("\r\n\r\n") + 4);
 			std::string postheader = receiver->getBody().substr(0, receiver->getBody().find("\r\n\r\n") + 4);
-			
+
 			std::vector<std::string> lines = splitString(postheader, '\n');
 			for (size_t i = 0; i < lines.size(); i++)
 			{
 				if (lines[i].find("filename=") != std::string::npos)
 				{
-					std::string filename = lines[i].substr(lines[i].find("filename=") + 10, lines[i].size() );
+					std::string filename = lines[i].substr(lines[i].find("filename=") + 10, lines[i].size());
 					filename = filename.substr(0, filename.find("\""));
-					this->Request[REQ_FILE] +=  "/" + filename;
+					this->Request[REQ_FILE] += "/" + filename;
 					if (access(this->Request[REQ_FILE].c_str(), F_OK) == 0)
 					{
 						header.setStatus("403 Forbidden");
-						return ;
+						return;
 					}
 					std::cout << "filename: " << this->Request[REQ_FILE] << std::endl;
-					std::fstream file(this->Request[REQ_FILE], std::ios::out | std::ios::binary | std::ios::app);
+					std::fstream file(this->Request[REQ_FILE].c_str(), std::ios::out | std::ios::binary | std::ios::app);
 					file.write(body.c_str(), body.size());
 					file.close();
 					header.setStatus("201 Created");
-					return ;
+					return;
 				}
-			}		
-			// std::string key_file = postheader.substr(postheader.find_first_of("-"), postheader.find("\r\n"));
-			// rec = rec.substr(0, rec.find(key_file) - 2);
-			// std::cout << "reccc: " << rec << std::endl;
+			}
 		}
-		else 
+		else if (receiver->getisform())
+		{
+			std::cout << "form: " << receiver->getBody() << std::endl;
+			header.setStatus("201 Created");
+		}
+		else
 			std::cout << "form: " << receiver->getBody() << std::endl;
 		header.setServer(server->getServerName());
 	}

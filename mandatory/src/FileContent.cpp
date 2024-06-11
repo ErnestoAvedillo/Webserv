@@ -3,11 +3,11 @@
 FileContent::FileContent(Server *srv)
 {
 	server = srv;
+	fileName = "";
 	sendComplete = false;
 	isFileOpen = false;
 	isFistFragment = true;
 	this->cgiModule = srv->cgiModuleClone();
-	fileName = "";
 	if(server->getAutoIndex())
 	{
 		listDir = new ListDir(srv->getRoot());

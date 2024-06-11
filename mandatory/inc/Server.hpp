@@ -12,6 +12,8 @@
 # include "Location.hpp"
 # include "../inc/toString.hpp"
 # include "CGI.hpp"
+# include "../inc/toString.hpp"
+# include "CGI.hpp"
 
 #define VAR_PORT	"port"
 #define VAR_HOST	"host"
@@ -19,6 +21,8 @@
 #define VAR_ERROR_PAGE	"error_page"
 #define VAR_ROOT	"root"
 #define VAR_INDEX	"index"
+#define VAR_CGI_EXTENSION	"CGI_extension"
+#define VAR_CGI_FOLDER	"CGI_folder"
 #define VAR_CGI_EXTENSION	"CGI_extension"
 #define VAR_CGI_FOLDER	"CGI_folder"
 #define VAR_CLIENT_MAX_BODY_SIZE	"client_max_body_size"
@@ -44,7 +48,7 @@ class Server {
 		bool		isDefault;
 		std::map<int, ListeningSocket *> port;
 		std::vector<std::string> ports;
-		size_t			maxClientBodySize;
+		int 		maxClientBodySize;
 		std::string	Host;
 		std::string	serverName;
 		std::string errorPage;
@@ -53,20 +57,26 @@ class Server {
 		bool autoIndex;
 		std::vector<Location *> locations;
 		CGI *cgiModule;
+		in_addr_t hostAddr;
 		void	setDefaultData();
 
 	public:
+		// Server();
+		//Server(std::string  &);
 		// Server();
 		Server(std::string const &);
 		~Server();
 		Server(Server const &);
 		Server &operator=(Server const &);
 		//---- Server Methods ------//
+		//---- Server Methods ------//
 		int		loadData(std::string const &);
 		CGI		*cgiModuleClone();
 		//---- Server setters ------//
 		void	setPort(std::string const &);
+		void	setPorts(std::string const &portsLine);
 		void	setHost(std::string const &);
+		void	setHostAddr(in_addr_t Addr);
 		void	setServerName(std::string const &);
 		void	setErrorPage(std::string const &);
 		void	setClientMaxBodySize(std::string const &);
@@ -80,6 +90,7 @@ class Server {
 
 		//---- Server getters ------//
 		ListeningSocket *getListening(int i);
+		std::vector<std::string> getPorts();
 		std::vector<int> getServerFds();
 
 		ListeningSocket *		getPort(int i); 
@@ -94,6 +105,10 @@ class Server {
 		std::string	getCGIFolder();
 		bool getAutoIndex();
 		void	print();
+		void createListeningSockets();
+		in_addr_t getHostAddr();
+		std::vector<Location *> getLocations();
+
 		//std::vector<class Location> getLocations();
 };
 

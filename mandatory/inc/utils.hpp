@@ -7,8 +7,18 @@
 #include <netinet/in.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include "colors.h"
+#include <iostream>
+#include <netinet/in.h>
+#include <cstdlib>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <string>
+#include <vector>
+#include <sstream>
+#include <ctime>
 
-#define MAX_SENT_BYTES 2048
+#define MAX_SENT_BYTES 100
 
 
 template <typename T>
@@ -32,3 +42,8 @@ template <typename T>
 std::string itos (T n);
 void replaceString(std::string &mainString, const std::string &searchString, const std::string &replaceString);
 int count_chars(const std::string &str, char c);
+int count_chars(const std::string &str, char c);
+
+std::string getTime();
+std::string getLocalTime();
+void printLog(std::string type ,std::string message);

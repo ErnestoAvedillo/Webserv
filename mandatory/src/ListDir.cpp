@@ -36,7 +36,7 @@ ListDir::~ListDir() {
 
 void ListDir::setListOfFiles() 
 {
-	std::cout <<RED<< "ListDir::setListOfFiles()" <<RESET<< std::endl;
+	std::cout << RED << "ListDir::setListOfFiles() path is " << path << RESET << std::endl;
 	DIR* dir = opendir(path.c_str());
 	if (dir) {
 		struct dirent* entry;
@@ -102,7 +102,7 @@ std::string ListDir::getContentToList()
 	}
 
 	content = content + "<body>" + this->getDirFileList() + "</body></html>";
-	std::cout << "Send is completed -->" << content.substr(0,20) << "..." << content.substr(content.size() - 20) << std::endl;
+	std::cout << "Send is completed -->" << content.substr(0,240) << "..." << content.substr(content.size() - 20) << std::endl;
 	return content;
 }
 

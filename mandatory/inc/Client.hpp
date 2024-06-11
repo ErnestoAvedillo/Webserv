@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 12:46:28 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/02 18:58:27 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/11 14:07:35 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,9 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <cstring>
 #include "../inc/utils.hpp"
+#include <string>
 
 class Server;
 #include "../inc/Server.hpp"

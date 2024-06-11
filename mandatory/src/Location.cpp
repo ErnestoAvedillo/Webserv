@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/29 17:38:18 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/09 12:43:11 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/11 17:15:20 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@ std::map<std::string, int> var_names_location()
 	varnames[VAR_LOC_ALLOW_METHODS] = 0;
 	varnames[VAR_LOC_AUTOINDEX] = 0;
 	varnames[VAR_LOC_ALIAS] = 0;
+	varnames[VAR_LOC_CGI_PATH] = 0;
+	varnames[VAR_LOC_CGI_EXTENSION] = 0;
 	return varnames;
 }
 // Method to get the methods of the location
@@ -36,6 +38,8 @@ std::map<std::string, void (Location::*)(const std::string&)> getLocationMethods
 	locationMethods[VAR_LOC_ALLOW_METHODS] = &Location::setAllowMethods;
 	locationMethods[VAR_LOC_AUTOINDEX] = &Location::setAutoindex;
 	locationMethods[VAR_LOC_ALIAS] = &Location::setAlias;
+	locationMethods[VAR_LOC_CGI_PATH] = &Location::setCgiPath;
+	locationMethods[VAR_LOC_CGI_EXTENSION] = &Location::setCgiExtension;
 	return locationMethods;
 }
 
@@ -53,7 +57,6 @@ Location::Location()
 Location::Location(std::string const &content)
 {
 	std::cout << "Location constructor" << std::endl;
-	std::cout << content << std::endl;
 	this->loadData(content);
 }
 // Copy constructor
@@ -88,6 +91,8 @@ Location::Location(const Location& other)
 	void Location::setAllowMethods(const std::string &allow) { allow_methods = allow; }
 	void Location::setAutoindex(const std::string &autoidx) { autoindex = autoidx; }
 	void Location::setAlias(const std::string &als) { alias = als; }
+	void Location::setCgiPath(const std::string &cgi_path) { this->cgi_path = cgi_path; }
+	void Location::setCgiExtension(const std::string &cgi_ext) { this->cgi_extension = cgi_ext; }
 
 // Load data from a string configuration
 	int Location::loadData(const std::string &content)
@@ -96,36 +101,29 @@ Location::Location(const Location& other)
 		std::string line;
 		std::string straux;
 		std::map<std::string, int> varnames = var_names_location();
-		if (std::count(content.begin(), content.end(), '{') - std::count(content.begin(), content.end(), '}') != 0)
-		{
-			std::cerr << "Error: Llaves no balanceadas" << std::endl;
-			return -1;
-		}
-		if (content.find(start_string) != 0)
-		{
-			std::cerr << "Error: La configuración de location debe empezar con \"" + start_string + "\"" << std::endl;
-			return -1;
-		}
 
-		std::istringstream fileContentStream(content.substr(start_string.length(), content.length() - 1));
+		std::istringstream fileContentStream(content);
 		while (std::getline(fileContentStream, line, ';'))
 		{
+			line.erase(std::remove(line.begin(), line.end(), '\n'), line.end());
 			if (line == "}")
 				continue;
 			std::map<std::string, int>::iterator it = varnames.begin();
 			while (it != varnames.end())
 			{
-				if (line.find(it->first) != std::string::npos)
+				if (line.substr(0 , line.find(":") ) == it->first)
 				{
 					if (it->second == 1)
-						std::cout << "Error: " << it->first << " ha sido ya asignado." << std::endl;
+						std::cerr << "Error: duplicated variable " << it->first << std::endl;
 					it->second = 1;
 					break;
 				}
 				it++;
 			}
-			if (it == varnames.end())
-				std::cout << "Error: Variable no reconocida: " << line.substr(0, line.find(":")) << std::endl;
+			if (line.length() == 0 || line == "}" || line == "{")
+				continue;
+			else if (it == varnames.end())
+				std::cerr << "Error: Unrecognized variable " << line.substr(0, line.find(":")) << "$" << std::endl;
 			else
 			{
 				straux = line.substr(line.find(":") + 1, line.size());
@@ -145,4 +143,6 @@ void Location::print()
 	std::cout << "Allow Methods: " << allow_methods << std::endl;
 	std::cout << "Autoindex: " << autoindex << std::endl;
 	std::cout << "Alias: " << alias << std::endl;
+	std::cout << "Cgi Path: " << cgi_path << std::endl;
+	std::cout << "Cgi Extension: " << cgi_extension << std::endl;
 }

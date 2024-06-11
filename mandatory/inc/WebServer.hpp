@@ -31,10 +31,10 @@
 # include <netdb.h>
 # include <arpa/inet.h>
 # include "colors.h"
+# include "Parser.hpp"
 
 #define BACKLOG 10
 #define MAX_CLIENTS 100
-#define MAX_MSG_SIZE 1024
 #define MAX_EVENTS 200
 //  The backlog parameter defines the maximum length for the queue of pending
 //      connections.  If a connection request arrives with the queue full, the
@@ -44,7 +44,7 @@ class WebServer {
 	private:
 		std::ifstream		configFile;
 		std::string			configFilename;
-		std::string 		fileContent;
+		std::string 		configFileString;
 		/* Socket Configuration */
 		std::map<int, ListeningSocket *>	serverSocket;
 		std::map<int, ListeningSocket *>	acceptedSocket;
@@ -54,13 +54,16 @@ class WebServer {
 		std::map<int, std::string>	errorPages;
 
 		int kq;
-		void	processConfigFile();
 	public:
 		WebServer();
 		~WebServer();
 		WebServer(WebServer const &copy);
 		WebServer &operator=(WebServer const &copy);
 
+		void createListeningSockets();
+		bool	checkSyntax();
+		bool	parseInfo();
+		void	processConfigFile();
 		void	loadConfigFile(std::string configFile);
 		void	launchServers();
 		void	eventLoop();
@@ -72,6 +75,7 @@ class WebServer {
 		int acceptNewEvent(int curfd);
 		static bool ExitFlag;
 		static void exit_handler(int signum);
+		bool checkVariables(Server *server);
 #ifdef __APPLE__
 			int waitEvent(struct kevent *evList);
 			void modifEvent(struct kevent eventList, int typeRem, int typeAdd);

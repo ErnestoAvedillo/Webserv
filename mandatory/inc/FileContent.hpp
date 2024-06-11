@@ -7,6 +7,8 @@
 #include <filesystem>
 #include <vector>
 #include <map>
+#include <vector>
+#include <map>
 #include "../inc/colors.h"
 #include "../inc/CGI.hpp"
 #include "../inc/Server.hpp"
@@ -47,4 +49,9 @@ public:
 	bool getFirstFragment();
 	std::string getLastModified();
 	size_t getContentSize();
+	bool isCGIFile();
+	void setCGIFile(bool);
+	void setCGIFolder(const std::string &);
+	std::string getCGIFolder();
+	std::string getFileExtension();
 };
