@@ -3,6 +3,7 @@
 #include <fstream>
 #include <string>
 #include <cstring>
+#include "../inc/Header.hpp"
 
 Receive::Receive() : buffer(""), request(""), body(""), isbody(false), maxSize(0), sizeSent(0), isform(false)
 {
@@ -11,7 +12,7 @@ Receive::Receive() : buffer(""), request(""), body(""), isbody(false), maxSize(0
 
 Receive::~Receive()
 {
-    std::cerr << "Receive destroyed" << std::endl;
+    // std::cerr << "Receive destroyed" << std::endl;
 }
 
 Receive::Receive(Receive const &copy)
@@ -64,13 +65,13 @@ bool Receive::receiveHeader(int fd)
         if (tmp.find("\r\n\r\n") != std::string::npos || tmp.find("\n\n") != std::string::npos)
         {
             request += tmp.substr(0, tmp.find("\r\n\r\n"));
-            if (request.find("Content-Length: ") != std::string::npos)
-            {
-                std::string contentLength = request.substr(request.find("Content-Length: ") + 16, request.find("\r\n", request.find("Content-Length: ")));
-                this->maxSize = std::atoi(contentLength.c_str());
-                std::string boundary = request.substr(request.find("boundary=") + 9, request.find("\r\n", request.find("boundary=")) - 1);
-                this->boundary = boundary;
-            }
+            Header header(request);
+            std::map<std::string, std::string>  Attributes = header.getAttributes();
+
+            std::string log = CHR_BLUE + header.getMethod() + RESET + "\t" + Attributes["Host"] + CHR_CYAN + header.getPath() + RESET;
+            printLog("NOTICE", log);
+            if (Attributes.find("Content-Length") != Attributes.end())
+                 this->maxSize = std::atoi(Attributes["Content-Length"].c_str());
             else
                 return true;
             this->body = this->buffer.substr(this->buffer.find("\r\n\r\n") + 4, this->buffer.at(this->buffer.size() - 1));

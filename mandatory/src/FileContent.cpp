@@ -45,7 +45,7 @@ std::string FileContent::getContent()
 		}
 		else
 		{
-			std::cout << "is a normal file: " << fileName << std::endl;
+			// std::cout << "is a normal file: " << fileName << std::endl;
 			content = "";
 			char buffer[MAX_SENT_BYTES];
 			if(file.read(buffer, MAX_SENT_BYTES))
@@ -77,7 +77,7 @@ bool FileContent::setFileName(std::string &file_name)
 {
 	std::string tmp = file_name.substr(0, file_name.find("?"));
 	bool filefound = false;
-	std::cout << "File name: " << file_name << std::endl;
+	// std::cout << "File name: " << file_name << std::endl;
 	if (stat(tmp.c_str(), &fileStat) == 0)
 	{
 		filefound = true;

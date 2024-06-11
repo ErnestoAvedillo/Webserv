@@ -6,7 +6,7 @@
 /*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/20 16:05:31 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/11 14:44:49 by jcheel-n         ###   ########.fr       */
+/*   Updated: 2024/06/11 22:34:29 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,17 +16,22 @@
 #include <iostream>
 #include <ctime>
 #include "../inc/utils.hpp"
-
+#include <algorithm>
 class Header 
 {
 	private:
-		std::string Version;
-		std::string Status;
-		std::string Server;
-		std::string Date;
-		std::string LastModified;
-		size_t ContentLength;
-		std::string ContentType;
+		/* Receive Header*/
+		std::string method;
+		std::string path;
+		
+		std::string protocol;
+		std::string status;
+		std::string server;
+		std::string date;
+		std::string lastModified;
+		size_t contentLength;
+		std::string contentType;
+		std::map<std::string, std::string> attributes;
 		/*
 		HTTP/1.0 200 OK
 		Server: Netscape-Communications/1.1
@@ -37,13 +42,18 @@ class Header
 		*/
 public:
 	Header();
+	Header(std::string header);
 	~Header();
 	std::string generateHeader() const;
-	void setVersion(std::string version);
-	void setStatus(std::string status);
+	std::map<std::string, std::string> getAttributes();
+	void setProtocol(std::string protocol);
 	void setServer(std::string server);
+	void setStatus(std::string status);
 	void setDate();
 	void setLastModified(std::string lastModified);
 	void setContentLength(size_t contentLength);
 	void setContentType(std::string contentType);
+
+	std::string getMethod();
+	std::string getPath();
 };

@@ -85,7 +85,7 @@ void	WebServer::eventLoop()
 		num_events = waitEvent(evList);
 		if (num_events == -1)
 			continue ;
-		std::cerr << "Event " << num_events << std::endl;
+		// std::cerr << "Event " << num_events << std::endl;
 		for (int i = 0; i < num_events; i++)
 		{
 			#ifdef __APPLE__
@@ -123,7 +123,7 @@ void	WebServer::eventLoop()
 				{
 					if (i == num_events - 1)
 					{
-						std::cerr << "DELETE 2" << std::endl;
+						// std::cerr << "DELETE 2" << std::endl;
 						delete acceptedSocket[currfd];
 						acceptedSocket.erase(currfd);
 					}
@@ -134,8 +134,8 @@ void	WebServer::eventLoop()
 			{
 				if (acceptedSocket[currfd]->sendData(currfd))
 				{
-					std::cerr << "DELETE " << currfd << std::endl;
-					std::cout << "Curffd " << currfd << std::endl; 
+				// 	std::cerr << "DELETE " << currfd << std::endl;
+				// 	std::cout << "Curffd " << currfd << std::endl; 
 					delete acceptedSocket[currfd];
 					acceptedSocket.erase(currfd);
 				}

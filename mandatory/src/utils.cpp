@@ -173,12 +173,13 @@ std::string getLocalTime()
 
 void printLog(std::string type ,std::string message)
 {
+	// std::cout << message << std::endl;
 	if (type == "ERROR")
 		std::cout << CHR_RED << getLocalTime() << " [" << type << "]" << "\t\t" RESET << message << RESET << std::endl;
 	else if (type == "WARNING")
 		std::cout << CHR_YELLOW << getLocalTime() << " [" << type << "]" << "\t\t" RESET << message << RESET << std::endl;
 	else if (type == "NOTICE")
-		std::cout << CHR_GREEN << getLocalTime() << " [" << type << "]" << "\t\t" RESET << message << RESET << std::endl;
+		std::cout << CHR_GREEN << getLocalTime() << " [" << type << "]" << "\t\t" << RESET << message << RESET << std::endl;
 	else if (type == "DEBUG")
 		std::cout << getLocalTime() << " [" << type << "]" << CHR_BLUE " | " RESET << message << std::endl;
 }
