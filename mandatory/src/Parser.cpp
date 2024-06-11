@@ -86,6 +86,8 @@ bool Parser::checkServerName(std::string serverName)
 
 bool Parser::checkErrorPage(std::string errorPage)
 {
+	if (errorPage.length() == 0)
+		return true;
 	if (isDirPermissions(errorPage, R_OK) == false)
 	{
 		printLog("WARNING", "error_page\t<" + errorPage + ">\tnot a valid directory." );
