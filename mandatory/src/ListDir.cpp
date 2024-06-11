@@ -62,7 +62,7 @@ std::map <std::string, Attributes *>::iterator ListDir::getEndOfFiles()
 std::string ListDir::getDirFileList() 
 {
 	std::string content = "";
-	for (std::map <std::string, Attributes *>::iterator it = files.begin(); it != files.end(); it++) 
+	for (std::map <std::string , Attributes *>::iterator it = files.begin(); it != files.end(); it++) 
 	{
 		content = content + "<script>\n";
 		//addRow(".dockerignore",".dockerignore",0,52,"52 B",521717927779,"2024-06-09 12:09:39");
@@ -85,22 +85,24 @@ std::string ListDir::getContentToList()
 	char buffer[MAX_SENT_BYTES];
 	if(file.read(buffer, MAX_SENT_BYTES))
 	{
-		std::cout << "file.read" << std::endl;
+		std::cout << "reading file" << std::endl;
+		if (file.eof())
+		{
+			std::cout << RED << "Mark as completed" << RESET << std::endl;
+			isSendComplete = true;
+		}		
 		content.append(buffer, file.gcount());
-	}
-	if(file.eof())
-	{
-		isSendComplete = true;
-	}
-	content.append(buffer, file.gcount());
-	if(!isSendComplete)
-	{
-		std::cout << "Send is still not cmpleted" << std::endl;
+		std::cout << "Send is still not cmpleted -->" << content.substr(0, 20) << "..." << content.substr(content.size() - 20) << std::endl;
 		return content;
 	}
+	else
+	{
+		content.append(buffer, file.gcount());
+		std::cout << RED << "file.read finished -->" << RESET << content.substr(0, 20) << "..." << content.substr(content.size() - 240) << std::endl;
+	}
 
-	content = content + this->getDirFileList() + "</body></html>";
-	std::cout << "Send is completed" << content << std::endl;
+	content = content + "<body>" + this->getDirFileList() + "</body></html>";
+	std::cout << "Send is completed -->" << content.substr(0,20) << "..." << content.substr(content.size() - 20) << std::endl;
 	return content;
 }
 
@@ -111,7 +113,7 @@ bool ListDir::getsIsSendComlete()
 
 void ListDir::openMasterListFile() 
 {
-	std::string filename = path + "dir_list.html";
+	std::string filename = "./Master/dir_list.html";
 	std::cout << "filename: " << filename << std::endl;
 	file.open(filename.c_str(), std::ios::out | std::ios::binary);
 }

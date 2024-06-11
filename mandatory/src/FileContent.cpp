@@ -61,20 +61,17 @@ std::string FileContent::getContent()
 	{
 		if (cgiModule->getIsCGI())
 		{
-			std::cout << "is a CGI file: " << fileName << std::endl;
 			sendComplete = true;
 			return cgiModule->execute();
 		}
 		else if (server->getAutoIndex() && this->fileStat.st_mode & S_IFDIR)
 		{
-			std::cout << "is an autoindex file: " << fileName << std::endl;
 			content = listDir->getContentToList();
 			sendComplete = listDir->getsIsSendComlete();
 			return content;
 		}
 		else
 		{
-			std::cout << "is a normal file: " << fileName << std::endl;
 			content = "";
 			char buffer[MAX_SENT_BYTES];
 			if(file.read(buffer, MAX_SENT_BYTES))
@@ -104,35 +101,39 @@ std::string FileContent::getContent()
 
 bool FileContent::setFileName(const std::string &file_name)
 {
-	std::string tmp = file_name.substr(0, file_name.find("?"));
-	bool filefound = false;
-	if (stat(tmp.c_str(), &fileStat) == 0)
+	std::string FileAndFolder = this->splitFileFromArgs(file_name);
+	bool fileOrFolderExists = this->FileOrFolerExtists(FileAndFolder);
+	if (fileOrFolderExists)
 	{
-		filefound = true;
-	}
-	else
-	{
-		std::cout << "File <" << file_name << "> not found: " << filefound << std::endl;
-		return false;
-	}
-	if (cgiModule->setIsCGI(file_name))
-	{
-		cgiModule->setFileName(file_name);
-		isFileOpen = true;
-	}
-	else
-	{
-		if(stat(fileName.c_str(), &fileStat))
+		if (this->isInputDirectory() && server->getAutoIndex())
 		{
-			fileName = file_name;
-			isFileOpen = this->openFile();
+			fileName = FileAndFolder;
+			isFileOpen = true;
+			return isFileOpen;
 		}
-
+		else if (cgiModule->setIsCGI(file_name))
+		{
+			cgiModule->setFileName(file_name);
+			isFileOpen = true;
+			return isFileOpen;
+		}
+		else
+		{
+			if (this->isInputDirectory())
+				fileName = FileAndFolder + server->getIndex();
+			else
+				fileName = FileAndFolder;
+			isFileOpen = this->openFile();
+			isFileOpen = true;
+			return isFileOpen;
+		}
 	}
-	if (!isFileOpen)
+	else
 	{
-		std::cerr << "File not open: " << fileName << std::endl;
+		std::cout << "File <" << file_name << "> not found." << std::endl;
+		//throw std::runtime_error("Error: File not found");
 	}
+
 	return isFileOpen;
 }
 
@@ -171,4 +172,25 @@ std::string FileContent::getLastModified()
 size_t FileContent::getContentSize()
 {
 	return fileStat.st_size;
+}
+
+bool FileContent::FileOrFolerExtists(const std::string &str)
+{
+	if (stat(str.c_str(), &fileStat) == 0)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool FileContent::isInputDirectory()
+{
+	if (fileStat.st_mode & S_IFDIR)
+			return true;
+	return false;
+}
+
+std::string FileContent::splitFileFromArgs(const std::string &str)
+{
+	return str.substr(0, str.find("?"));
 }

@@ -96,11 +96,15 @@ void	WebServer::eventLoop()
 			{
 				std::cout << "Accepting new connection" << std::endl;
 				fd = acceptNewEvent(currfd);
-//				if (fd == -1)
-//					continue;
+				if (fd == -1)
+					continue;
 			}
 			else if (flag & END_EVENT || flag & ERR_EVENT)
 			{
+				if (flag & END_EVENT)
+					std::cerr << "End event" << std::endl;
+				else if (flag & ERR_EVENT)
+					std::cerr << "Error event" << std::endl;
 				std::cout << "Closing connection" << std::endl;
 				delete acceptedSocket[currfd];
 				acceptedSocket.erase(currfd);

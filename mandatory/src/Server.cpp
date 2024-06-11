@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/27 14:24:35 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/07 17:34:40 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/11 07:33:48 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,14 @@ std::map<std::string, void (Server::*)(const std::string &)> getServerMethods()
 
 Server::Server(std::string const &str) 
 {
+	isDefault = false;
+	maxClientBodySize = 1024;
+	Host = "";
+	serverName = "";
+	errorPage = "";
+	root = "";
+	index = "";
+	autoIndex = false;
 	this->cgiModule = new CGI();
 	if(this->loadData(str) == -1)
 	{

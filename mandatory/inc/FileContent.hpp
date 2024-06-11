@@ -31,7 +31,9 @@ private:
 	CGI *cgiModule;
 	Server *server;
 	ListDir *listDir;
-
+	std::string splitFileFromArgs(const std::string &);
+	bool FileOrFolerExtists(const std::string &);
+	bool isInputDirectory();
 public:
 	FileContent(Server *);
 	FileContent(const std::string &, Server *);

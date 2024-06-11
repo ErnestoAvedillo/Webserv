@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2024/06/09 18:46:59 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/09 23:05:34 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,8 +58,8 @@ void Client::addKeyType(std::string const &value)
 void Client::addKeyFile(std::string const &value)
 {
 	this->Request[REQ_FILE] = this->server->getRoot() + value;
-	if (value == "/")
-		this->Request[REQ_FILE] += this->server->getIndex();
+//	if (value == "/")
+//   		this->Request[REQ_FILE] += this->server->getIndex();
 	replaceString(this->Request[REQ_FILE], "%20", " ");
 }
 
@@ -115,9 +115,6 @@ void Client::loadCompleteClient(Receive *receiver)
 			this->addKeyReq(lines[i].substr(0, lines[i].find(":")), lines[i].substr(lines[i].find(":") + 1, lines.size()));
 	this->loadDataHeader(receiver);
 }
-
-
-
 
 // std::string getExtension(std::string filePath)
 // {

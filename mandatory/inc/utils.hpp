@@ -8,7 +8,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#define MAX_SENT_BYTES 8192
+#define MAX_SENT_BYTES 2048
 
 
 template <typename T>
