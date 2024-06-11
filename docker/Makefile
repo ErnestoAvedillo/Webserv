@@ -40,15 +40,15 @@ clean-cache:
 
 re : down re-img
 
-print:
+help:
 	@echo "$(WARN_COLOR)Makefile Rules$(NO_COLOR)"
 	@echo "[$(OK_COLOR)make up$(NO_COLOR)] Build the image and container"
 	@echo "[$(OK_COLOR)make down$(NO_COLOR)] Stops containers and removes containers"
 	@echo "[$(OK_COLOR)make down-all$(NO_COLOR)] Stops containers and removes containers, networks, volumes, and images "
 	@echo "[$(OK_COLOR)make re-img$(NO_COLOR)] Rebuilds the image if something changed, and build the container"
-	@echo "[$(OK_COLOR)make clean-cache:$(NO_COLOR)] Cleans the docker cache of everything built of images"
+	@echo "[$(OK_COLOR)make clean-cache$(NO_COLOR)] Cleans the docker cache of everything built of images"
 	@echo "[$(OK_COLOR)make re$(NO_COLOR)] Stops everything and Rebulds the image and contianers"
 	
 
 	
-.PHONY: all up down down-all re-img clean-cache
+.PHONY: all up down down-all re-img clean-cache re help
