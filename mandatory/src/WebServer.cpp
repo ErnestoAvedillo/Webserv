@@ -125,8 +125,8 @@ void	WebServer::eventLoop()
 					if (i == num_events - 1)
 					{
 						// std::cerr << "DELETE 2" << std::endl;
-						delete acceptedSocket[currfd];
-						acceptedSocket.erase(currfd);
+						// delete acceptedSocket[currfd];
+						// acceptedSocket.erase(currfd);
 					}
 					continue;
 				}
