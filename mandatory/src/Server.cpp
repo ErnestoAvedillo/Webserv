@@ -6,7 +6,7 @@
 /*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/27 14:24:35 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/08 16:11:52 by jcheel-n         ###   ########.fr       */
+/*   Updated: 2024/06/11 16:43:17 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ std::map<std::string, void (Server::*)(const std::string &)> ServerSetters()
 	serverMethods[VAR_INDEX] = &Server::setIndex;
 	serverMethods[VAR_CGI_EXTENSION] = &Server::setCGIExtension;
 	serverMethods[VAR_CGI_FOLDER] = &Server::setCGIFolder;
-	serverMethods[VAR_CLIENT_MAX_BODY_SIZE] = &Server::setClientMaxBodySize;
+	serverMethods[VAR_CLIENT_MAX_BODY_SIZE] = &Server::setMaxClientBodySizeStr;
 	// serverMethods[VAR_LOCATIONS] = &Server::addLocation;
 	return serverMethods;
 }
@@ -100,7 +100,8 @@ Server &Server::operator=(Server const &copy) {
 	if (this != &copy) {
 		this->isDefault = copy.isDefault;
 		this->port = copy.port;
-		this->maxClientBodySize = copy.maxClientBodySize;
+		this->maxBodySizeStr = copy.maxBodySizeStr;
+		this->maxBodySize = copy.maxBodySize;
 		this->Host = copy.Host;
 		this->serverName = copy.serverName;
 		this->errorPage = copy.errorPage;
@@ -159,7 +160,7 @@ void	Server::print()
 	std::cout << "Error Page: " << this->errorPage << std::endl;
 	std::cout << "Root: " << this->root << std::endl;
 	std::cout << "Index: " << this->index << std::endl;
-	std::cout << "Client Max Body Size: " << this->maxClientBodySize << std::endl;
+	std::cout << "Client Max Body Size: " << this->maxBodySizeStr << std::endl;
 	std::cout << "Is Default: " << this->isDefault << std::endl;
 	for (size_t i = 0; i < this->ports.size(); i++)
 		std::cout << "Port: " << this->ports[i] << std::endl;

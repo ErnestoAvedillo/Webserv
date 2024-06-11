@@ -7,7 +7,7 @@
 # include "../inc/utils.hpp"
 # include <iostream>
 # include <cstring> // Required for memset
-
+# define DEFAULT_MAX_BOD_SIZE 1024
 
 class Parser
 {
@@ -21,4 +21,5 @@ class Parser
 		static bool checkRoot(std::string root);
 		static bool checkIndex(std::string index, std::string root);
 		static in_addr_t	isValidHost(std::string hostname);
+		static size_t checkClientBodySize(std::string maxClientBodySize);
 };

@@ -174,7 +174,7 @@ std::string getLocalTime()
 void printLog(std::string type ,std::string message)
 {
 	if (type == "ERROR")
-		std::cout << CHR_YELLOW << getLocalTime() << " [" << type << "]" << "\t\t" RESET << message << RESET << std::endl;
+		std::cout << CHR_RED << getLocalTime() << " [" << type << "]" << "\t\t" RESET << message << RESET << std::endl;
 	else if (type == "WARNING")
 		std::cout << CHR_YELLOW << getLocalTime() << " [" << type << "]" << "\t\t" RESET << message << RESET << std::endl;
 	else if (type == "NOTICE")

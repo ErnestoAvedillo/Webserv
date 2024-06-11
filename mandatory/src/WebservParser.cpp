@@ -118,7 +118,7 @@ void WebServer::loadConfigFile(std::string filename) // WebServer loadConfigFile
 {
 	if (!isFilePermissions(filename, R_OK))
 	{
-		std::cerr << "Error: <" << filename <<  "> not a valid file" << std::endl;
+		printLog("ERROR", "File\t\t<" + filename + ">\tnot a valid file");
 		exit(1);
 	}
 	this->configFilename = filename;
@@ -162,12 +162,11 @@ bool WebServer::checkVariables(Server *server)
 		server->setHostAddr(Parser::isValidHost(server->getHost()));
 	if (Parser::checkServerName(server->getServerName()) == false)
 		exit(1);
-	if (Parser::checkErrorPage(server->getErrorPage()) == false)
-		exit(1);
 	if (Parser::checkRoot(server->getRoot()) == false)
 		exit (1);
-	if (Parser::checkIndex(server->getIndex(), server->getRoot()) == false)
-		exit(1);
+	Parser::checkErrorPage(server->getErrorPage());
+	Parser::checkIndex(server->getIndex(), server->getRoot());
+	server->setMaxClientBodySize(Parser::checkClientBodySize(server->getMaxClientBodySizeStr()));
 	return true;
 }
 
@@ -175,8 +174,10 @@ bool WebServer::parseInfo()
 {
 	for (size_t i = 0; i < this->servers.size(); i++)
 	{
+		std::cout << CHR_BLUE"Checking Server [" << i  << "]" << std::endl;
 		checkVariables(this->servers[i]);
-		this->servers[i]->print();
+		// this->servers[i]->print(); // print all Server parameters for debug
+		std::cout << std::endl;
 	}
 	std::vector<std::string> ports;
 	for (size_t i = 0; i < this->servers.size(); i++)
@@ -185,12 +186,11 @@ bool WebServer::parseInfo()
 		{
 			if (std::find(ports.begin(), ports.end(), this->servers[i]->getPorts()[j]) != ports.end())
 			{
-				std::cerr << "Error: Port " << this->servers[i]->getPorts()[j] << " duplicated" << std::endl;
+				printLog("ERROR", "Port " + this->servers[i]->getPorts()[j] + " duplicated");
 				return false;
 			}
 			ports.push_back(this->servers[i]->getPorts()[j]);
 		}
 	}
-	return (true);
-	
+	return (true);	
 }

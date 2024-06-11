@@ -42,7 +42,8 @@ class Server {
 		bool		isDefault;
 		std::map<int, ListeningSocket *> port;
 		std::vector<std::string> ports;
-		size_t			maxClientBodySize;
+		size_t			maxBodySize;
+		std::string		maxBodySizeStr;
 		std::string	Host;
 		std::string	serverName;
 		std::string errorPage;
@@ -67,7 +68,9 @@ class Server {
 		void	setHost(std::string const &);
 		void	setServerName(std::string const &);
 		void	setErrorPage(std::string const &);
-		void	setClientMaxBodySize(std::string const &);
+		void	setMaxClientBodySizeStr(std::string const &);
+		void	setMaxClientBodySize(size_t const &);
+		
 		void	setRoot(std::string const &);
 		void	setIndex(std::string const &);
 		void	setCGIExtension(std::string const &);
@@ -83,7 +86,6 @@ class Server {
 		std::vector<int> getServerFds();
 
 		ListeningSocket *		getPort(int i); 
-		size_t			getClientBodySize();
 		bool getIsDefault();
 		std::string	getHost();
 		std::string	getServerName();
@@ -92,7 +94,9 @@ class Server {
 		std::string	getIndex();
 		std::string	getCGIExtension(const std::string &);
 		std::string	getCGIFolder();
-		in_addr_t getHostAddr();
+		in_addr_t	getHostAddr();
+		std::string	getMaxClientBodySizeStr();
+		size_t		getMaxClientBodySize();
 		std::vector<Location *> getLocations();
 
 
