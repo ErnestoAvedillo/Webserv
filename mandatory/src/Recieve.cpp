@@ -61,13 +61,10 @@ bool Receive::receiveHeader(int fd)
     {
         this->buffer.clear();
         this->buffer.append(buf, ret);
-        std::cout << "Buffer" << this->buffer.size() << std::endl;
-        std::cout << "ret" << ret << std::endl;
         std::string tmp = request + this->buffer;
         if (tmp.find("\r\n\r\n") != std::string::npos || tmp.find("\n\n") != std::string::npos)
         {
             request += tmp.substr(0, tmp.find("\r\n\r\n"));
-            std::cout << "Request" << request.size() << std::endl;
             Header header(request);
             std::map<std::string, std::string>  Attributes = header.getAttributes();
 
@@ -78,11 +75,7 @@ bool Receive::receiveHeader(int fd)
             else
                 return true;
             this->body = tmp.substr(tmp.find("\r\n\r\n") + 4, tmp.size() - tmp.find("\r\n\r\n") - 4);
-            std::cout << "TMP" << tmp.size() << std::endl;
-            std::cout << "Body" << this->body.size() << std::endl;
             this->sizeSent += this->body.size();
-            std::cout << "Maxsize" << this->maxSize << std::endl;
-            std::cout << "SizeSent" << this->sizeSent << std::endl;
             if (this->sizeSent >= this->maxSize)
             {
                 this->isform = true;
@@ -111,17 +104,14 @@ bool Receive::receiveBody(int fd)
 {
     char buf[MAX_MSG_SIZE] = {0};
     int ret = 0;
-    std::cout << "HOKA" << std::endl;
+
     while ((ret = recv(fd, buf, MAX_MSG_SIZE, 0)) > 0)
     {
-        std::cout << "HOKA" << std::endl;
         this->sizeSent += ret;
         this->buffer.clear();
         this->buffer = std::string(buf, ret);
         if (this->sizeSent >= this->maxSize)
         {
-            std::cout << "Maxsizeee" << this->maxSize << std::endl;
-            std::cout << "SizeSenttt" << this->sizeSent << std::endl;
             this->body += this->buffer;
             this->isbody = false;
             return true;
@@ -130,9 +120,6 @@ bool Receive::receiveBody(int fd)
             this->body += this->buffer;
         std::memset(buf, 0, MAX_MSG_SIZE); 
     }
-    std::cout << "Maxsizeee" << this->maxSize << std::endl;
-    std::cout << "SizeSenttt" << this->sizeSent << std::endl;
-    std::cout << "Ret" << ret << std::endl;
     if (ret < 0) // This is not handle as an error 
         return false;
     else if (ret == 0)
