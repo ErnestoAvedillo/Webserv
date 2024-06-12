@@ -11,6 +11,7 @@
 # include "utils.hpp"
 # include "Location.hpp"
 # include "CGI.hpp"
+# include "Parser.hpp"
 
 #define VAR_PORT	"port"
 #define VAR_HOST	"host"
@@ -102,6 +103,7 @@ class Server {
 
 		void	print();
 		void createListeningSockets();
+		void checkVariables();
 		//std::vector<class Location> getLocations();
 };
 

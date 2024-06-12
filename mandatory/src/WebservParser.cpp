@@ -152,33 +152,16 @@ void WebServer::processConfigFile() // WebServer processConfigFile
 	}
 }
 
-bool WebServer::checkVariables(Server *server)
-{
-	if (Parser::checkPorts(server->getPorts()) == false)
-		exit(1);
-	if (Parser::checkHost(server->getHost()) == false && server->getHost() != "0.0.0.0")
-		exit(1);
-	else
-		server->setHostAddr(Parser::isValidHost(server->getHost()));
-	if (Parser::checkServerName(server->getServerName()) == false)
-		exit(1);
-	if (Parser::checkRoot(server->getRoot()) == false)
-		exit (1);
-	Parser::checkErrorPage(server->getErrorPage());
-	Parser::checkIndex(server->getIndex(), server->getRoot());
-	server->setMaxClientBodySize(Parser::checkClientBodySize(server->getMaxClientBodySizeStr()));
-	return true;
-}
-
 bool WebServer::parseInfo()
 {
 	for (size_t i = 0; i < this->servers.size(); i++)
 	{
 		std::cout << CHR_BLUE"Checking Server [" << i  << "]" << std::endl;
-		checkVariables(this->servers[i]);
+		this->servers[i]->checkVariables();
 		// this->servers[i]->print(); // print all Server parameters for debug
-		std::cout << CHR_GREEN"OK: server " << i << std::endl;
+		std::cout << CHR_GREEN"OK: server " << i << std::endl << std::endl;
 	}
+
 	std::vector<std::string> ports;
 	for (size_t i = 0; i < this->servers.size(); i++)
 	{

@@ -111,6 +111,21 @@ bool Parser::checkRoot(std::string root)
 	return true;
 }
 
+bool Parser::checkPath(std::string root, std::string attributeName)
+{
+	if (root.length() == 0)
+	{
+		printLog("ERROR", attributeName + "\t\t\t\tnot defined." );
+		return false;
+	}
+	if (isDirPermissions(root, R_OK) == false)
+	{
+		printLog("ERROR", attributeName + "\t\t<" + root + ">\tnot a valid directory." );
+		return false;
+	}
+	return true;
+}
+
 bool Parser::checkIndex(std::string index, std::string root)
 {
 	if (index.length() == 0)
@@ -146,4 +161,87 @@ size_t	Parser::checkClientBodySize(std::string maxClientBodySize)
 		exit(1);
 	}
 	return nbr;
+}
+
+
+bool Parser::checkAutoIndex(std::string autoindex)
+{
+	// if (autoindex.length() == 0)
+	// 	return true;
+	// if (autoindex != "on" && autoindex != "off")
+	// {
+	// 	printLog("ERROR", "autoindex\t<" + autoindex + ">\tinvalid value." );
+	// 	return false;
+	// }
+	(void)autoindex;
+	return true;
+}
+
+bool Parser::checkLocationName(std::string name)
+{
+	if (name.length() == 0)
+	{
+		printLog("ERROR", "location name\t\t\t\tnot defined." );
+		return false;
+	}
+	return true;
+}
+
+int Parser::checkRootAliasReturn(std::string root, std::string alias, std::string return_)
+{
+	if (root.empty() && return_.empty() && alias.empty())
+	{
+		printLog("ERROR", "At least one of root, return or alias must be specified");
+		exit(1);
+	}
+	if ((!root.empty() && !return_.empty()) || (!root.empty() && !alias.empty()) || (!return_.empty() && !alias.empty()))
+	{
+		printLog("ERROR", "Only one of root, return or alias can be specified");
+		exit(1);
+	}
+	if (!root.empty())
+	{
+		if (!isDirPermissions(root, R_OK))
+		{
+			printLog("ERROR", "root\t\t<" + root + ">\tnot a valid directory." );
+			exit(1);
+		}
+		return (1);
+	}
+	else if (!alias.empty())
+	{
+		if (!isDirPermissions(alias, R_OK))
+		{
+			printLog("ERROR", "root\t\t<" + alias + ">\tnot a valid directory." );
+			exit(1);
+		}
+		return (2);
+	}
+	else if (!return_.empty())
+	{
+		if (!isDirPermissions(return_, R_OK) && (!return_.find("http://") || !return_.find("https://")))
+		{
+			printLog("ERROR", "root\t\t<" + return_ + ">\tnot a valid directory." );
+			exit(1);
+		}
+		return (3);
+	}
+	return (0);
+}
+
+bool Parser::checkReturn(Location *loc)
+{
+	if (!loc->getAllowMethods().empty())
+	{
+		printLog("WARNING", "allowed_methods\t\twill be ignored when return is defined.");
+	}
+	if (!loc->getAutoindex().empty())
+	{
+		printLog("WARNING", "autoindex\t\twill be ignored when return is defined.");
+	}
+	if (!loc->getIndex().empty())
+	{
+		printLog("WARNING", "index\t\t\twill be ignored when return is defined.");
+	}
+	return true;
 }

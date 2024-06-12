@@ -6,7 +6,7 @@
 /*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/27 14:24:35 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/11 16:43:17 by jcheel-n         ###   ########.fr       */
+/*   Updated: 2024/06/12 16:06:10 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -177,5 +177,29 @@ void Server::createListeningSockets()
 	{
 		ls = new ListeningSocket(stringToSizeT(ports[i]), this);
 		this->port[ls->getFd()] = ls;
+	}
+}
+
+void Server::checkVariables()
+{
+	if (Parser::checkPorts(this->getPorts()) == false)
+		exit(1);
+	if (Parser::checkHost(this->getHost()) == false && this->getHost() != "0.0.0.0")
+		exit(1);
+	else
+		this->setHostAddr(Parser::isValidHost(this->getHost()));
+	if (Parser::checkServerName(this->getServerName()) == false)
+		exit(1);
+	if (Parser::checkRoot(this->getRoot()) == false)
+		exit (1);
+	Parser::checkErrorPage(this->getErrorPage());
+	Parser::checkIndex(this->getIndex(), this->getRoot());
+	this->setMaxClientBodySize(Parser::checkClientBodySize(this->getMaxClientBodySizeStr()));
+	for (size_t i = 0; i < this->locations.size(); i++)
+	{
+		
+		std::cout << CHR_MGENTA"Location [" << i << "]" RESET<< std::endl;
+		this->locations[i]->checkVariables();
+		std::cout << CHR_GREEN"OK!: Location " << i << RESET<< std::endl;
 	}
 }

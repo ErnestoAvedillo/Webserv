@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <iostream>
 #include <sstream>
+#include "Parser.hpp"
 #define VAR_LOC_NAME "name"
 #define VAR_LOC_ROOT "root"
 #define VAR_LOC_RETURN "return"
@@ -23,11 +24,12 @@ class Location
 		std::string root;
 		std::string return_;
 		std::string index;
-		std::string allow_methods; 
+		std::string allowMethodsStr;
+		std::vector<std::string> allowMethods; 
 		std::string autoindex;
 		std::string alias;
-		std::string cgi_path;
-		std::string cgi_extension;
+		std::string cgiPath;
+		std::string cgiExtension;
 		int loadData(const std::string &data);
 
 	public:
@@ -63,6 +65,7 @@ class Location
 		void setCgiExtension(const std::string &cgi_ext);
 		// Load data from a string configuration
 		void print();
+		void checkVariables();
 };
 
 //typedef void (Location::*location)(std::string);
