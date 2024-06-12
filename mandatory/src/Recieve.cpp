@@ -94,7 +94,7 @@ bool Receive::receiveHeader(int fd)
         return false;
     else if (ret == 0)
     {
-        std::cerr << "Client disconnected" << std::endl;
+        printLog("NOTICE", "Client disconnected");
         return false;
     }
     return false;
@@ -124,7 +124,7 @@ bool Receive::receiveBody(int fd)
         return false;
     else if (ret == 0)
     {
-        std::cerr << "Client disconnected" << std::endl;
+        printLog("NOTICE", "Client disconnected");
         return false;
     }
     return false;
