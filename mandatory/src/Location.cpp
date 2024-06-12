@@ -6,7 +6,7 @@
 /*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/29 17:38:18 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/12 19:58:45 by jcheel-n         ###   ########.fr       */
+/*   Updated: 2024/06/12 20:03:40 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -283,10 +283,12 @@ void Location::checkVariables()
 			if (!Parser::checkCgiString(this->cgiPathStr, this->cgiExtensionStr))
 				exit(1);
 			else
+			{
 				this->setCgiPath(this->cgiPathStr);
 				this->setCgiExtension(this->cgiExtensionStr);
 				Parser::checkCgi(this->cgiPath, this->cgiExtension);
 				this->isCgi = true;
+			}
 			break ;
 		case 1:
 			break;
