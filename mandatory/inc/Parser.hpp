@@ -28,7 +28,10 @@ class Parser
 		static size_t checkClientBodySize(std::string maxClientBodySize);
 
 		static bool checkAutoIndex(std::string autoindex);
-		static bool checkLocationName(std::string name);
+		static int checkLocationName(std::string name);
 		static int checkRootAliasReturn(std::string root, std::string alias, std::string return_);
-		static bool checkReturn(Location *loc);
+		static bool checkReturnIgnore(std::string allowMethods, std::string autoindex, std::string index);
+		static bool checkCgiString(std::string cgiPath, std::string cgiExtension);
+		static bool checkCgi(std::vector<std::string> paths, std::vector<std::string> extensions);
+		static void checkAllowedMethods(std::string allowMethods);
 };

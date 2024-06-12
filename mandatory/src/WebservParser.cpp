@@ -156,10 +156,11 @@ bool WebServer::parseInfo()
 {
 	for (size_t i = 0; i < this->servers.size(); i++)
 	{
-		std::cout << CHR_BLUE"Checking Server [" << i  << "]" << std::endl;
+		std::cout << CHR_CYAN"-------------Checking Server [" << i + 1  << "]------------" RESET<< std::endl;
 		this->servers[i]->checkVariables();
 		// this->servers[i]->print(); // print all Server parameters for debug
-		std::cout << CHR_GREEN"OK: server " << i << std::endl << std::endl;
+		printLog("NOTICE", "OK! Server " + toString(i + 1));
+		std::cout << CHR_CYAN"--------------------------------------------" RESET<< std::endl;
 	}
 
 	std::vector<std::string> ports;

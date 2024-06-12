@@ -6,7 +6,7 @@
 /*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/29 17:38:18 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/12 17:14:56 by jcheel-n         ###   ########.fr       */
+/*   Updated: 2024/06/12 19:58:45 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,11 +35,11 @@ std::map<std::string, void (Location::*)(const std::string&)> getLocationMethods
 	locationMethods[VAR_LOC_ROOT] = &Location::setRoot;
 	locationMethods[VAR_LOC_RETURN] = &Location::setReturn;
 	locationMethods[VAR_LOC_INDEX] = &Location::setIndex;
-	locationMethods[VAR_LOC_ALLOW_METHODS] = &Location::setAllowMethods;
+	locationMethods[VAR_LOC_ALLOW_METHODS] = &Location::setAllowMethodsStr;
 	locationMethods[VAR_LOC_AUTOINDEX] = &Location::setAutoindex;
 	locationMethods[VAR_LOC_ALIAS] = &Location::setAlias;
-	locationMethods[VAR_LOC_CGI_PATH] = &Location::setCgiPath;
-	locationMethods[VAR_LOC_CGI_EXTENSION] = &Location::setCgiExtension;
+	locationMethods[VAR_LOC_CGI_PATH] = &Location::setCgiPathStr;
+	locationMethods[VAR_LOC_CGI_EXTENSION] = &Location::setCgiExtensionStr;
 	return locationMethods;
 }
 
@@ -53,10 +53,13 @@ Location::Location()
 	allowMethodsStr = "";
 	autoindex = "";
 	alias = "";
+	cgiPathStr = "";
+	cgiExtensionStr = "";
+	isCgi = false;
 }
 Location::Location(std::string const &content)
 {
-	std::cout << "Location constructor" << std::endl;
+	// std::cout << "Location constructor" << std::endl;
 	this->loadData(content);
 }
 // Copy constructor
@@ -66,8 +69,8 @@ Location::Location(const Location& other)
 	setRoot(other.root);
 	setReturn(other.return_);
 	setIndex(other.index);
-	setAllowMethods(other.allowMethodsStr);
-	setAutoindex(other.autoindex);
+	setAllowMethodsStr(other.allowMethodsStr);
+	setAutoindex(other.autoindexStr);
 	setAlias(other.alias);
 }
 
@@ -79,21 +82,77 @@ const std::string &Location::getName() const { return name; }
 const std::string &Location::getRoot() const { return root; }
 const std::string &Location::getReturn() const { return return_; }
 const std::string &Location::getIndex() const { return index; }
-const std::string &Location::getAllowMethods() const { return allowMethodsStr; }
-const std::string &Location::getAutoindex() const { return autoindex; }
+const std::string &Location::getAllowMethodsStr() const { return allowMethodsStr; }
+const std::string &Location::getAutoindex() const { return autoindexStr; }
 const std::string &Location::getAlias() const { return alias; }
+bool Location::getGetAllowed() const { return isGetAllowed; }
+bool Location::getPostAllowed() const { return isPostAllowed; }
+bool Location::getDeleteAllowed() const { return isDeleteAllowed; }
 
 // Setter methods
 void Location::setName(const std::string &n) { name = n; }
 void Location::setRoot(const std::string &r) { root = r; }
 void Location::setReturn(const std::string &ret) { return_ = ret; }
 void Location::setIndex(const std::string &idx) { index = idx; }
-void Location::setAllowMethods(const std::string &allow) { allowMethodsStr = allow; }
-void Location::setAutoindex(const std::string &autoidx) { autoindex = autoidx; }
+void Location::setAllowMethodsStr(const std::string &allow) { allowMethodsStr = allow; }
+void Location::setAutoindex(const std::string &autoidx) { autoindexStr = autoidx; }
 void Location::setAlias(const std::string &als) { alias = als; }
-void Location::setCgiPath(const std::string &cgi_path) { this->cgiPath = cgi_path; }
-void Location::setCgiExtension(const std::string &cgi_ext) { this->cgiExtension = cgi_ext; }
+void Location::setCgiPathStr(const std::string &paths) { this->cgiPathStr = paths; }
+void Location::setCgiExtensionStr(const std::string &extensions) { this->cgiExtensionStr = extensions; }
 
+void Location::setAllowMethods(const std::string& methods)
+{
+	std::string line;
+	std::istringstream allowMethodsStream(methods);
+	while (std::getline(allowMethodsStream, line, ','))
+	{
+		if (line.length() == 0)
+			continue;
+		if (line == "GET")// || line == "POST" || line == "DELETE")
+		{
+			this->allowMethods.push_back(line);
+			this->isGetAllowed = true;
+		}
+		else if (line == "POST")
+		{
+			this->allowMethods.push_back(line);
+			this->isPostAllowed = true;
+		}
+		else if (line == "DELETE")
+		{
+			this->allowMethods.push_back(line);
+			this->isDeleteAllowed = true;
+		}
+		else
+		{
+			printLog("ERROR", "allow_method " + line + " is not valid.");
+			exit(1);
+		}
+	}
+}
+void Location ::setCgiPath(const std::string &paths)
+{
+	std::string line;
+	std::istringstream cgiPathStream(paths);
+	while (std::getline(cgiPathStream, line, ','))
+	{
+		if (line.length() == 0)
+			continue;
+		this->cgiPath.push_back(line);
+	}
+}
+
+void Location ::setCgiExtension(const std::string &extensions)
+{
+	std::string line;
+	std::istringstream cgiExtStream(extensions);
+	while (std::getline(cgiExtStream, line, ','))
+	{
+		if (line.length() == 0)
+			continue;
+		this->cgiExtension.push_back(line);
+	}
+}
 // Load data from a string configuration
 int Location::loadData(const std::string &content)
 {
@@ -143,8 +202,8 @@ void Location::print()
 	std::cout << "Allow Methods: " << allowMethodsStr << std::endl;
 	std::cout << "Autoindex: " << autoindex << std::endl;
 	std::cout << "Alias: " << alias << std::endl;
-	std::cout << "Cgi Path: " << cgiPath << std::endl;
-	std::cout << "Cgi Extension: " << cgiExtension << std::endl;
+	std::cout << "Cgi Path: " << cgiPathStr << std::endl;
+	std::cout << "Cgi Extension: " << cgiExtensionStr << std::endl;
 }
 
 // location:{                   
@@ -160,24 +219,105 @@ void Location::print()
 //                                       # EX: - URI /tours           --> docs/fusion_web
 //                                       #     - URI /tours/page.html --> docs/fusion_web/page.html 
 //   }
+
+// bool isValidUrl(const std::string& url)
+// {
+// 	// Check if the URL starts with a valid scheme
+// 	std::string validSchemes[] = {"http://", "https://", "ftp://"};
+// 	bool validScheme = false;
+// 	for (const std::string& scheme : validSchemes) {
+// 		if (url.substr(0, scheme.length()) == scheme) {
+// 			validScheme = true;
+// 			break;
+// 		}
+// 	}
+// 	if (!validScheme) {
+// 		return false;
+// 	}
+
+// 	// Check if the URL contains only valid characters
+// 	std::string validCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~:/?#[]@!$&'()*+,;=";
+// 	for (char c : url) {
+// 		if (validCharacters.find(c) == std::string::npos) {
+// 			return false;
+// 		}
+// 	}
+
+// 	return true;
+// }
+
+// #include <string>
+// #include <algorithm>
+
+// bool isValidUrl(const std::string& url)
+// {
+//     // Check if the URL starts with a valid scheme
+//     std::string validSchemes[] = {"http://", "https://", "ftp://"};
+//     bool validScheme = false;
+//     for (int i = 0; i < 3; ++i) {
+//         if (url.substr(0, validSchemes[i].length()) == validSchemes[i]) {
+//             validScheme = true;
+//             break;
+//         }
+//     }
+//     if (!validScheme) {
+//         return false;
+//     }
+
+//     // Check if the URL contains only valid characters
+//     std::string validCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~:/?#[]@!$&'()*+,;=";
+//     for (std::string::const_iterator it = url.begin(); it != url.end(); ++it) {
+//         if (validCharacters.find(*it) == std::string::npos) {
+//             return false;
+//         }
+//     }
+
+//     return true;
+// }
+
 void Location::checkVariables()
 {
-	if (!Parser::checkLocationName(this->getName()))
-		exit(1);
-
+	switch (Parser::checkLocationName(this->name))
+	{
+		case 2:
+			if (!Parser::checkCgiString(this->cgiPathStr, this->cgiExtensionStr))
+				exit(1);
+			else
+				this->setCgiPath(this->cgiPathStr);
+				this->setCgiExtension(this->cgiExtensionStr);
+				Parser::checkCgi(this->cgiPath, this->cgiExtension);
+				this->isCgi = true;
+			break ;
+		case 1:
+			break;
+	}
+	
 	switch (Parser::checkRootAliasReturn(this->root, this->alias,this->return_))
 	{
 		case 3:
-			Parser::checkReturn(this);
+			if (this->isCgi)
+			{
+				printLog("ERROR", "Cgi location cannot have return");
+				exit(1);
+			}
+			Parser::checkReturnIgnore(this->allowMethodsStr, this->autoindexStr, this->index);
 			return ;
 		default:
 			break;
 	}
-	// {
-	// 	printLog("ERROR", "root\t\t<" + root + ">\tnot a valid directory." );
-	// 	exit(1);
-	// }
-	Parser::checkAutoIndex(this->getAutoindex());
+
+	switch (Parser::checkAutoIndex(this->getAutoindex()))
+	{
+		case true:
+			this->autoindex = true;
+			break;
+		case false:
+			this->autoindex = false;
+			break;
+	}
+
+	this->setAllowMethods(this->allowMethodsStr);
+	Parser::checkAllowedMethods(this->allowMethodsStr);
 	Parser::checkIndex(this->getIndex(), this->getRoot());
 	
 }

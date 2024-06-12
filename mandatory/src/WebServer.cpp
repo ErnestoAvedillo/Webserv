@@ -51,7 +51,7 @@ void WebServer::createServerSocket()
 }
 void WebServer::launchServers()
 {
-	std::cout << "Launching servers..." << std::endl << std::endl;
+	std::cout << CHR_YELLOW "Launching servers..." RESET << std::endl << std::endl;
 	std::cout << "\e[4;37m    Date & time    \t\t\t\t\t\t\tport\tfd" << RESET << std::endl;
 
 	this->createListeningSockets();

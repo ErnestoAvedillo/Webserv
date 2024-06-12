@@ -133,7 +133,7 @@ bool Parser::checkIndex(std::string index, std::string root)
 
 	if (isFilePermissions(root + "/" + index, R_OK) == false)
 	{
-		printLog("WARNING", "index\t\t<" + index + ">\tnot a valid file." );
+		printLog("WARNING", "index\t\t<" + index + ">\tfile not found." );
 		return false;
 	}
 	return true;
@@ -166,25 +166,35 @@ size_t	Parser::checkClientBodySize(std::string maxClientBodySize)
 
 bool Parser::checkAutoIndex(std::string autoindex)
 {
-	// if (autoindex.length() == 0)
-	// 	return true;
-	// if (autoindex != "on" && autoindex != "off")
-	// {
-	// 	printLog("ERROR", "autoindex\t<" + autoindex + ">\tinvalid value." );
-	// 	return false;
-	// }
-	(void)autoindex;
-	return true;
+	if (autoindex.length() == 0)
+		return false;
+	if (autoindex != "on" && autoindex != "off")
+	{
+		printLog("WARNING", "autoindex\t<" + autoindex + ">\t\tinvalid value. Set to default " CHR_GREEN "off" RESET " value" );
+		return false;
+	}
+	if (autoindex == "on")
+		return true;
+	else if (autoindex == "off")
+		return false;
+	return false;
 }
 
-bool Parser::checkLocationName(std::string name)
+int Parser::checkLocationName(std::string name)
 {
 	if (name.length() == 0)
 	{
 		printLog("ERROR", "location name\t\t\t\tnot defined." );
-		return false;
+		exit(1);
 	}
-	return true;
+	// if (name == "/")
+	// {
+	// 	printLog("ERROR", "location name\t\t\t\tcannot be root." );
+	// 	return 0;
+	// }
+	if (name == "cgi-bin")
+		return 2;
+	return 1;
 }
 
 int Parser::checkRootAliasReturn(std::string root, std::string alias, std::string return_)
@@ -229,19 +239,67 @@ int Parser::checkRootAliasReturn(std::string root, std::string alias, std::strin
 	return (0);
 }
 
-bool Parser::checkReturn(Location *loc)
+bool Parser::checkReturnIgnore(std::string allowMethods, std::string autoindex, std::string index)
 {
-	if (!loc->getAllowMethods().empty())
-	{
-		printLog("WARNING", "allowed_methods\t\twill be ignored when return is defined.");
-	}
-	if (!loc->getAutoindex().empty())
-	{
-		printLog("WARNING", "autoindex\t\twill be ignored when return is defined.");
-	}
-	if (!loc->getIndex().empty())
-	{
-		printLog("WARNING", "index\t\t\twill be ignored when return is defined.");
-	}
+	if (!allowMethods.empty())
+		printLog("WARNING", "allowed_methods\t\twill be ignored when " CHR_GREEN  "return" RESET " is defined.");
+	if (!autoindex.empty())
+		printLog("WARNING", "autoindex\t\twill be ignored when " CHR_GREEN  "return" RESET " is defined.");
+	if (!index.empty())
+		printLog("WARNING", "index\t\t\twill be ignored when " CHR_GREEN  "return" RESET " is defined.");
 	return true;
+}
+
+bool Parser::checkCgiString(std::string cgiPath, std::string cgiExtension)
+{
+	if (cgiPath.empty() && cgiExtension.empty())
+	{
+		printLog("ERROR", "cgi_path\t\t\tis not defined.");
+		printLog("ERROR", "cgi_extension\t\t\tis not defined.");
+		return false;
+	}
+	else if (cgiPath.empty())
+	{
+		printLog("ERROR", "cgi_path\t\t\tis not defined.");
+		return false;
+	}
+	else if (cgiExtension.empty())
+	{
+		printLog("ERROR", "cgi_extension\t\t\tis not defined.");
+		return false;
+	}
+	
+	return true;
+}
+
+bool Parser::checkCgi(std::vector<std::string> paths, std::vector<std::string> extensions)
+{
+	if (paths.size() != extensions.size())
+	{
+		printLog("ERROR", "cgi_path and cgi_extension must have the same number of elements.");
+		return false;
+	}
+	for (size_t size = 0; size < paths.size(); size++)
+	{
+		if (!isFilePermissions(paths[size], X_OK))
+		{
+			printLog("ERROR", "cgi_path\t\t<" + paths[size] + ">\tdoes not exists or not permission" );
+			return false;
+		}
+	}
+	// for (size_t size = 0; size < extensions.size(); size++)
+	// {
+	// 	if (extensions[size].find('.') == std::string::npos)
+	// 	{
+	// 		printLog("ERROR", "cgi_extension\t\t<" + extensions[size] + ">\tis not a valid extension" );
+	// 		return false;
+	// 	}
+	// }
+	return true;
+}
+
+void Parser::checkAllowedMethods(std::string allowMethods)
+{
+	if (allowMethods.length() == 0)
+		printLog("WARNING", "allow_methods\t\tis not defined. Set to default " CHR_GREEN "GET" RESET " value" );
 }

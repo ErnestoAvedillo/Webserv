@@ -6,7 +6,7 @@
 /*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/27 14:24:35 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/12 16:06:10 by jcheel-n         ###   ########.fr       */
+/*   Updated: 2024/06/12 19:56:30 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -195,11 +195,16 @@ void Server::checkVariables()
 	Parser::checkErrorPage(this->getErrorPage());
 	Parser::checkIndex(this->getIndex(), this->getRoot());
 	this->setMaxClientBodySize(Parser::checkClientBodySize(this->getMaxClientBodySizeStr()));
+	if (this->locations.size())
+		std::cout << std::endl;
 	for (size_t i = 0; i < this->locations.size(); i++)
 	{
-		
-		std::cout << CHR_MGENTA"Location [" << i << "]" RESET<< std::endl;
+		std::cout << CHR_MGENTA"---------Location [" << i + 1 << "]---------" RESET << std::endl;
 		this->locations[i]->checkVariables();
-		std::cout << CHR_GREEN"OK!: Location " << i << RESET<< std::endl;
+		// std::cout << CHR_GREEN"OK! Location " << i << RESET<< std::endl;
+		printLog("NOTICE", "OK! Location " + toString(i + 1));
+		std::cout << CHR_MGENTA"------------------------------" RESET << std::endl;
 	}
+	
+	std::cout << std::endl;
 }
