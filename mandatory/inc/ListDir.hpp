@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ListDir.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 19:03:57 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/09 18:15:18 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/12 19:47:00 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <filesystem>
 #include <string>
 #include <map>
+#include <algorithm>
 #include <dirent.h>
 #include "Attributes.hpp"
 #include "utils.hpp"
@@ -24,8 +25,10 @@ class ListDir
     private:
         std::ifstream file;
         std::string path;
-        std::map <std::string, Attributes *> files;
-        bool isSendComplete;
+        std::string contentToSend;
+        std::size_t      posToSend;
+        std::map<std::string, Attributes *> files;
+        bool        isSendComplete;
     public:
         ListDir();
         ListDir(const std::string &);
@@ -34,9 +37,11 @@ class ListDir
         std::map <std::string, Attributes *>::iterator getBeginOfFiles();
         std::map <std::string, Attributes *>::iterator getEndOfFiles();
         std::string getDirFileList();
-        std::string getContentToList();
-        bool getsIsSendComlete();
+        void setContentToList();
+        void setIsSendComlete();
+        bool getIsSendComlete();
         void openMasterListFile();
         void printFiles();
+        std::string getContentToSend();
 };
 

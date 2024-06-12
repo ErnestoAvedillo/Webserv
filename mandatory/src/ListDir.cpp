@@ -1,16 +1,20 @@
 
 #include "../inc/ListDir.hpp"
 
-ListDir::ListDir() {
+ListDir::ListDir() 
+{
+	posToSend = 0;
 	path = "./";
 	this->setListOfFiles();
 	isSendComplete = false;
 	this->openMasterListFile();
 }
 
-ListDir::ListDir(const std::string& directory) {
-//	std::cout << "ListDir::ListDir(const std::string& directory)" << std::endl;
-//	path = directory.substr(0, directory.find_last_of("/") + 1);
+ListDir::ListDir(const std::string& directory) 
+{
+	//	std::cout << "ListDir::ListDir(const std::string& directory)" << std::endl;
+	//	path = directory.substr(0, directory.find_last_of("/") + 1);
+	posToSend = 0;
 	if (directory[directory.size() - 1] != '/')
 		path = directory + "/";
 	else
@@ -78,37 +82,32 @@ std::string ListDir::getDirFileList()
 	return content;
 }
 
-std::string ListDir::getContentToList() 
+void ListDir::setContentToList() 
 {
-	std::string content;
+	contentToSend = "";
 
 	char buffer[MAX_SENT_BYTES];
-	if(file.read(buffer, MAX_SENT_BYTES))
+	while(file.read(buffer, MAX_SENT_BYTES))
 	{
-		std::cout << "reading file" << std::endl;
-		if (file.eof())
-		{
-			std::cout << RED << "Mark as completed" << RESET << std::endl;
-			isSendComplete = true;
-		}		
-		content.append(buffer, file.gcount());
-		std::cout << "Send is still not cmpleted -->" << content.substr(0, 20) << "..." << content.substr(content.size() - 20) << std::endl;
-		return content;
+		contentToSend.append(buffer, file.gcount());
 	}
-	else
-	{
-		content.append(buffer, file.gcount());
-		std::cout << RED << "file.read finished -->" << RESET << content.substr(0, 20) << "..." << content.substr(content.size() - 240) << std::endl;
-	}
-
-	content = content + "<body>" + this->getDirFileList() + "</body></html>";
-	std::cout << "Send is completed -->" << content.substr(0,240) << "..." << content.substr(content.size() - 20) << std::endl;
-	return content;
+	contentToSend.append(buffer, file.gcount());
+	contentToSend = contentToSend + "<body>" + this->getDirFileList() + "</body></html>";
+	std::cout << "Send is completed -->" << contentToSend << std::endl;
 }
 
-bool ListDir::getsIsSendComlete() 
+void ListDir::setIsSendComlete() 
 {
-	return isSendComplete;
+	if(posToSend >= contentToSend.size())
+	{
+		std::cout << RED << "Send is completed" << RESET << std::endl;
+		isSendComplete = true;
+	}
+}
+
+bool ListDir::getIsSendComlete()
+{
+		return isSendComplete;
 }
 
 void ListDir::openMasterListFile() 
@@ -134,4 +133,16 @@ void ListDir::printFiles()
 		itb++;
 	}
 	std::cout << CYAN << "---end of list of files--- " << RESET << std::endl;
+}
+
+std::string ListDir::getContentToSend() 
+{
+	std::string subStrToSend = contentToSend.substr(posToSend, MAX_SENT_BYTES);
+	if(posToSend + MAX_SENT_BYTES >= contentToSend.size())
+		posToSend = contentToSend.size();
+	else
+		posToSend += MAX_SENT_BYTES;
+	this->setIsSendComlete();
+	std::cout << "subStrToSend: " << subStrToSend << std::endl;
+	return subStrToSend;
 }

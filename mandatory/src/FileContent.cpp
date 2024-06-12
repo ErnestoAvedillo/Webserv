@@ -66,8 +66,8 @@ std::string FileContent::getContent()
 		}
 		else if (server->getAutoIndex() && this->fileStat.st_mode & S_IFDIR)
 		{
-			content = listDir->getContentToList();
-			sendComplete = listDir->getsIsSendComlete();
+			content = listDir->getContentToSend();
+			sendComplete = listDir->getIsSendComlete();
 			return content;
 		}
 		else
@@ -109,6 +109,7 @@ bool FileContent::setFileName(const std::string &file_name)
 		{
 			fileName = FileAndFolder;
 			isFileOpen = true;
+			listDir->setContentToList();
 			return isFileOpen;
 		}
 		else if (cgiModule->setIsCGI(file_name))

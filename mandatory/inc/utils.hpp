@@ -17,7 +17,7 @@
 #include <vector>
 #include <sstream>
 #include <ctime>
-
+#include <algorithm>
 #define MAX_SENT_BYTES 100
 
 
@@ -47,3 +47,9 @@ int count_chars(const std::string &str, char c);
 std::string getTime();
 std::string getLocalTime();
 void printLog(std::string type ,std::string message);
+
+template <typename T>
+T min(T a, T b);
+
+template <typename T>
+T max(T a, T b);

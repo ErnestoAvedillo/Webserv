@@ -194,3 +194,15 @@ void printLog(std::string type ,std::string message)
 	else if (type == "DEBUG")
 		std::cout << getLocalTime() << " [" << type << "]" << CHR_BLUE " | " RESET << message << std::endl;
 }
+
+template <typename T>
+T min(T a, T b)
+{
+	return a < b ? a : b;
+}
+
+template <typename T>
+T max(T a, T b)
+{
+	return a > b ? a : b;
+}
