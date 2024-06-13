@@ -116,11 +116,16 @@ bool WebServer::checkSyntax()
 
 void WebServer::loadConfigFile(std::string filename) // WebServer loadConfigFile
 {
+	if (!isFilePermissions(filename, R_OK))
+	{
+		printLog("ERROR", "File\t\t<" + filename + ">\tnot a valid file");
+		exit(1);
+	}
 	this->configFilename = filename;
 	this->configFile.open(this->configFilename.c_str());
 	if (!this->configFile.is_open())
 	{
-		std::cerr << "Error: No se ha podido abrir el archivo de configuración" << std::endl;
+		std::cerr << "Error: File not found" << std::endl;
 		exit(1);
 	}
 	this->configFileString = std::string((std::istreambuf_iterator<char>(configFile)),std::istreambuf_iterator<char>());
@@ -147,32 +152,17 @@ void WebServer::processConfigFile() // WebServer processConfigFile
 	}
 }
 
-bool WebServer::checkVariables(Server *server)
-{
-	if (Parser::checkPorts(server->getPorts()) == false)
-		exit(1);
-	if (Parser::checkHost(server->getHost()) == false && server->getHost() != "0.0.0.0")
-		exit(1);
-	else
-		server->setHostAddr(Parser::isValidHost(server->getHost()));
-	if (Parser::checkServerName(server->getServerName()) == false)
-		exit(1);
-	if (Parser::checkErrorPage(server->getErrorPage()) == false)
-		exit(1);
-	if (Parser::checkRoot(server->getRoot()) == false)
-		exit (1);
-	if (Parser::checkIndex(server->getIndex(), server->getRoot()) == false)
-		exit(1);
-	return true;
-}
-
 bool WebServer::parseInfo()
 {
 	for (size_t i = 0; i < this->servers.size(); i++)
 	{
-		checkVariables(this->servers[i]);
-		this->servers[i]->print();
+		std::cout << CHR_CYAN"-------------Checking Server [" << i + 1  << "]------------" RESET<< std::endl;
+		this->servers[i]->checkVariables();
+		// this->servers[i]->print(); // print all Server parameters for debug
+		printLog("NOTICE", "OK! Server " + toString(i + 1));
+		std::cout << CHR_CYAN"--------------------------------------------" RESET<< std::endl;
 	}
+
 	std::vector<std::string> ports;
 	for (size_t i = 0; i < this->servers.size(); i++)
 	{
@@ -180,12 +170,11 @@ bool WebServer::parseInfo()
 		{
 			if (std::find(ports.begin(), ports.end(), this->servers[i]->getPorts()[j]) != ports.end())
 			{
-				std::cerr << "Error: Port " << this->servers[i]->getPorts()[j] << " duplicated" << std::endl;
+				printLog("ERROR", "Port " + this->servers[i]->getPorts()[j] + " duplicated");
 				return false;
 			}
 			ports.push_back(this->servers[i]->getPorts()[j]);
 		}
 	}
-	return (true);
-	
+	return (true);	
 }

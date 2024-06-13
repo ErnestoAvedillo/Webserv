@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2024/06/11 22:25:11 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/12 23:23:27 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,9 +58,9 @@ void Client::addKeyType(std::string const &value)
 void Client::addKeyFile(std::string const &value)
 {
 	this->Request[REQ_FILE] = this->server->getRoot() + value;
-//	if (value == "/")
-//   		this->Request[REQ_FILE] += this->server->getIndex();
-	replaceString(this->Request[REQ_FILE], "%20", " ");
+	if (value == "/")
+		this->Request[REQ_FILE] += this->server->getIndex();
+	this->Request[REQ_FILE] = decodeURL(this->Request[REQ_FILE]);
 }
 
 void Client::addKeyVers(std::string const &value)

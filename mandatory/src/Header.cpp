@@ -3,45 +3,92 @@
 
 Header::Header()
 {
-	Version = "1.1";
-	ContentLength = 0;
-	ContentType = "text/html";
+	protocol = "HTTP/1.1";
+	contentLength = 0;
+	contentType = "text/html";
 	this->setDate();
+}
+
+Header::Header(std::string receiveHeader)
+{
+	std::istringstream iss(receiveHeader);
+	std::string line;
+	while (std::getline(iss, line))
+	{
+		size_t colonPos = line.find(':');
+		if (colonPos != std::string::npos)
+		{
+			std::string key = line.substr(0, colonPos);
+			std::string value = line.substr(colonPos + 1);
+			key.erase(0, key.find_first_not_of(' '));
+			key.erase(key.find_last_not_of(' ') + 1);
+			value.erase(0, value.find_first_not_of(' '));
+			value.erase(value.find_last_not_of(' '));
+			this->attributes[key] = value;
+		}
+		else
+		{
+			if (std::count(line.begin(), line.end(), ' ') == 2)
+			{
+				size_t firstSpace = line.find(' ');
+				size_t secondSpace = line.find(' ', firstSpace + 1);
+				method = line.substr(0, firstSpace);
+				path = line.substr(firstSpace + 1, secondSpace - firstSpace - 1);
+				protocol = line.substr(secondSpace + 1);
+
+			}
+		}
+	}
+}
+
+std::map<std::string, std::string> Header::getAttributes()
+{
+	return attributes;
 }
 
 Header::~Header(){}
 
+std::string Header::getMethod()
+{
+	return method;
+}
+std::string Header::getPath()
+{
+	return path;
+}
 std::string Header::generateHeader() const
 {
 	std::string header;
 	
-	std::cout << "Version: $" << Version << "$" << std::endl;
-	header = "HTTP/" + Version + " " + Status + "\r\n"; 
-	header += "Server: " + Server + "\r\n";
-	header += "Date: " + Date + "\r\n";
-	if (LastModified != "")
-		header += "Last-modified: " + LastModified + "\r\n";
-	if(ContentLength != 0)
-		header += "Content-length: " + toString(ContentLength) + "\r\n";
-	header += "Content-Type: " + ContentType + "\r\n";
+	// std::cout << "Version: $" << Version << "$" << std::endl;
+	header = protocol + " " + status + "\r\n"; 
+	header += "Server: " + server + "\r\n";
+	header += "Date: " + date + "\r\n";
+	if (lastModified != "")
+		header += "Last-modified: " + lastModified + "\r\n";
+	if(contentLength != 0)
+		header += "Content-length: " + toString(contentLength) + "\r\n";
+	header += "Content-Type: " + contentType + "\r\n";
 	header += "\r\n";
-	std::cout << "header: " << header << std::endl;
+	// std::cout << "header: " << header << std::endl;
 	return header;
 }
 
-void Header::setVersion(std::string version)
+
+
+void Header::setProtocol(std::string protocol)
 {
-	Version = version;
+	this->protocol = protocol;
 }
 
 void Header::setStatus(std::string status)
 {
-	Status = status;
+	this->status = status;
 }
 
 void Header::setServer(std::string server)
 {
-	Server = server;
+	this->server = server;
 }
 
 void Header::setDate()
@@ -55,17 +102,17 @@ void Header::setDate()
 	std::strftime(buffer, sizeof(buffer), "%A, %d-%b-%y %H:%M:%S GMT", timeInfo);
 
 	// Set the date in the header
-	Date = buffer;
+	this->date = buffer;
 }
 
 void Header::setLastModified(std::string lastModified)
 {
-	LastModified = lastModified;
+	this->lastModified = lastModified;
 }
 
 void Header::setContentLength(size_t contentLength)
 {
-	ContentLength = contentLength;
+	this->contentLength = contentLength;
 }
 
 void Header::setContentType(std::string contentType)
@@ -75,11 +122,9 @@ void Header::setContentType(std::string contentType)
 
 	/* Create once only */
 	std::map<std::string, std::string> Mimetype = create_filetypes();
-
-	//std::cout << "found extension " << extension << std::endl;
 	if (Mimetype.find(extension) != Mimetype.end())
-		ContentType = Mimetype[extension];
+		this->contentType = Mimetype[extension];
 	else
-		ContentType = "text/html";
+		this->contentType = "text/html";
 
 }

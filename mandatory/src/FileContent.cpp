@@ -105,6 +105,7 @@ std::string FileContent::getContent()
 
 bool FileContent::setFileName(const std::string &file_name)
 {
+
 	std::string FileAndFolder = this->splitFileFromArgs(file_name);
 	bool fileOrFolderExists = this->FileOrFolerExtists(FileAndFolder);
 	if (fileOrFolderExists)
@@ -117,6 +118,29 @@ bool FileContent::setFileName(const std::string &file_name)
 			return isFileOpen;
 		}
 		else if (cgiModule->setIsCGI(file_name))
+
+	std::string tmp = file_name.substr(0, file_name.find("?"));
+	// bool filefound = false;
+	// std::cout << "File name: " << file_name << std::endl;
+	if (stat(tmp.c_str(), &fileStat) == 0)
+	{
+		// filefound = true;
+		file_name = tmp;
+	}
+	else
+	{
+		// std::cout << "File <" << file_name << "> not found: " << filefound << std::endl;
+		return false;
+	}
+	if (cgiModule->setIsCGI(file_name))
+	{
+		cgiModule->setFileName(file_name);
+		isFileOpen = true;
+	}
+	else
+	{
+		if(stat(fileName.c_str(), &fileStat))
+
 		{
 			cgiModule->setFileName(file_name);
 			isFileOpen = true;
@@ -133,12 +157,11 @@ bool FileContent::setFileName(const std::string &file_name)
 			return isFileOpen;
 		}
 	}
-	else
+  else
 	{
 		std::cout << "File <" << file_name << "> not found." << std::endl;
 		//throw std::runtime_error("Error: File not found");
 	}
-
 	return isFileOpen;
 }
 

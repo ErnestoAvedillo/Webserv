@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/27 14:24:35 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/11 22:26:51 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/12 19:56:30 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,8 @@ std::map<std::string, void (Server::*)(const std::string &)> ServerSetters()
 	serverMethods[VAR_LOCATIONS] = &Server::addLocation;\
 	serverMethods[VAR_AUTOINDEX] = &Server::setAutoindex;
 
+	serverMethods[VAR_CLIENT_MAX_BODY_SIZE] = &Server::setMaxClientBodySizeStr;
+	// serverMethods[VAR_LOCATIONS] = &Server::addLocation;
 	return serverMethods;
 }
 
@@ -109,7 +111,8 @@ Server &Server::operator=(Server const &copy) {
 	if (this != &copy) {
 		this->isDefault = copy.isDefault;
 		this->port = copy.port;
-		this->maxClientBodySize = copy.maxClientBodySize;
+		this->maxBodySizeStr = copy.maxBodySizeStr;
+		this->maxBodySize = copy.maxBodySize;
 		this->Host = copy.Host;
 		this->serverName = copy.serverName;
 		this->errorPage = copy.errorPage;
@@ -168,7 +171,7 @@ void	Server::print()
 	std::cout << "Error Page: " << this->errorPage << std::endl;
 	std::cout << "Root: " << this->root << std::endl;
 	std::cout << "Index: " << this->index << std::endl;
-	std::cout << "Client Max Body Size: " << this->maxClientBodySize << std::endl;
+	std::cout << "Client Max Body Size: " << this->maxBodySizeStr << std::endl;
 	std::cout << "Is Default: " << this->isDefault << std::endl;
 	for (size_t i = 0; i < this->ports.size(); i++)
 		std::cout << "Port: " << this->ports[i] << std::endl;
@@ -186,4 +189,33 @@ void Server::createListeningSockets()
 		ls = new ListeningSocket(stringToSizeT(ports[i]), this);
 		this->port[ls->getFd()] = ls;
 	}
+}
+
+void Server::checkVariables()
+{
+	if (Parser::checkPorts(this->getPorts()) == false)
+		exit(1);
+	if (Parser::checkHost(this->getHost()) == false && this->getHost() != "0.0.0.0")
+		exit(1);
+	else
+		this->setHostAddr(Parser::isValidHost(this->getHost()));
+	if (Parser::checkServerName(this->getServerName()) == false)
+		exit(1);
+	if (Parser::checkRoot(this->getRoot()) == false)
+		exit (1);
+	Parser::checkErrorPage(this->getErrorPage());
+	Parser::checkIndex(this->getIndex(), this->getRoot());
+	this->setMaxClientBodySize(Parser::checkClientBodySize(this->getMaxClientBodySizeStr()));
+	if (this->locations.size())
+		std::cout << std::endl;
+	for (size_t i = 0; i < this->locations.size(); i++)
+	{
+		std::cout << CHR_MGENTA"---------Location [" << i + 1 << "]---------" RESET << std::endl;
+		this->locations[i]->checkVariables();
+		// std::cout << CHR_GREEN"OK! Location " << i << RESET<< std::endl;
+		printLog("NOTICE", "OK! Location " + toString(i + 1));
+		std::cout << CHR_MGENTA"------------------------------" RESET << std::endl;
+	}
+	
+	std::cout << std::endl;
 }

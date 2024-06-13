@@ -10,8 +10,10 @@ ListeningSocket::ListeningSocket(int myPort, Server *srv)
 	this->receiver = new Receive();
 	this->socketFd = -1;
 	if (this->startListening())
-		printLog("NOTICE", "Listening on port: " CHR_GREEN + std::to_string(myPort) + RESET " with file descriptor " CHR_GREEN + std::to_string(this->socketFd));
-		// std::cout << CHR_GREEN <<  getLocalTime() << " [NOTICE]" << CHR_BLUE " | " RESET << "Listening on port: " CHR_GREEN<< myPort <<RESET " with file descriptor " << this->socketFd << std::endl;
+	{
+		std::string msg = "Listening on " + std::string(CHR_YELLOW) + srv->getHost() + RESET + "\t\t" + std::string(CHR_GREEN) + std::to_string(myPort) + RESET + "\t" + CHR_GREEN + std::to_string(this->socketFd);
+		printLog("NOTICE", msg);
+	}
 }
 ListeningSocket::ListeningSocket(Server *srv)
 {
@@ -93,7 +95,11 @@ ListeningSocket::ListeningSocket(int myPort, Server *srv)
 	this->client = new Client(srv);
 	this->receiver = new Receive();
 	socketFd = -1;
-	this->startListening();
+	if (this->startListening())
+	{
+		std::string msg = "Listening on " + std::string(CHR_YELLOW) + srv->getHost() + RESET + "\t\t" + std::string(CHR_GREEN) + toString(myPort) + RESET + "\t" + CHR_GREEN + toString(this->socketFd);
+		printLog("NOTICE", msg);
+	}
 }
 ListeningSocket::ListeningSocket(Server *srv)
 {

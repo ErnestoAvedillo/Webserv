@@ -114,18 +114,6 @@ std::string removeBlanksAndTabs(const std::string& input) {
 	return result;
 }
 
-template <typename T>
-std::string itos (T n)
-{
-	std::string str;
-	std::stringstream ss;
-	
-	ss << n;
-	ss >> str;
-
-	return  str;
-}
-
 void replaceString(std::string& mainString, const std::string& searchString, const std::string& replaceString) {
 	size_t pos = 0;
 	while ((pos = mainString.find(searchString, pos)) != std::string::npos) {
@@ -185,12 +173,13 @@ std::string getLocalTime()
 
 void printLog(std::string type ,std::string message)
 {
+	// std::cout << message << std::endl;
 	if (type == "ERROR")
-		std::cout << CHR_YELLOW << getLocalTime() << " [" << type << "]" << "\t\t" RESET << message << RESET << std::endl;
+		std::cout << CHR_RED << getLocalTime() << " [" << type << "]" << "\t\t" RESET << message << RESET << std::endl;
 	else if (type == "WARNING")
 		std::cout << CHR_YELLOW << getLocalTime() << " [" << type << "]" << "\t\t" RESET << message << RESET << std::endl;
 	else if (type == "NOTICE")
-		std::cout << CHR_GREEN << getLocalTime() << " [" << type << "]" << "\t\t" RESET << message << RESET << std::endl;
+		std::cout << CHR_GREEN << getLocalTime() << " [" << type << "]" << "\t\t" << RESET << message << RESET << std::endl;
 	else if (type == "DEBUG")
 		std::cout << getLocalTime() << " [" << type << "]" << CHR_BLUE " | " RESET << message << std::endl;
 }
@@ -205,4 +194,36 @@ template <typename T>
 T max(T a, T b)
 {
 	return a > b ? a : b;
+}
+static int hexStringToInt(const std::string& hexStr) {
+    int value;
+    std::stringstream ss;
+
+    ss << std::hex << hexStr;
+    ss >> value;
+
+    return value;
+}
+
+std::string decodeURL(const std::string& url)
+{
+	std::string decoded;
+	size_t i = 0;
+	while (i < url.size())
+	{
+		if (url[i] == '%')
+		{
+			if (i + 2 < url.size())
+			{
+				decoded += static_cast<char>(hexStringToInt(url.substr(i + 1, 2)));
+				i += 2;
+			}
+		}
+		else if (url[i] == '+')
+			decoded += ' ';
+		else
+			decoded += url[i];
+		i++;
+	}
+	return decoded;
 }
