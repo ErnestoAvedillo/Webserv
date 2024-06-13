@@ -25,7 +25,6 @@ private:
 	std::string fileName;
 	std::vector <std::string> args;
 	std::string content;
-	size_t contentSize;
 	std::ifstream file;
 	bool isFistFragment;
 	bool isFileOpen;
