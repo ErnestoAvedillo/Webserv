@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2024/06/11 22:25:11 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/13 21:32:22 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -241,7 +241,6 @@ void Client::loadDataHeader(Receive *receiver)
 						header.setStatus("403 Forbidden");
 						return;
 					}
-					std::cout << "filename: " << this->Request[REQ_FILE] << std::endl;
 					std::fstream file(this->Request[REQ_FILE].c_str(), std::ios::out | std::ios::binary | std::ios::app);
 					file.write(body.c_str(), body.size());
 					file.close();

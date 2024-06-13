@@ -18,7 +18,7 @@
 #include <sstream>
 #include <ctime>
 #include <algorithm>
-#define MAX_SENT_BYTES 100
+#define MAX_SENT_BYTES 8024
 
 
 template <typename T>

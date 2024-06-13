@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Attributes.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 18:22:26 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/09 12:56:54 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/13 20:42:45 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,5 +64,9 @@ std::string Attributes::getCreated()
 
 std::string Attributes::getModified() 
 {
-	return std::to_string(this->attributes.st_mtime);
+	std::tm *timeInfo = std::gmtime(&this->attributes.st_mtime);
+
+	char buffer[80];
+	std::strftime(buffer, sizeof(buffer), "%A, %d-%b-%y %H:%M:%S GMT", timeInfo);
+	return buffer;
 }

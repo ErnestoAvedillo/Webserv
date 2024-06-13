@@ -3,18 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   Attributes.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 18:22:35 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/07 19:08:58 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/13 20:21:02 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 #include <string>
+#include <iostream>
 #include <vector>
 #include <map>
 #include <fstream>
+#include <ctime>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/types.h>

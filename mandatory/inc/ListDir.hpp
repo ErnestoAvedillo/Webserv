@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 19:03:57 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/12 19:47:00 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/13 21:38:29 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,5 +43,7 @@ class ListDir
         void openMasterListFile();
         void printFiles();
         std::string getContentToSend();
+        size_t getSizeToSend();
+        void setSubdirectory(const std::string &);
 };
 

@@ -109,6 +109,7 @@ bool FileContent::setFileName(const std::string &file_name)
 		{
 			fileName = FileAndFolder;
 			isFileOpen = true;
+			listDir->setSubdirectory(FileAndFolder);
 			listDir->setContentToList();
 			return isFileOpen;
 		}

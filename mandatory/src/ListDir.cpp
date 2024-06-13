@@ -5,7 +5,6 @@ ListDir::ListDir()
 {
 	posToSend = 0;
 	path = "./";
-	this->setListOfFiles();
 	isSendComplete = false;
 	this->openMasterListFile();
 }
@@ -19,7 +18,6 @@ ListDir::ListDir(const std::string& directory)
 		path = directory + "/";
 	else
 		path = directory;
-	this->setListOfFiles();
 	isSendComplete = false;
 	this->openMasterListFile();
 }
@@ -30,7 +28,6 @@ ListDir::~ListDir() {
 
 	while (itb != ite) 
 	{
-		std::cout << "Deleting: " << itb->second->getName() << std::endl;
 		delete itb->second;
 		itb++;
 	}
@@ -40,14 +37,13 @@ ListDir::~ListDir() {
 
 void ListDir::setListOfFiles() 
 {
-	std::cout << RED << "ListDir::setListOfFiles() path is " << path << RESET << std::endl;
 	DIR* dir = opendir(path.c_str());
 	if (dir) {
 		struct dirent* entry;
 		while ((entry = readdir(dir)) != nullptr) 
 		{
 			Attributes *attribute = new Attributes(path + entry->d_name);
-			files.insert(std::pair <std::string, Attributes *>{attribute->getName(), attribute});
+			files.insert(std::pair<std::string, Attributes *>{entry->d_name, attribute});
 		}
 		closedir(dir);
 	}
@@ -70,8 +66,8 @@ std::string ListDir::getDirFileList()
 	{
 		content = content + "<script>\n";
 		//addRow(".dockerignore",".dockerignore",0,52,"52 B",521717927779,"2024-06-09 12:09:39");
-		content = content + "addRow(\"" + it->second->getName() + "\",";
-		content = content + "\"" + it->second->getName() + "\",";
+		content = content + "addRow(\" " + it->first + "\",";
+		content = content + "\"" + it->first + "\",";
 		content = content + (it->second->getIsDir()? "1" : "0") + ",";
 		content = content + it->second->getSize() + ",";
 		content = content +"\"" + it->second->getSize() + "\",";
@@ -93,7 +89,6 @@ void ListDir::setContentToList()
 	}
 	contentToSend.append(buffer, file.gcount());
 	contentToSend = contentToSend + "<body>" + this->getDirFileList() + "</body></html>";
-	std::cout << "Send is completed -->" << contentToSend << std::endl;
 }
 
 void ListDir::setIsSendComlete() 
@@ -113,7 +108,6 @@ bool ListDir::getIsSendComlete()
 void ListDir::openMasterListFile() 
 {
 	std::string filename = "./Master/dir_list.html";
-	std::cout << "filename: " << filename << std::endl;
 	file.open(filename.c_str(), std::ios::out | std::ios::binary);
 }
 
@@ -143,6 +137,19 @@ std::string ListDir::getContentToSend()
 	else
 		posToSend += MAX_SENT_BYTES;
 	this->setIsSendComlete();
-	std::cout << "subStrToSend: " << subStrToSend << std::endl;
 	return subStrToSend;
+}
+
+size_t ListDir::getSizeToSend()
+{
+}
+
+void ListDir::setSubdirectory(const std::string &subDir)
+{
+	if (subDir[0] == '/')
+		path += subDir.substr(1);
+	else
+		path = subDir;
+	path += (path[path.size() -1] == '/') ? "" :"/";
+	this->setListOfFiles();
 }
