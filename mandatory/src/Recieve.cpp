@@ -67,11 +67,15 @@ bool Receive::receiveHeader(int fd)
             request += tmp.substr(0, tmp.find("\r\n\r\n"));
             Header header(request);
             std::map<std::string, std::string>  Attributes = header.getAttributes();
-
             std::string log = CHR_BLUE + header.getMethod() + RESET + "\t" + Attributes["Host"] + CHR_CYAN + header.getPath() + RESET;
             printLog("NOTICE", log);
             if (Attributes.find("Content-Length") != Attributes.end())
-                 this->maxSize = std::atoi(Attributes["Content-Length"].c_str());
+                this->maxSize = std::atoi(Attributes["Content-Length"].c_str());
+            if (Attributes.find("Content-Type") != Attributes.end())
+            {
+                if (Attributes["Content-Type"].find("boundary") != std::string::npos)
+                    this->boundary = Attributes["Content-Type"].substr(Attributes["Content-Type"].find("boundary=") + 9);
+            }
             else
                 return true;
             this->body = tmp.substr(tmp.find("\r\n\r\n") + 4, tmp.size() - tmp.find("\r\n\r\n") - 4);
@@ -112,6 +116,8 @@ bool Receive::receiveBody(int fd)
         this->buffer = std::string(buf, ret);
         if (this->sizeSent >= this->maxSize)
         {
+            if (this->boundary.length())
+                this->buffer = this->buffer.substr(0, this->buffer.find(this->boundary) - 4);
             this->body += this->buffer;
             this->isbody = false;
             return true;
