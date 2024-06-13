@@ -131,10 +131,22 @@ bool Parser::checkIndex(std::string index, std::string root)
 	if (index.length() == 0)
 		return true;
 
-	if (isFilePermissions(root + "/" + index, R_OK) == false)
+	switch (isFilePermissions(root + "/" + index, R_OK))
 	{
-		printLog("WARNING", "index\t\t<" + index + ">\tfile not found." );
-		return false;
+		case -1:
+			printLog("WARNING", "index\t\t<" + index + ">\terror getting file metadata" );
+			return false;
+		case -3:
+			printLog("WARNING", "index\t\t<" + index + ">\tnot a regular file" );
+			return false;
+		case -4:
+			printLog("WARNING", "index\t\t<" + index + ">\tpermission denied" );
+			return false;
+		case -5:
+			printLog("WARNING", "index\t\t<" + index + ">\tfile not found." );
+			return false;
+		default:
+			break ;
 	}
 	return true;
 }
@@ -281,10 +293,25 @@ bool Parser::checkCgi(std::vector<std::string> paths, std::vector<std::string> e
 	}
 	for (size_t size = 0; size < paths.size(); size++)
 	{
-		if (!isFilePermissions(paths[size], X_OK))
+		switch (isFilePermissions(paths[size], X_OK))
 		{
-			printLog("ERROR", "cgi_path\t\t<" + paths[size] + ">\tdoes not exists or not permission" );
-			return false;
+			case -2:
+				printLog("ERROR", "cgi_path\t\t<" + paths[size]  + ">\tempty path");
+				return false;
+			case -1:
+				printLog("ERROR", "cgi_path\t\t<" + paths[size] + ">\terror getting file metadata");
+				return false;
+			case -3:
+				printLog("ERROR", "cgi_path\t\t<" + paths[size] + ">\tnot a regular file");
+				return false;
+			case -4:
+				printLog("ERROR", "cgi_path\t\t<" + paths[size] + ">\tpermission denied");
+				return false;
+			case -5:
+				printLog("ERROR", "cgi_path\t\t<" + paths[size] + ">\tfile not found");
+				return false;
+			default:
+				break ;
 		}
 	}
 	// for (size_t size = 0; size < extensions.size(); size++)

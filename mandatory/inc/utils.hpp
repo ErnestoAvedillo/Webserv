@@ -23,7 +23,7 @@ bool isrange(T value, T min, T max);
 bool isNumber(std::string str);
 bool validIPAddress(std::string ip);
 bool isDirPermissions(std::string path, int mode);
-bool isFilePermissions(std::string path, int mode);
+int isFilePermissions(std::string path, int mode);
 
 
 std::string removeBlanksAndTabs(const std::string& input);

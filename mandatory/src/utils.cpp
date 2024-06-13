@@ -59,18 +59,20 @@ bool isDirPermissions(std::string path, int mode)
 	return true;
 }
 
-bool isFilePermissions(std::string path, int mode)
+int isFilePermissions(std::string path, int mode)
 {
 	if (path.empty())
-		return false;
+		return -2;
+	if (access(path.c_str(), F_OK) != 0)
+		return -5;
 	struct stat buffer;
 	if (stat(path.c_str(), &buffer) == -1)
-		return false;
+		return -1;
 	if (!S_ISREG(buffer.st_mode))
-		return false;
+		return -3;
 	if (access(path.c_str(), mode) != 0)
-		return false;
-	return true;
+		return -4;
+	return 1;
 }
 
 size_t stringToSizeT(const std::string& str) {

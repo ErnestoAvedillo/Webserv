@@ -116,10 +116,24 @@ bool WebServer::checkSyntax()
 
 void WebServer::loadConfigFile(std::string filename) // WebServer loadConfigFile
 {
-	if (!isFilePermissions(filename, R_OK))
+	switch (isFilePermissions(filename, R_OK))
 	{
-		printLog("ERROR", "File\t\t<" + filename + ">\tnot a valid file");
-		exit(1);
+		case -2:
+			printLog("ERROR", "File\t\t<" + filename + ">\tempty path");
+			exit(1);
+		case -1:
+			printLog("ERROR", "File\t\t<" + filename + ">\terror getting file metadata");
+			exit(1);
+		case -3:
+			printLog("ERROR", "File\t\t<" + filename + ">\tnot a regular file");
+			exit(1);
+		case -4:
+			printLog("ERROR", "File\t\t<" + filename + ">\tpermission denied");
+			exit(1);
+		case -5:
+			printLog("ERROR", "File\t\t<" + filename + ">\tfile not found");
+		default:
+			break ;
 	}
 	this->configFilename = filename;
 	this->configFile.open(this->configFilename.c_str());
