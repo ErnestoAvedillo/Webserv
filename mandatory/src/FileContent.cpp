@@ -62,18 +62,22 @@ std::string FileContent::getContent()
 		if (cgiModule->getIsCGI())
 		{
 			sendComplete = true;
-			return cgiModule->execute();
+			content = cgiModule->execute();
+			contentSize = content.size();
+			return content;
 		}
 		else if (server->getAutoIndex() && this->fileStat.st_mode & S_IFDIR)
 		{
 			content = listDir->getContentToSend();
 			sendComplete = listDir->getIsSendComlete();
+			contentSize = content.size();
 			return content;
 		}
 		else
 		{
 			content = "";
 			char buffer[MAX_SENT_BYTES];
+			contentSize = fileStat.st_size;
 			if(file.read(buffer, MAX_SENT_BYTES))
 			{
 				if(file.eof())
@@ -172,7 +176,7 @@ std::string FileContent::getLastModified()
 
 size_t FileContent::getContentSize()
 {
-	return fileStat.st_size;
+	return contentSize;
 }
 
 bool FileContent::FileOrFolerExtists(const std::string &str)

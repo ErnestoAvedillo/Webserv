@@ -146,3 +146,8 @@ std::string ListDir::getContentToSend()
 	std::cout << "subStrToSend: " << subStrToSend << std::endl;
 	return subStrToSend;
 }
+
+size_t ListDir::getSizeToSend()
+{
+	return contentToSend.size();
+}	

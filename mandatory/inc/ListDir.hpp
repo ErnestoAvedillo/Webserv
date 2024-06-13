@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 19:03:57 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/12 19:47:00 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/13 07:22:31 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ class ListDir
         std::ifstream file;
         std::string path;
         std::string contentToSend;
-        std::size_t      posToSend;
+        size_t      posToSend;
         std::map<std::string, Attributes *> files;
         bool        isSendComplete;
     public:
@@ -43,5 +43,6 @@ class ListDir
         void openMasterListFile();
         void printFiles();
         std::string getContentToSend();
+        size_t getSizeToSend();
 };
 
