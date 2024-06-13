@@ -116,7 +116,7 @@ int Server::loadData(std::string const &content) {
 	std::string straux;
 	std::map<std::string, int> varnames = var_names_server();
 
-	std::istringstream fileContentStream(content.substr(9, content.length() - 1));
+	std::istringstream fileContentStream(content.substr(8, content.length() - 1));
 	while (std::getline(fileContentStream, line,';'))
 	{
 		line.erase(std::remove(line.begin(), line.end(), '\n'), line.end());

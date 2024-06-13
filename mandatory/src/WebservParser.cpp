@@ -139,11 +139,16 @@ void WebServer::processConfigFile() // WebServer processConfigFile
 
 	while (this->configFileString.find("server:{") != std::string::npos)
 	{
+		
+		configFileString.erase(std::remove(configFileString.begin(), configFileString.end(), '\n'), configFileString.end());
 		pos = this->configFileString.find("server:{", 8);
 		if(pos == std::string::npos)
 			aux = this->configFileString.substr(0, pos);
 		else
 			aux = this->configFileString.substr(0, pos - 1);
+
+		if (aux.empty() || aux.length() == 0)
+			continue;
 		Server *tmp = new Server(aux);
 		servers.push_back(tmp);
 		if(this->configFileString.find("server:{", 8) == std::string::npos)
