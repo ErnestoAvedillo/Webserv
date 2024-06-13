@@ -6,7 +6,7 @@
 #    By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/01 15:03:29 by eavedill          #+#    #+#              #
-#    Updated: 2024/06/12 03:12:58 by jcheel-n         ###   ########.fr        #
+#    Updated: 2024/06/11 17:27:17 by eavedill         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -47,7 +47,7 @@ ifeq (,$(findstring "Darwin",$(shell uname -s)))
 endif
 
 
-FLAGS := -Wall -Werror -Wextra -std=c++98 $(SYSTEM) -g #-fsanitize=address #-pedantic 
+FLAGS := -Wall -Werror -Wextra -std=c++11 $(SYSTEM) -g -fsanitize=address #-pedantic 
 
 all:	print_system $(NAME)  
 

@@ -40,7 +40,6 @@
 //      connections.  If a connection request arrives with the queue full, the
 //      client may receive an error with an indication of ECONNREFUSED
 
-
 class WebServer {
 	private:
 		std::ifstream		configFile;
@@ -53,14 +52,14 @@ class WebServer {
 		std::vector<Server *>	servers;
 		std::map<std::string, std::string>	mimeTypes;
 		std::map<int, std::string>	errorPages;
+
 		int kq;
 	public:
-		static bool ExitFlag;
 		WebServer();
 		~WebServer();
 		WebServer(WebServer const &copy);
 		WebServer &operator=(WebServer const &copy);
-	
+
 		void createListeningSockets();
 		bool	checkSyntax();
 		bool	parseInfo();
@@ -74,9 +73,9 @@ class WebServer {
 		void addEventSet();
 		void createQueue ();
 		int acceptNewEvent(int curfd);
+		static bool ExitFlag;
 		static void exit_handler(int signum);
 		bool checkVariables(Server *server);
-		void createServerSocket();
 #ifdef __APPLE__
 			int waitEvent(struct kevent *evList);
 			void modifEvent(struct kevent eventList, int typeRem, int typeAdd);

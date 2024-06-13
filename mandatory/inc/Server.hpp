@@ -10,10 +10,10 @@
 # include <algorithm>
 # include "utils.hpp"
 # include "Location.hpp"
+# include "../inc/toString.hpp"
 # include "CGI.hpp"
 # include "../inc/toString.hpp"
 # include "CGI.hpp"
-# include "Parser.hpp"
 
 #define VAR_PORT	"port"
 #define VAR_HOST	"host"
@@ -48,8 +48,7 @@ class Server {
 		bool		isDefault;
 		std::map<int, ListeningSocket *> port;
 		std::vector<std::string> ports;
-		size_t			maxBodySize;
-		std::string		maxBodySizeStr;
+		int 		maxClientBodySize;
 		std::string	Host;
 		std::string	serverName;
 		std::string errorPage;
@@ -80,9 +79,7 @@ class Server {
 		void	setHostAddr(in_addr_t Addr);
 		void	setServerName(std::string const &);
 		void	setErrorPage(std::string const &);
-		void	setMaxClientBodySizeStr(std::string const &);
-		void	setMaxClientBodySize(size_t const &);
-		
+		void	setClientMaxBodySize(std::string const &);
 		void	setRoot(std::string const &);
 		void	setIndex(std::string const &);
 		void	setCGIExtension(std::string const &);
@@ -97,6 +94,7 @@ class Server {
 		std::vector<int> getServerFds();
 
 		ListeningSocket *		getPort(int i); 
+		size_t			getClientBodySize();
 		bool getIsDefault();
 		std::string	getHost();
 		std::string	getServerName();
@@ -105,21 +103,12 @@ class Server {
 		std::string	getIndex();
 		std::string	getCGIExtension(const std::string &);
 		std::string	getCGIFolder();
-  
 		bool getAutoIndex();
 		void	print();
 		void createListeningSockets();
 		in_addr_t getHostAddr();
 		std::vector<Location *> getLocations();
-		in_addr_t	getHostAddr();
-		std::string	getMaxClientBodySizeStr();
-		size_t		getMaxClientBodySize();
-		std::vector<Location *> getLocations();
 
-
-		void	print();
-		void createListeningSockets();
-		void checkVariables();
 		//std::vector<class Location> getLocations();
 };
 
