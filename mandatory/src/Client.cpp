@@ -6,7 +6,7 @@
 /*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2024/06/15 00:15:17 by jcheel-n         ###   ########.fr       */
+/*   Updated: 2024/06/15 00:53:07 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,25 +80,6 @@ void Client::loadCompleteClient(Receive *receiver)
 	this->loadDataHeader(receiver);
 }
 
-// std::string getExtension(std::string filePath)
-// {
-// 	size_t point = filePath.find_last_of(".");
-// 	std::string extension = filePath.substr(point + 1, filePath.size());
-
-// 	std::map<std::string, std::string> Mimetype = create_filetypes();
-
-// 	if (Mimetype.find(extension) != Mimetype.end())
-// 	{
-// 		std::cout << CHR_BLUE << "found extension " << extension << ": " << Mimetype[extension] << RESET << std::endl;
-// 		return(Mimetype[extension]);
-// 	}
-// 	else
-// 	{
-// 		std::cout << CHR_MGENTA << "NOT found extension " << extension << RESET << std::endl;
-// 		return("text/html");
-// 	}
-// }
-
 /*
 Normalize the path, removes .., adds ./ at teh beggining if necessary, removes / at the end, removes duplicate /.
 */
@@ -164,6 +145,35 @@ bool Client::isSendComplete()
 	return this->fileContent->isSendComplete();
 }
 
+int Client::isAllowedMethod(Location *location)
+{
+	if (this->Request[REQ_TYPE] == "GET")
+	{
+		if (location->getGetAllowed() == false)
+		{
+			header.setStatus("405 Method Not Allowed");
+			return NOT_ALLOWED;
+		}
+	}
+	else if (this->Request[REQ_TYPE] == "POST")
+	{
+		if (location->getPostAllowed() == false)
+		{
+			header.setStatus("405 Method Not Allowed");
+			return NOT_ALLOWED;
+		}
+
+	}
+	else if (this->Request[REQ_TYPE] == "DELETE")
+	{
+		if (location->getDeleteAllowed() == false)
+		{
+			header.setStatus("405 Method Not Allowed");
+			return NOT_ALLOWED;
+		}
+	}
+	return OK;
+}
 
 int Client::matchingLocation()
 {
@@ -172,39 +182,11 @@ int Client::matchingLocation()
 	{
 		if (this->Request[REQ_FILE].find(locations[i]->getName()) != std::string::npos)
 		{
-			if (this->Request[REQ_TYPE] == "GET")
-			{
-				if (locations[i]->getGetAllowed() == false)
-				{
-					std::cout << "GET NOT ALLOWED" << std::endl;
-					header.setStatus("405 Method Not Allowed");
-					return NOT_ALLOWED;
-				}
-			}
-			else if (this->Request[REQ_TYPE] == "POST")
-			{
-				if (locations[i]->getPostAllowed() == false)
-				{
-					std::cout << "POST NOT ALLOWED" << std::endl;
-					header.setStatus("405 Method Not Allowed");
-					
-					return NOT_ALLOWED;
-				}
-
-			}
-			else if (this->Request[REQ_TYPE] == "DELETE")
-			{
-				if (locations[i]->getDeleteAllowed() == false)
-				{
-					std::cout << "DELETE NOT ALLOWED" << std::endl;
-					header.setStatus("405 Method Not Allowed");
-					return NOT_ALLOWED;
-				}
-			}
+			if (isAllowedMethod(locations[i]) == NOT_ALLOWED)
+				return NOT_ALLOWED;
 			switch (locations[i]->getLocationType())
 			{
 				case RETURN:
-					std::cout << "RETURN NOT IMPLENETED YET" << std::endl;
 					header.setStatus("301 Moved Permanently");
 					header.setAttribute("Location", locations[i]->getReturn());
 					return REDIRECT;
@@ -214,11 +196,7 @@ int Client::matchingLocation()
 						this->Request[REQ_FILE] += "/" + locations[i]->getIndex();
 					break ;
 				case ROOT:
-					std::cout << "ROOT IMPLENETED" << std::endl;
 					replaceString(this->Request[REQ_FILE],  locations[i]->getName(), locations[i]->getRoot() + locations[i]->getName());
-					std::cout << "ROOT: " << this->Request[REQ_FILE] << std::endl;
-					// this->Request[REQ_FILE] += locations[i]->getName();
-					std::cout << "ROOT: " << this->Request[REQ_FILE] << std::endl;
 					if (!locations[i]->getIndex().empty() && isDirPermissions(this->Request[REQ_FILE], F_OK | R_OK) == true && this->Request[REQ_TYPE] != "POST")
 						this->Request[REQ_FILE] += "/" + locations[i]->getIndex();
 					break ;
@@ -242,16 +220,16 @@ void Client::loadDataHeader(Receive *receiver)
 		case NO_LOCATION:
 			this->Request[REQ_FILE] = this->server->getRoot() + this->Request[REQ_FILE];
 			if (isDirPermissions(this->Request[REQ_FILE], F_OK | R_OK) == true)
-				this->Request[REQ_FILE] += this->server->getIndex(); // wrong Should check if its a directory
+				this->Request[REQ_FILE] += this->server->getIndex();
 			break ;
-		case NOT_ALLOWED:
+		case NOT_ALLOWED :
 			return ;
 		case REDIRECT:
 			return ;
 	}
-	this->Request[REQ_FILE] = decodeURL(this->Request[REQ_FILE]);
 
-	std::cout << this->Request[REQ_FILE] << std::endl;
+	this->Request[REQ_FILE] = decodeURL(this->Request[REQ_FILE]);
+	// std::cout << this->Request[REQ_FILE] << std::endl;
 	if (this->Request[REQ_TYPE] == "GET")
 	{
 		if (this->fileContent->setFileName(this->Request[REQ_FILE]))

@@ -6,7 +6,7 @@
 /*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 12:46:28 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/15 00:10:33 by jcheel-n         ###   ########.fr       */
+/*   Updated: 2024/06/15 00:46:33 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,5 +87,6 @@ public:
 	void loadCompleteClient(Receive *receiver);
 	void loadDataHeader(Receive *receiver);
 	int matchingLocation();
+	int isAllowedMethod(Location *location);
 };
 
