@@ -56,9 +56,10 @@ void Client::addKeyType(std::string const &value)
 
 void Client::addKeyFile(std::string const &value)
 {
-	this->Request[REQ_FILE] = this->server->getRoot() + value;
-	if (value == "/")
-		this->Request[REQ_FILE] += this->server->getIndex();
+	// this->Request[REQ_FILE] = this->server->getRoot() + value;
+	// if (value == "/")
+		// this->Request[REQ_FILE] += this->server->getIndex();
+	this->Request[REQ_FILE] = value;
 	this->Request[REQ_FILE] = decodeURL(this->Request[REQ_FILE]);
 }
 
@@ -199,8 +200,52 @@ bool Client::isSendComplete()
 	return this->fileContent->isSendComplete();
 }
 
+
+bool Client::matchingLocation()
+{
+	std::vector<Location *> locations = this->server->getLocations();
+	for (size_t i = 0; i < locations.size(); i++)
+	{
+		if (this->Request[REQ_FILE].find(locations[i]->getName()) != std::string::npos)
+		{
+			switch (locations[i]->getLocationType())
+			{
+				case RETURN:
+					std::cout << "RETURN NOT IMPLENETED YET" << std::endl;
+				case ALIAS:
+					replaceString(this->Request[REQ_FILE],  locations[i]->getName(), locations[i]->getAlias());
+					if (!locations[i]->getIndex().empty())
+						this->Request[REQ_FILE] += "/" + locations[i]->getIndex();
+					break ;
+				case ROOT:
+					replaceString(this->Request[REQ_FILE],  locations[i]->getName(), locations[i]->getRoot());
+					if (!locations[i]->getIndex().empty())
+						this->Request[REQ_FILE] += locations[i]->getName() + "/" + locations[i]->getIndex();
+					break ;
+
+				default:
+					std::cerr << "This is incorrect" << std::endl;
+					break ;
+			}
+			std::cout << this->Request[REQ_FILE] << std::endl;
+			return true;
+		} 
+	}
+	return false;
+
+}
+
 void Client::loadDataHeader(Receive *receiver)
 {
+
+	if (!this->matchingLocation())
+	{
+		this->Request[REQ_FILE] = this->server->getRoot() + this->Request[REQ_FILE];
+		if (this->Request[REQ_FILE] == "/")
+		this->Request[REQ_FILE] += this->server->getIndex(); // wrong Should check if its a directory
+	}
+
+	std::cout << this->Request[REQ_FILE] << std::endl;
 	if (this->Request[REQ_TYPE] == "GET")
 	{
 		if (this->fileContent->setFileName(this->Request[REQ_FILE]))

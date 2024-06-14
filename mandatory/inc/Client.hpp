@@ -20,6 +20,7 @@
 #include <cstring>
 #include "../inc/utils.hpp"
 #include <string>
+#include <algorithm>
 
 class Server;
 #include "../inc/Server.hpp"
@@ -66,5 +67,6 @@ public:
 	bool isSendComplete();
 	void loadCompleteClient(Receive *receiver);
 	void loadDataHeader(Receive *receiver);
+	bool matchingLocation();
 };
 
