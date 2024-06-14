@@ -6,7 +6,7 @@
 /*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/04 12:46:28 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/11 14:43:14 by jcheel-n         ###   ########.fr       */
+/*   Updated: 2024/06/15 00:10:33 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,25 @@ class Server;
 
 class FileContent;
 #include "../inc/FileContent.hpp"
+
+
+
+enum LocationStatus
+{
+	/* Correct */
+	NO_LOCATION,
+	OK,
+	NOT_ALLOWED,
+	NOT_FOUND,
+	NOT_IMPLEMENTED,
+	REQUEST_ENTITY_TOO_LARGE,
+	REQUEST_URI_TOO_LONG,
+	INTERNAL_SERVER_ERROR,
+	NOT_MODIFIED,
+	REDIRECT,
+
+};
+
 class Client
 {
 private:
@@ -53,12 +72,12 @@ public:
 	void addKeyType(std::string const &);
 	void addKeyFile(std::string const &);
 	void addKeyVers(std::string const &);
-	std::map<std::string, std::string>::iterator findClient(std::string const &);
-	std::map<std::string, std::string>::iterator getBeginClient();
-	std::map<std::string, std::string>::iterator getEndClient();
-	void clearClient();
-	void deleteClient(std::string const &);
-	void updateClient(std::string const &, std::string const &);
+	// std::map<std::string, std::string>::iterator findClient(std::string const &);
+	// std::map<std::string, std::string>::iterator getBeginClient();
+	// std::map<std::string, std::string>::iterator getEndClient();
+	// void clearClient();
+	// void deleteClient(std::string const &);
+	// void updateClient(std::string const &, std::string const &);
 	std::string getAnswerToSend();
 	std::string getFilePath();
 	std::string getFileContent(std::string filename);
@@ -67,6 +86,6 @@ public:
 	bool isSendComplete();
 	void loadCompleteClient(Receive *receiver);
 	void loadDataHeader(Receive *receiver);
-	bool matchingLocation();
+	int matchingLocation();
 };
 

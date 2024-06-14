@@ -6,7 +6,7 @@
 /*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/20 16:05:31 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/11 22:34:29 by jcheel-n         ###   ########.fr       */
+/*   Updated: 2024/06/14 23:38:42 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ public:
 	void setLastModified(std::string lastModified);
 	void setContentLength(size_t contentLength);
 	void setContentType(std::string contentType);
-
+	void setAttribute(std::string key, std::string value);
 	std::string getMethod();
 	std::string getPath();
 };

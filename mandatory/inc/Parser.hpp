@@ -33,5 +33,5 @@ class Parser
 		static bool checkReturnIgnore(std::string allowMethods, std::string autoindex, std::string index);
 		static bool checkCgiString(std::string cgiPath, std::string cgiExtension);
 		static bool checkCgi(std::vector<std::string> paths, std::vector<std::string> extensions);
-		static void checkAllowedMethods(std::string allowMethods);
+		static bool checkAllowedMethods(std::string allowMethods);
 };

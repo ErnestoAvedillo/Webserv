@@ -234,18 +234,18 @@ int Parser::checkRootAliasReturn(std::string root, std::string alias, std::strin
 	{
 		if (!isDirPermissions(alias, R_OK))
 		{
-			printLog("ERROR", "root\t\t<" + alias + ">\tnot a valid directory." );
+			printLog("ERROR", "alias\t\t<" + alias + ">\tnot a valid directory." );
 			exit(1);
 		}
 		return (ALIAS);
 	}
 	else if (!return_.empty())
 	{
-		if (!isDirPermissions(return_, R_OK) && (!return_.find("http://") || !return_.find("https://")))
-		{
-			printLog("ERROR", "root\t\t<" + return_ + ">\tnot a valid directory." );
-			exit(1);
-		}
+		// if (!isDirPermissions(return_, F_OK ) && (return_.find("http://") == std::string::npos && return_.find("https://") == std::string::npos))
+		// {
+		// 	printLog("ERROR", "return\t\t<" + return_ + ">\tnot a valid directory." );
+		// 	exit(1);
+		// }
 		return (RETURN);
 	}
 	return (0);
@@ -325,8 +325,12 @@ bool Parser::checkCgi(std::vector<std::string> paths, std::vector<std::string> e
 	return true;
 }
 
-void Parser::checkAllowedMethods(std::string allowMethods)
+bool Parser::checkAllowedMethods(std::string allowMethods)
 {
 	if (allowMethods.length() == 0)
+	{
 		printLog("WARNING", "allow_methods\t\tis not defined. Set to default " CHR_GREEN "GET" RESET " value" );
+		return false;
+	}
+	return true;
 }

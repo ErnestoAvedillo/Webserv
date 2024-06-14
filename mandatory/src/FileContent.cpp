@@ -76,18 +76,12 @@ std::string FileContent::getContent()
 bool FileContent::setFileName(std::string &file_name)
 {
 	std::string tmp = file_name.substr(0, file_name.find("?"));
-	// bool filefound = false;
-	// std::cout << "File name: " << file_name << std::endl;
-	if (stat(tmp.c_str(), &fileStat) == 0)
+	if (access(tmp.c_str(), F_OK) == 0)
 	{
-		// filefound = true;
 		file_name = tmp;
 	}
 	else
-	{
-		// std::cout << "File <" << file_name << "> not found: " << filefound << std::endl;
 		return false;
-	}
 	if (cgiModule->setIsCGI(file_name))
 	{
 		cgiModule->setFileName(file_name);
@@ -95,17 +89,13 @@ bool FileContent::setFileName(std::string &file_name)
 	}
 	else
 	{
-		if(stat(fileName.c_str(), &fileStat))
+		if (access(tmp.c_str(), F_OK) == 0)
 		{
 			fileName = file_name;
 			isFileOpen = this->openFile();
 		}
 
 	}
-	// if (!isFileOpen)
-	// {
-	// 	// std::cerr << "File not open: " << fileName << std::endl;
-	// }
 	return isFileOpen;
 }
 

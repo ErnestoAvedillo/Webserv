@@ -6,7 +6,7 @@
 /*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/29 17:38:18 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/12 20:03:40 by jcheel-n         ###   ########.fr       */
+/*   Updated: 2024/06/14 23:55:41 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -310,7 +310,7 @@ void Location::checkVariables()
 			}
 			Parser::checkReturnIgnore(this->allowMethodsStr, this->autoindexStr, this->index);
 			LocationType = RETURN;
-			return ;
+			break ;
 		default:
 			break;
 	}
@@ -326,7 +326,9 @@ void Location::checkVariables()
 	}
 
 	this->setAllowMethods(this->allowMethodsStr);
-	Parser::checkAllowedMethods(this->allowMethodsStr);
-	Parser::checkIndex(this->getIndex(), this->getRoot());
+	if (!Parser::checkAllowedMethods(this->allowMethodsStr))
+		this->isGetAllowed = true;
+	if (LocationType != RETURN)
+		Parser::checkIndex(this->getIndex(), this->getRoot());
 	
 }

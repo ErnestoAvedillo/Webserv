@@ -41,6 +41,11 @@ Header::Header(std::string receiveHeader)
 	}
 }
 
+void Header::setAttribute(std::string key, std::string value)
+{
+	this->attributes[key] = value;
+}
+
 std::map<std::string, std::string> Header::getAttributes()
 {
 	return attributes;
@@ -69,8 +74,11 @@ std::string Header::generateHeader() const
 	if(contentLength != 0)
 		header += "Content-length: " + toString(contentLength) + "\r\n";
 	header += "Content-Type: " + contentType + "\r\n";
+	for (std::map<std::string, std::string>::const_iterator it = attributes.begin(); it != attributes.end(); ++it)
+		header += it->first + ": " + it->second + "\r\n";
+	
 	header += "\r\n";
-	// std::cout << "header: " << header << std::endl;
+	
 	return header;
 }
 
