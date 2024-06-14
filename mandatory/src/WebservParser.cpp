@@ -21,7 +21,7 @@ std::string removeComments(std::string &str)
 			}
 			if(aux.find("*/") == std::string::npos)
 			{
-				std::cerr << "Error: Comentario no cerrado" << std::endl;
+				printLog("ERROR", "Comment not closed");
 				exit(1);
 			}
 			aux.erase(aux.find("/*"), aux.find("*/") + 2);
@@ -36,7 +36,7 @@ static bool mismatchedBraces(std::string fileString)
 {
 	if (std::count(fileString.begin(), fileString.end(), '{') != std::count(fileString.begin(), fileString.end(), '}') )
 	{
-		std::cerr << "Error: unbalanced braces" << std::endl;
+		printLog("ERROR", "Unbalanced braces");
 		return false;
 	}
 	return true;
@@ -44,7 +44,6 @@ static bool mismatchedBraces(std::string fileString)
 
 static bool endWithSemicolon(std::string &fileString)
 {
-	int i = 0;
 	std::string			line;
 
 	fileString = removeComments(fileString);
@@ -53,8 +52,6 @@ static bool endWithSemicolon(std::string &fileString)
 	std::istringstream fileStream(fileString);
 	while (std::getline(fileStream, line))
 	{
-		i++;
-		// if (line.length() == 0 || (!line.empty() && (line.back() == ';' || line.back() == '}' || line.back() == '{')))
 		if (line.length() == 0)
 			continue;
 		char lastCharIter = line[line.length() - 1];
@@ -62,7 +59,7 @@ static bool endWithSemicolon(std::string &fileString)
 			continue;
 		else
 		{
-			std::cerr << "Error: Line " << i << " missing semicolon at the end: " << line << std::endl;
+			printLog("ERROR", "Missing semicolon " CHR_YELLOW ":" RESET " at the end: \"" YELLOW + line + RESET"\"");
 			return false;
 		}
 	}
@@ -73,7 +70,7 @@ static bool isServerBlock(std::string &fileString)
 {
 	if (fileString.find("server:{") == std::string::npos)
 	{
-		std::cerr << "Error: File configuration should contain at least one server block" << std::endl;
+		printLog("ERROR", "File configuration should contain at least one server block");
 		return false;
 	}
 	return true;
@@ -83,7 +80,6 @@ static bool hasDoublePoints(std::string &fileString)
 {
 	std::string			line;
 	std::istringstream fileStream(fileString);
-	int i = 0;
 	while (std::getline(fileStream, line))
 	{
 
@@ -91,7 +87,7 @@ static bool hasDoublePoints(std::string &fileString)
 			continue;
 		else
 		{
-			std::cerr << "Error: Line " << i << " missing : between {key:value} " << line << std::endl;
+			printLog("ERROR", "Missing colon " CHR_YELLOW ":" RESET " between {key:value} \"" CHR_YELLOW + line + RESET "\"");
 			return false;
 		}
 	}
@@ -100,6 +96,9 @@ static bool hasDoublePoints(std::string &fileString)
 
 bool WebServer::checkSyntax()
 {
+	if (!isServerBlock(this->configFileString))
+		return false;
+
 	if (!mismatchedBraces(this->configFileString))
 		return false;
 	
@@ -109,8 +108,6 @@ bool WebServer::checkSyntax()
 	if (!hasDoublePoints(this->configFileString))
 		return false;
 
-	if (!isServerBlock(this->configFileString))
-		return false;
 	return true;
 }
 
@@ -132,6 +129,7 @@ void WebServer::loadConfigFile(std::string filename) // WebServer loadConfigFile
 			exit(1);
 		case -5:
 			printLog("ERROR", "File\t\t<" + filename + ">\tfile not found");
+			exit(1);
 		default:
 			break ;
 	}
@@ -139,7 +137,7 @@ void WebServer::loadConfigFile(std::string filename) // WebServer loadConfigFile
 	this->configFile.open(this->configFilename.c_str());
 	if (!this->configFile.is_open())
 	{
-		std::cerr << "Error: File not found" << std::endl;
+		printLog("ERROR", "File\t\t<" + filename + ">\tfile not found");
 		exit(1);
 	}
 	this->configFileString = std::string((std::istreambuf_iterator<char>(configFile)),std::istreambuf_iterator<char>());
