@@ -228,7 +228,7 @@ int Parser::checkRootAliasReturn(std::string root, std::string alias, std::strin
 			printLog("ERROR", "root\t\t<" + root + ">\tnot a valid directory." );
 			exit(1);
 		}
-		return (1);
+		return (ROOT);
 	}
 	else if (!alias.empty())
 	{
@@ -237,7 +237,7 @@ int Parser::checkRootAliasReturn(std::string root, std::string alias, std::strin
 			printLog("ERROR", "root\t\t<" + alias + ">\tnot a valid directory." );
 			exit(1);
 		}
-		return (2);
+		return (ALIAS);
 	}
 	else if (!return_.empty())
 	{
@@ -246,7 +246,7 @@ int Parser::checkRootAliasReturn(std::string root, std::string alias, std::strin
 			printLog("ERROR", "root\t\t<" + return_ + ">\tnot a valid directory." );
 			exit(1);
 		}
-		return (3);
+		return (RETURN);
 	}
 	return (0);
 }
