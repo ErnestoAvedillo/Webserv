@@ -10,8 +10,12 @@
 # include <algorithm>
 # include "utils.hpp"
 # include "Location.hpp"
-# include "../inc/toString.hpp"
+
 # include "CGI.hpp"
+# include "Parser.hpp"
+
+# include "../inc/toString.hpp""
+
 
 #define VAR_PORT	"port"
 #define VAR_HOST	"host"
@@ -43,7 +47,8 @@ class Server {
 		bool		isDefault;
 		std::map<int, ListeningSocket *> port;
 		std::vector<std::string> ports;
-		size_t			maxClientBodySize;
+		size_t			maxBodySize;
+		std::string		maxBodySizeStr;
 		std::string	Host;
 		std::string	serverName;
 		std::string errorPage;
@@ -51,11 +56,14 @@ class Server {
 		std::string index;
 		std::vector<Location *> locations;
 		CGI *cgiModule;
+		in_addr_t hostAddr;
+
 		void	setDefaultData();
 
 	public:
 		// Server();
-		Server(std::string const &);
+		Server(std::string  &);
+
 		~Server();
 		Server(Server const &);
 		Server &operator=(Server const &);
@@ -67,7 +75,9 @@ class Server {
 		void	setHost(std::string const &);
 		void	setServerName(std::string const &);
 		void	setErrorPage(std::string const &);
-		void	setClientMaxBodySize(std::string const &);
+		void	setMaxClientBodySizeStr(std::string const &);
+		void	setMaxClientBodySize(size_t const &);
+		
 		void	setRoot(std::string const &);
 		void	setIndex(std::string const &);
 		void	setCGIExtension(std::string const &);
@@ -75,13 +85,15 @@ class Server {
 		void	addLocation(std::string const &);
 		void	setIsDefault(std::string const &);
 		void	setPorts(std::string const &ports);
+		void    setHostAddr(in_addr_t Addr);
+
 
 		//---- Server getters ------//
 		ListeningSocket *getListening(int i);
+		std::vector<std::string> getPorts();
 		std::vector<int> getServerFds();
 
 		ListeningSocket *		getPort(int i); 
-		size_t			getClientBodySize();
 		bool getIsDefault();
 		std::string	getHost();
 		std::string	getServerName();
@@ -90,8 +102,15 @@ class Server {
 		std::string	getIndex();
 		std::string	getCGIExtension(const std::string &);
 		std::string	getCGIFolder();
+		in_addr_t	getHostAddr();
+		std::string	getMaxClientBodySizeStr();
+		size_t		getMaxClientBodySize();
+		std::vector<Location *> getLocations();
+
 
 		void	print();
+		void createListeningSockets();
+		void checkVariables();
 		//std::vector<class Location> getLocations();
 };
 

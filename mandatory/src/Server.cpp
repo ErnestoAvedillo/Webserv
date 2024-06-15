@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Server.cpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/27 14:24:35 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/04 13:13:26 by eavedill         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../inc/Server.hpp"
 
 std::map<std::string, int> var_names_server()
@@ -24,15 +12,15 @@ std::map<std::string, int> var_names_server()
 	varnames[VAR_CGI_EXTENSION] = 0;
 	varnames[VAR_CGI_FOLDER] = 0;
 	varnames[VAR_CLIENT_MAX_BODY_SIZE] = 0;
-	varnames[VAR_LOCATIONS] = 0;
+// 	varnames[VAR_LOCATIONS] = 0;
 	return varnames;
 }
 
-std::map<std::string, void (Server::*)(const std::string &)> getServerMethods()
+std::map<std::string, void (Server::*)(const std::string &)> ServerSetters()
 {
 	std::map<std::string, void (Server::*)(const std::string &)> serverMethods;
 
-	serverMethods[VAR_PORT] = &Server::setPort;
+	serverMethods[VAR_PORT] = &Server::setPorts;
 	serverMethods[VAR_HOST] = &Server::setHost;
 	serverMethods[VAR_SERVER_NAME] = &Server::setServerName;
 	serverMethods[VAR_ERROR_PAGE] = &Server::setErrorPage;
@@ -40,8 +28,10 @@ std::map<std::string, void (Server::*)(const std::string &)> getServerMethods()
 	serverMethods[VAR_INDEX] = &Server::setIndex;
 	serverMethods[VAR_CGI_EXTENSION] = &Server::setCGIExtension;
 	serverMethods[VAR_CGI_FOLDER] = &Server::setCGIFolder;
-	serverMethods[VAR_CLIENT_MAX_BODY_SIZE] = &Server::setClientMaxBodySize;
-	serverMethods[VAR_LOCATIONS] = &Server::addLocation;
+	serverMethods[VAR_CLIENT_MAX_BODY_SIZE] = &Server::setMaxClientBodySizeStr;
+	// serverMethods[VAR_LOCATIONS] = &Server::addLocation;
+// 	serverMethods[VAR_CLIENT_MAX_BODY_SIZE] = &Server::setClientMaxBodySize;
+// 	serverMethods[VAR_LOCATIONS] = &Server::addLocation;
 	return serverMethods;
 }
 
@@ -68,9 +58,17 @@ std::map<std::string, void (Server::*)(const std::string &)> getServerMethods()
 // 	}
 // }
 
-Server::Server(std::string const &str) 
+Server::Server(std::string &str) 
 {
 	this->cgiModule = new CGI();
+	while (str.find("location") != std::string::npos)
+	{
+		std::string aux = str.substr(str.find("location:{"));
+		std::string location  = aux.substr(10, aux.find("}") - 10);
+		str.erase(str.find("location"), aux.find("}") + 1);
+		this->addLocation(location);
+	}
+
 	if(this->loadData(str) == -1)
 	{
 		std::cerr << CHR_RED << "Error: No se ha podido cargar la configuración del servidor. Parámetros por defecto establecidos." << RESET << std::endl;
@@ -81,6 +79,8 @@ Server::Server(std::string const &str)
 Server::~Server() 
 {
 	delete cgiModule;
+	for (size_t i = 0; i < this->locations.size(); i++)
+		delete this->locations[i];
 }
 
 Server::Server(Server const &copy) {
@@ -91,7 +91,8 @@ Server &Server::operator=(Server const &copy) {
 	if (this != &copy) {
 		this->isDefault = copy.isDefault;
 		this->port = copy.port;
-		this->maxClientBodySize = copy.maxClientBodySize;
+		this->maxBodySizeStr = copy.maxBodySizeStr;
+		this->maxBodySize = copy.maxBodySize;
 		this->Host = copy.Host;
 		this->serverName = copy.serverName;
 		this->errorPage = copy.errorPage;
@@ -105,40 +106,33 @@ int Server::loadData(std::string const &content) {
 	std::string line;
 	std::string straux;
 	std::map<std::string, int> varnames = var_names_server();
-	if (std::count(content.begin(), content.end(), '{') - std::count(content.begin(), content.end(), '}') != 0)
-	{
-		std::cerr << "Error: Llaves no balanceadas" << std::endl;
-		return -1;
-	}
-	if(content.find("server:{") != 0)
-	{
-		std::cerr << "Error: La configuración del servidor debe empezar con \"server:{\"" << std::endl;
-		return -1;
-	}
-	
+
 	std::istringstream fileContentStream(content.substr(8, content.length() - 1));
 	while (std::getline(fileContentStream, line,';'))
 	{
-		if(line == "}")
+		line.erase(std::remove(line.begin(), line.end(), '\n'), line.end());
+		if(line.length() == 0 || line == "}" || line == "{")
 			continue;
 		std::map<std::string, int>::iterator it = varnames.begin();
 		while (it != varnames.end())
 		{
-			if (line.find(it->first) != std::string::npos)
+			if (line.substr(0 , line.find(":") ) == it->first)
 			{
 				if (it->second == 1)
-					std::cerr << "Error: " << it->first << " ha sido ya asignado." << std::endl;
+					std::cerr << "Error: duplicated variable " << it->first << std::endl;
 				it->second = 1;
 				break;
 			}
 			it++;
 		}
-		if (it == varnames.end())
-			std::cerr << "Error: Variable no reconocida: " << line.substr(0, line.find(":")) << std::endl;
+		if(line.length() == 0 || line == "}" || line == "{" )
+			continue;
+		else if (it == varnames.end())
+			std::cerr << "Error: Unrecognized variable " << line.substr(0, line.find(":")) << "$" << std::endl;
 		else
 		{
 			straux = line.substr(line.find(":") + 1, line.size());
-			(this->*getServerMethods()[it->first])(straux);
+			(this->*ServerSetters()[it->first])(straux);
 		}
 	}
 	return 0;
@@ -157,7 +151,7 @@ void	Server::print()
 	std::cout << "Error Page: " << this->errorPage << std::endl;
 	std::cout << "Root: " << this->root << std::endl;
 	std::cout << "Index: " << this->index << std::endl;
-	std::cout << "Client Max Body Size: " << this->maxClientBodySize << std::endl;
+	std::cout << "Client Max Body Size: " << this->maxBodySizeStr << std::endl;
 	std::cout << "Is Default: " << this->isDefault << std::endl;
 	for (size_t i = 0; i < this->ports.size(); i++)
 		std::cout << "Port: " << this->ports[i] << std::endl;
@@ -167,3 +161,41 @@ void	Server::print()
 	std::cout << "-----------------------------------------------" << std::endl;
 }
 
+void Server::createListeningSockets()
+{
+	ListeningSocket *ls;
+	for (size_t i = 0; i < this->ports.size(); i++)
+	{
+		ls = new ListeningSocket(stringToSizeT(ports[i]), this);
+		this->port[ls->getFd()] = ls;
+	}
+}
+
+void Server::checkVariables()
+{
+	if (Parser::checkPorts(this->getPorts()) == false)
+		exit(1);
+	if (Parser::checkHost(this->getHost()) == false && this->getHost() != "0.0.0.0")
+		exit(1);
+	else
+		this->setHostAddr(Parser::isValidHost(this->getHost()));
+	if (Parser::checkServerName(this->getServerName()) == false)
+		exit(1);
+	if (Parser::checkRoot(this->getRoot()) == false)
+		exit (1);
+	Parser::checkErrorPage(this->getErrorPage());
+	Parser::checkIndex(this->getIndex(), this->getRoot());
+	this->setMaxClientBodySize(Parser::checkClientBodySize(this->getMaxClientBodySizeStr()));
+	if (this->locations.size())
+		std::cout << std::endl;
+	for (size_t i = 0; i < this->locations.size(); i++)
+	{
+		std::cout << CHR_MGENTA"---------Location [" << i + 1 << "]---------" RESET << std::endl;
+		this->locations[i]->checkVariables();
+		// std::cout << CHR_GREEN"OK! Location " << i << RESET<< std::endl;
+		printLog("NOTICE", "OK! Location " + toString(i + 1));
+		std::cout << CHR_MGENTA"------------------------------" RESET << std::endl;
+	}
+	
+	std::cout << std::endl;
+}

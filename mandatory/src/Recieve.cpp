@@ -4,14 +4,15 @@
 #include <string>
 #include <cstring>
 
+#include "../inc/Header.hpp"
+
 Receive::Receive() : buffer(""), request(""), body(""), isbody(false), maxSize(0), sizeSent(0), isform(false)
 {
-    std::cerr << "Receive created" << std::endl;
+
 }
 
 Receive::~Receive()
 {
-    std::cerr << "Receive destroyed" << std::endl;
 }
 
 Receive::Receive(Receive const &copy)
@@ -60,19 +61,25 @@ bool Receive::receiveHeader(int fd)
     {
         this->buffer.clear();
         this->buffer.append(buf, ret);
-        if (buffer.find("\r\n\r\n") != std::string::npos)
+        std::string tmp = request + this->buffer;
+        if (tmp.find("\r\n\r\n") != std::string::npos || tmp.find("\n\n") != std::string::npos)
         {
-            request += this->buffer.substr(0, this->buffer.find("\r\n\r\n"));
-            if (request.find("Content-Length: ") != std::string::npos)
+            request += tmp.substr(0, tmp.find("\r\n\r\n"));
+            Header header(request);
+            std::map<std::string, std::string>  Attributes = header.getAttributes();
+            std::string log = CHR_BLUE + header.getMethod() + RESET + "\t" + Attributes["Host"] + CHR_CYAN + header.getPath() + RESET;
+            printLog("NOTICE", log);
+            if (Attributes.find("Content-Length") != Attributes.end())
+                this->maxSize = std::atoi(Attributes["Content-Length"].c_str());
+            if (Attributes.find("Content-Type") != Attributes.end())
             {
-                std::string contentLength = request.substr(request.find("Content-Length: ") + 16, request.find("\r\n", request.find("Content-Length: ")));
-                this->maxSize = std::stoi(contentLength);
-                std::string boundary = request.substr(request.find("boundary=") + 9, request.find("\r\n", request.find("boundary=")) - 1);
-                this->boundary = boundary;
+                if (Attributes["Content-Type"].find("boundary") != std::string::npos)
+                    this->boundary = Attributes["Content-Type"].substr(Attributes["Content-Type"].find("boundary=") + 9);
             }
             else
                 return true;
-            this->body = this->buffer.substr(this->buffer.find("\r\n\r\n") + 4, this->buffer.at(this->buffer.size() - 1));
+            this->body = tmp.substr(tmp.find("\r\n\r\n") + 4, tmp.size() - tmp.find("\r\n\r\n") - 4);
+
             this->sizeSent += this->body.size();
             if (this->sizeSent >= this->maxSize)
             {
@@ -84,14 +91,16 @@ bool Receive::receiveHeader(int fd)
             return false;
         }
         else
-            request += this->buffer;
+
+            request += tmp;
         std::memset(buf, 0, MAX_MSG_SIZE);
     }
+ 
     if (ret < 0) // This is not handle as an error 
         return false;
     else if (ret == 0)
     {
-        std::cerr << "Client disconnected" << std::endl;
+        printLog("NOTICE", "Client disconnected");
         return false;
     }
     return false;
@@ -101,14 +110,18 @@ bool Receive::receiveBody(int fd)
 {
     char buf[MAX_MSG_SIZE] = {0};
     int ret = 0;
+
     while ((ret = recv(fd, buf, MAX_MSG_SIZE, 0)) > 0)
     {
-        
+
         this->sizeSent += ret;
         this->buffer.clear();
         this->buffer = std::string(buf, ret);
         if (this->sizeSent >= this->maxSize)
         {
+            if (this->boundary.length())
+                this->buffer = this->buffer.substr(0, this->buffer.find(this->boundary) - 4);
+
             this->body += this->buffer;
             this->isbody = false;
             return true;
@@ -121,7 +134,7 @@ bool Receive::receiveBody(int fd)
         return false;
     else if (ret == 0)
     {
-        std::cerr << "Client disconnected" << std::endl;
+        printLog("NOTICE", "Client disconnected");
         return false;
     }
     return false;

@@ -1,11 +1,4 @@
-#include <iostream>
-#include <netinet/in.h>
-#include <cstdlib>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <string>
-#include <vector>
-#include <sstream>
+#include "../inc/utils.hpp"
 
 template <typename T>
 bool isrange(T value, T min, T max)
@@ -45,10 +38,10 @@ bool validIPAddress(std::string ip)
 		count++;
 	}
 	
-	if (count != 3 || !isNumber(ip) || !isrange(std::atoi(ip.c_str()), 0, 255))
+	if (count != 4 || !isNumber(ip) || !isrange(std::atoi(ip.c_str()), 0, 255))
 		return false;
 	
-	return count == 3;
+	return count == 4;
 }
 
 
@@ -66,18 +59,20 @@ bool isDirPermissions(std::string path, int mode)
 	return true;
 }
 
-bool isFilePermissions(std::string path, int mode)
+int isFilePermissions(std::string path, int mode)
 {
 	if (path.empty())
-		return false;
+		return -2;
+	if (access(path.c_str(), F_OK) != 0)
+		return -5;
 	struct stat buffer;
 	if (stat(path.c_str(), &buffer) == -1)
-		return false;
+		return -1;
 	if (!S_ISREG(buffer.st_mode))
-		return false;
+		return -3;
 	if (access(path.c_str(), mode) != 0)
-		return false;
-	return true;
+		return -4;
+	return 1;
 }
 
 size_t stringToSizeT(const std::string& str) {
@@ -121,16 +116,108 @@ std::string removeBlanksAndTabs(const std::string& input) {
 	return result;
 }
 
-template <typename T>
-std::string itos (T n)
-{
-	std::string str;
-	std::stringstream ss;
-	
-	ss << n;
-	ss >> str;
+void replaceString(std::string& mainString, const std::string& searchString, const std::string& replaceString) {
+	size_t pos = 0;
+	while ((pos = mainString.find(searchString, pos)) != std::string::npos) {
+		mainString.replace(pos, searchString.length(), replaceString);
+		pos += replaceString.length();
+	}
+}
 
-	return  str;
+int count_chars(const std::string& str, char c) {
+	int count = 0;
+	for (size_t i = 0; i < str.size(); i++) {
+		if (str[i] == c) {
+			count++;
+		}
+	}
+	return count;
+}
+
+std::string getTime()
+{
+	std::time_t currentTime = std::time(NULL);
+
+	// Convert the current time to a string in the desired format
+	std::tm* timeInfo = std::gmtime(&currentTime);
+	char buffer[80];
+	std::strftime(buffer, sizeof(buffer), "%A, %d-%b-%y %H:%M:%S GMT", timeInfo);
+
+	// Set the date in the header
+	return(buffer);
+};
+
+// std::string getLocalTime()
+// {
+// 	std::time_t currentTime = std::time(NULL);
+
+//     // Convert the current time to a string in the desired format using local time
+//     std::tm* timeInfo = std::localtime(&currentTime);
+//     char buffer[80];
+//     std::strftime(buffer, sizeof(buffer), "%A, %d-%b-%y %H:%M:%S %Z", timeInfo);
+
+//     // Return the formatted date string
+//     return std::string(buffer);
+// }
+
+std::string getLocalTime()
+{
+    std::time_t currentTime = std::time(NULL);
+
+    // Convert the current time to a string in the desired format using local time
+    std::tm* timeInfo = std::localtime(&currentTime);
+    char buffer[20];
+    std::strftime(buffer, sizeof(buffer), "%Y/%m/%d %H:%M:%S", timeInfo);
+
+    // Return the formatted date string
+    return std::string(buffer);
+}
+
+void printLog(std::string type ,std::string message)
+{
+	// std::cout << message << std::endl;
+	if (type == "ERROR")
+		std::cout << CHR_RED << getLocalTime() << " [" << type << "]" << "\t\t" RESET << message << RESET << std::endl;
+	else if (type == "WARNING")
+		std::cout << CHR_YELLOW << getLocalTime() << " [" << type << "]" << "\t\t" RESET << message << RESET << std::endl;
+	else if (type == "NOTICE")
+		std::cout << CHR_GREEN << getLocalTime() << " [" << type << "]" << "\t\t" << RESET << message << RESET << std::endl;
+	else if (type == "DEBUG")
+		std::cout << getLocalTime() << " [" << type << "]" << CHR_BLUE " | " RESET << message << std::endl;
+}
+
+
+static int hexStringToInt(const std::string& hexStr) {
+    int value;
+    std::stringstream ss;
+
+    ss << std::hex << hexStr;
+    ss >> value;
+
+    return value;
+}
+
+std::string decodeURL(const std::string& url)
+{
+	std::string decoded;
+	size_t i = 0;
+	while (i < url.size())
+	{
+		if (url[i] == '%')
+		{
+			if (i + 2 < url.size())
+			{
+				decoded += static_cast<char>(hexStringToInt(url.substr(i + 1, 2)));
+				i += 2;
+			}
+		}
+		else if (url[i] == '+')
+			decoded += ' ';
+		else
+			decoded += url[i];
+		i++;
+	}
+	return decoded;
 }
 
 void replaceString(std::string& mainString, const std::string& searchString, const std::string& replaceString) {
@@ -150,3 +237,4 @@ int count_chars(const std::string& str, char c) {
 	}
 	return count;
 }
+

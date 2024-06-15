@@ -35,7 +35,7 @@ public:
 	FileContent(const std::string &, Server *);
 	~FileContent();
 	int openFile();
-	bool setFileName(const std::string &);
+	bool setFileName(std::string &);
 	std::string getFileName();
 	std::string getContent();
 	bool isSendComplete();
