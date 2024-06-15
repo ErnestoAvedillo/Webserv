@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ListDir.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 19:03:57 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/14 20:57:56 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/15 13:11:41 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,6 @@ class ListDir
         void setIsSendComlete();
         bool getIsSendComlete();
         void openMasterListFile();
-        void printFiles();
         std::string getContentToSend();
         size_t getSizeToSend();
         void setSubdirectory(const std::string &);

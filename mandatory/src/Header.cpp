@@ -15,7 +15,6 @@ std::string Header::generateHeader() const
 {
 	std::string header;
 	
-	std::cout << "Version: $" << Version << "$" << std::endl;
 	header = "HTTP/" + Version + " " + Status + "\r\n"; 
 	header += "Server: " + Server + "\r\n";
 	header += "Date: " + Date + "\r\n";
@@ -25,7 +24,6 @@ std::string Header::generateHeader() const
 		header += "Content-length: " + toString(ContentLength) + "\r\n";
 	header += "Content-Type: " + ContentType + "\r\n";
 	header += "\r\n";
-	std::cout << "header: " << header << std::endl;
 	return header;
 }
 
@@ -76,7 +74,6 @@ void Header::setContentType(std::string contentType)
 	/* Create once only */
 	std::map<std::string, std::string> Mimetype = create_filetypes();
 
-	//std::cout << "found extension " << extension << std::endl;
 	if (Mimetype.find(extension) != Mimetype.end())
 		ContentType = Mimetype[extension];
 	else

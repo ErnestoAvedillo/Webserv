@@ -11,8 +11,6 @@ ListDir::ListDir()
 
 ListDir::ListDir(const std::string& directory) 
 {
-	//	std::cout << "ListDir::ListDir(const std::string& directory)" << std::endl;
-	//	path = directory.substr(0, directory.find_last_of("/") + 1);
 	posToSend = 0;
 	if (directory[directory.size() - 1] != '/')
 		path = directory + "/";
@@ -95,10 +93,7 @@ void ListDir::setContentToList()
 void ListDir::setIsSendComlete() 
 {
 	if(posToSend >= contentToSend.size())
-	{
-		std::cout << RED << "Send is completed" << RESET << std::endl;
 		isSendComplete = true;
-	}
 }
 
 bool ListDir::getIsSendComlete()
@@ -110,24 +105,6 @@ void ListDir::openMasterListFile()
 {
 	std::string filename = "./Master/dir_list.html";
 	file.open(filename.c_str(), std::ios::out | std::ios::binary);
-}
-
-void ListDir::printFiles() 
-{
-	std::map <std::string, Attributes *>::iterator itb = files.begin();
-	std::map <std::string, Attributes *>::iterator ite = files.end();
-	
-	std::cout << YELLOW << "---printing list of files--- " << RESET << std::endl;
-	while (itb != ite) 
-	{
-		std::cout << "Name: " << itb->second->getName() << std::endl;
-		std::cout << "Size: " << itb->second->getSize() << std::endl;
-		std::cout << "Device: " << itb->second->getDevice() << std::endl;
-		std::cout << "Modified: " << itb->second->getModified() << std::endl;
-		std::cout << "IsDir: " << itb->second->getIsDir() << std::endl;
-		itb++;
-	}
-	std::cout << CYAN << "---end of list of files--- " << RESET << std::endl;
 }
 
 std::string ListDir::getContentToSend() 

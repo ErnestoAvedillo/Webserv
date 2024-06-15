@@ -38,10 +38,6 @@ std::vector<int>	Server::getServerFds()
 	std::vector<int> fd;
 	std::map<int, ListeningSocket*>::iterator itb = this->port.begin();
 	std::map<int, ListeningSocket*>::iterator ite = this->port.end();
-	// for (std::map<int, ListeningSocket *>::iterator it = this->port.begin(); it != this->port.end(); ++it)
-	// {
-	// 	std::cout << "Listening on port: " << it->first << " with fd " << it->second->getFd() << std::endl;
-	// }
 	while (itb != ite) {
 		fd.push_back(itb->second->getFd());
 		itb++;

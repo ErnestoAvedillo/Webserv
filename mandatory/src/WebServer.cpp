@@ -38,8 +38,6 @@ void WebServer::createListeningSockets()
 
 void WebServer::launchServers()
 {
-	std::cout << "Launching servers..." << std::endl;
-	
 	this->createListeningSockets();
 	std::vector<int> sk ;
     try
@@ -83,10 +81,6 @@ void	WebServer::eventLoop()
 	while (!WebServer::ExitFlag)
 	{
 		num_events = waitEvent(evList);
-		for (int i = 0; i < num_events; i++)
-		{
-			std::cout << "Event received " << i << " with fd = " << evList[i].data.fd << std::endl;
-		}
 		if (num_events == -1)
 			continue ;
 		std::cerr << "Event " << num_events << std::endl;

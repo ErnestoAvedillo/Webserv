@@ -11,7 +11,6 @@ Receive::Receive() : buffer(""), request(""), body(""), isbody(false), maxSize(0
 
 Receive::~Receive()
 {
-    std::cerr << "Receive destroyed" << std::endl;
 }
 
 Receive::Receive(Receive const &copy)

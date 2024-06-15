@@ -11,7 +11,6 @@ ListeningSocket::ListeningSocket(int myPort, Server *srv)
 	this->socketFd = -1;
 	if (this->startListening())
 		printLog("NOTICE", "Listening on port: " CHR_GREEN + std::to_string(myPort) + RESET " with file descriptor " CHR_GREEN + std::to_string(this->socketFd));
-		// std::cout << CHR_GREEN <<  getLocalTime() << " [NOTICE]" << CHR_BLUE " | " RESET << "Listening on port: " CHR_GREEN<< myPort <<RESET " with file descriptor " << this->socketFd << std::endl;
 }
 ListeningSocket::ListeningSocket(Server *srv)
 {
@@ -174,7 +173,6 @@ int ListeningSocket::getFd()
 bool ListeningSocket::sendData(int clientSocketFd)
 {
 	std::string answer = this->client->getAnswerToSend();
-	std::cout << "Answer to send: " << answer << std::endl;
 	int n = send(clientSocketFd, answer.c_str(), answer.size(), 0);
 	if (n < 0)
 	{
@@ -195,29 +193,6 @@ ListeningSocket *ListeningSocket::clone(int fd)
 	newSocket->socketFd = fd;
 	return newSocket;
 }
-
-// void print_visible(const std::string& str) {
-//     for (char ch : str) {
-//         switch (ch) {
-//             case '\n':
-//                 std::cout << "\\n";
-//                 break;
-//             case '\r':
-//                 std::cout << "\\r";
-//                 break;
-//             case '\t':
-//                 std::cout << "\\t";
-//                 break;
-//             default:
-//                 if (std::isprint(static_cast<unsigned char>(ch))) {
-//                     std::cout << ch;
-//                 } else {
-//                     std::cout << "\\x" << std::hex << std::uppercase << static_cast<int>(static_cast<unsigned char>(ch));
-//                     std::cout << std::dec;  // Reset to decimal for future use
-//                 }
-//         }
-//     }
-// }
 
 void ListeningSocket::loadRequest()
 {

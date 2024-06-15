@@ -62,7 +62,13 @@ std::string FileContent::getContent()
 		if (cgiModule->getIsCGI())
 		{
 			sendComplete = true;
-			content = cgiModule->execute();
+			try{
+				content = cgiModule->execute();
+			}
+			catch(const std::exception& e)
+			{
+				content = e.what();
+			}
 			completeContentSize = content.size();
 			return content;
 		}
@@ -139,12 +145,6 @@ bool FileContent::setFileName(const std::string &file_name)
 			return isFileOpen;
 		}
 	}
-	else
-	{
-		std::cout << "File <" << file_name << "> not found." << std::endl;
-		//throw std::runtime_error("Error: File not found");
-	}
-
 	return isFileOpen;
 }
 

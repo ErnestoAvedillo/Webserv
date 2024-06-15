@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2024/06/14 21:22:39 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/15 13:09:54 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,33 +116,6 @@ void Client::loadCompleteClient(Receive *receiver)
 	this->loadDataHeader(receiver);
 }
 
-// std::string getExtension(std::string filePath)
-// {
-// 	size_t point = filePath.find_last_of(".");
-// 	std::string extension = filePath.substr(point + 1, filePath.size());
-// std::string getExtension(std::string filePath)
-// {
-// 	size_t point = filePath.find_last_of(".");
-// 	std::string extension = filePath.substr(point + 1, filePath.size());
-
-// 	std::map<std::string, std::string> Mimetype = create_filetypes();
-
-// 	if (Mimetype.find(extension) != Mimetype.end())
-// 	{
-// 		std::cout << CHR_BLUE << "found extension " << extension << ": " << Mimetype[extension] << RESET << std::endl;
-// 		return(Mimetype[extension]);
-// 	}
-// 	else
-// 	{
-// 		std::cout << CHR_MGENTA << "NOT found extension " << extension << RESET << std::endl;
-// 		return("text/html"); 
-// 	}
-// }
-
-
-/*
-Normalize the path, removes .., adds ./ at teh beggining if necessary, removes / at the end, removes duplicate /.
-*/
 std::string Client::normalizePath(std::string path)
 {
 	while (path.find("..") != std::string::npos)
@@ -251,11 +224,8 @@ void Client::loadDataHeader(Receive *receiver)
 		}
 		else if (receiver->getisform())
 		{
-			std::cout << "form: " << receiver->getBody() << std::endl;
 			header.setStatus("201 Created");
 		}
-		else
-			std::cout << "form: " << receiver->getBody() << std::endl;
 		header.setServer(server->getServerName());
 	}
 	else if (this->Request[REQ_TYPE] == "DELETE")
