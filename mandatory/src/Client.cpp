@@ -1,4 +1,3 @@
-
 #include "../inc/Client.hpp"
 
 Client::Client() {}
@@ -10,6 +9,7 @@ Client::Client(Server *srv)
 }
 
 Client::Client(Receive *receive, Server *srv)
+
 {
 	this->fileContent = new FileContent(srv);
 	this->server = srv;
@@ -28,11 +28,12 @@ void Client::addKeyType(std::string const &value) { this->Request[REQ_TYPE] = va
 void Client::addKeyFile(std::string const &value) { this->Request[REQ_FILE] = value; }
 void Client::addKeyVers(std::string const &value) { this->Request[REQ_VER] = value; }
 
+
 void Client::loadCompleteClient(Receive *receiver)
 {
 	std::string str = receiver->getRequest();
 	if (str.length() == 0)
-		return;
+		return ;
 	std::vector<std::string> lines = splitString(str, '\n');
 	std::vector<std::string> parts = splitString(lines[0], ' ');
 	if (parts.size() == 3)
@@ -45,11 +46,6 @@ void Client::loadCompleteClient(Receive *receiver)
 		this->addKeyReq(lines[i].substr(0, lines[i].find(":")), lines[i].substr(lines[i].find(":") + 1, lines.size()));
 	this->loadDataHeader(receiver);
 }
-
-
-/*
-Normalize the path, removes .., adds ./ at teh beggining if necessary, removes / at the end, removes duplicate /.
-*/
 std::string Client::normalizePath(std::string path)
 {
 	while (path.find("..") != std::string::npos)
@@ -99,11 +95,12 @@ std::string Client::getAnswerToSend()
 	std::string file_content = getFileContent();
 	if (this->fileContent->getFirstFragment())
 	{
-		answer += header.generateHeader() + file_content;
+		answer = header.generateHeader() + file_content;
 		this->fileContent->setFirstFragment(false);
 	}
 	else
-		answer += file_content;
+		answer = file_content;
+
 	return (answer);
 }
 
@@ -231,7 +228,6 @@ void Client::loadDataHeader(Receive *receiver)
 						header.setStatus("403 Forbidden");
 						return;
 					}
-					std::cout << "filename: " << this->Request[REQ_FILE] << std::endl;
 					std::fstream file(this->Request[REQ_FILE].c_str(), std::ios::out | std::ios::binary | std::ios::app);
 					file.write(body.c_str(), body.size());
 					file.close();
@@ -242,10 +238,8 @@ void Client::loadDataHeader(Receive *receiver)
 		}
 		else if (receiver->getisform())
 		{
-			std::cout << "form: " << receiver->getBody() << std::endl;
 			header.setStatus("201 Created");
 		}
-
 		else
 			std::cout << "form: " << receiver->getBody() << std::endl;
 		header.setServer(server->getServerName());

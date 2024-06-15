@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CGI.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/25 17:42:08 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/04 15:32:45 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/15 13:14:05 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,6 @@ void CGI::setFileName(const std::string& str)
 	{
 		tmp = splitString(str, '?');
 		fileName = tmp[0];
-		std::cout << "File name: " << fileName << std::endl;
 		args = splitString(tmp[1], '&');
 	}
 	else

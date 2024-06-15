@@ -8,19 +8,41 @@ FileContent::FileContent(Server *srv)
 	isFileOpen = false;
 	isFistFragment = true;
 	this->cgiModule = srv->cgiModuleClone();
+	if(server->getAutoIndex())
+	{
+		listDir = new ListDir(srv->getRoot());
+		isFileOpen = true;
+	}
+	else
+	{
+		listDir = NULL;
+	}
 }
-FileContent::FileContent(std::string &MyfileName, Server *srv) 
+
+FileContent::FileContent(const std::string &MyfileName, Server *srv) 
 {
 	server = srv;
-	isFileOpen = this->setFileName(MyfileName);
 	sendComplete = false;
 	isFistFragment = true;
 	this->cgiModule = srv->cgiModuleClone();
+	if(server->getAutoIndex())
+	{
+		fileName = MyfileName;
+		listDir = new ListDir(MyfileName);
+		isFileOpen = true;
+	}
+	else
+	{
+		listDir = NULL;
+		isFileOpen = this->setFileName(MyfileName);
+	}
 }
 
 FileContent::~FileContent() 
 {
 	delete cgiModule;
+	if (listDir)
+		delete listDir;
 }
 
 int FileContent::openFile()
@@ -35,13 +57,28 @@ int FileContent::openFile()
 std::string FileContent::getContent() 
 {
 	std::string errorReturn = "Error: " + fileName + " File not found";
+
 	if (isFileOpen)
 	{
 		if (cgiModule->getIsCGI())
 		{
-			std::cout << "is a CGI file: " << fileName << std::endl;
 			sendComplete = true;
-			return cgiModule->execute();
+			try{
+				content = cgiModule->execute();
+			}
+			catch(const std::exception& e)
+			{
+				content = e.what();
+			}
+			completeContentSize = content.size();
+			return content;
+		}
+		else if (server->getAutoIndex() && this->fileStat.st_mode & S_IFDIR)
+		{
+			content = listDir->getContentToSend();
+			completeContentSize = content.size();
+			sendComplete = listDir->getIsSendComlete();
+			return content;
 		}
 		else
 		{
@@ -72,29 +109,42 @@ std::string FileContent::getContent()
 	return content;
 }
 
-bool FileContent::setFileName(std::string &file_name)
+bool FileContent::setFileName(const std::string &file_name)
 {
-	std::string tmp = file_name.substr(0, file_name.find("?"));
-
-	if (access(tmp.c_str(), F_OK) == 0)
+	std::string FileAndFolder = this->splitFileFromArgs(file_name);
+	bool fileOrFolderExists = this->FileOrFolerExtists(FileAndFolder);
+	if (fileOrFolderExists)
 	{
-		file_name = tmp;
-	}
-	else
-		return false;
-	if (cgiModule->setIsCGI(file_name))
-	{
-		cgiModule->setFileName(file_name);
-		isFileOpen = true;
-	}
-	else
-	{
-		if (access(tmp.c_str(), F_OK) == 0)
+		if (this->isInputDirectory() && server->getAutoIndex())
 		{
-			fileName = file_name;
-			isFileOpen = this->openFile();
+			fileName = FileAndFolder;
+			isFileOpen = true;
+			listDir->setSubdirectory(FileAndFolder);
+			listDir->setContentToList();
+			return isFileOpen;
 		}
-
+		else if (cgiModule->setIsCGI(file_name))
+		{
+			cgiModule->setFileName(file_name);
+			isFileOpen = true;
+			return isFileOpen;
+		}
+		else
+		{
+			if (this->isInputDirectory())
+			{
+				fileName = FileAndFolder + server->getIndex();
+			}
+			else
+			{
+				fileName = FileAndFolder;
+			}
+			stat(fileName.c_str(), &fileStat);
+			completeContentSize = fileStat.st_size;
+			isFileOpen = this->openFile();
+			isFileOpen = true;
+			return isFileOpen;
+		}
 	}
 	return isFileOpen;
 }
@@ -133,5 +183,26 @@ std::string FileContent::getLastModified()
 
 size_t FileContent::getContentSize()
 {
-	return fileStat.st_size;
+	return completeContentSize;
+}
+
+bool FileContent::FileOrFolerExtists(const std::string &str)
+{
+	if (stat(str.c_str(), &fileStat) == 0)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool FileContent::isInputDirectory()
+{
+	if (fileStat.st_mode & S_IFDIR)
+			return true;
+	return false;
+}
+
+std::string FileContent::splitFileFromArgs(const std::string &str)
+{
+	return str.substr(0, str.find("?"));
 }

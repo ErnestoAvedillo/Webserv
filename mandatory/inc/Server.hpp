@@ -10,12 +10,8 @@
 # include <algorithm>
 # include "utils.hpp"
 # include "Location.hpp"
-
 # include "CGI.hpp"
 # include "Parser.hpp"
-
-//"
-
 
 #define VAR_PORT	"port"
 #define VAR_HOST	"host"
@@ -25,8 +21,11 @@
 #define VAR_INDEX	"index"
 #define VAR_CGI_EXTENSION	"CGI_extension"
 #define VAR_CGI_FOLDER	"CGI_folder"
+#define VAR_CGI_EXTENSION	"CGI_extension"
+#define VAR_CGI_FOLDER	"CGI_folder"
 #define VAR_CLIENT_MAX_BODY_SIZE	"client_max_body_size"
 #define VAR_LOCATIONS	"location"
+#define VAR_AUTOINDEX	"autoindex"
 
 #ifdef __APPLE__
 	#define READ_EVENT EVFILT_READ
@@ -54,30 +53,28 @@ class Server {
 		std::string errorPage;
 		std::string root;
 		std::string index;
+		bool autoIndex;
 		std::vector<Location *> locations;
 		CGI *cgiModule;
 		in_addr_t hostAddr;
-
-		void	setDefaultData();
+		//void	setDefaultData();
 
 	public:
 		// Server();
 		Server(std::string  &);
-
 		~Server();
 		Server(Server const &);
 		Server &operator=(Server const &);
 		//---- Server Methods ------//
+		//---- Server Methods ------//
 		int		loadData(std::string const &);
 		CGI		*cgiModuleClone();
 		//---- Server setters ------//
-		void	setPort(std::string const &);
 		void	setHost(std::string const &);
 		void	setServerName(std::string const &);
 		void	setErrorPage(std::string const &);
-		void	setMaxClientBodySizeStr(std::string const &);
-		void	setMaxClientBodySize(size_t const &);
-		
+		void	setMaxClientBodySizeStr(std::string const &max_client_body_size);
+		void	setMaxClientBodySize(size_t const &max_client_body_size);
 		void	setRoot(std::string const &);
 		void	setIndex(std::string const &);
 		void	setCGIExtension(std::string const &);
@@ -86,7 +83,7 @@ class Server {
 		void	setIsDefault(std::string const &);
 		void	setPorts(std::string const &ports);
 		void    setHostAddr(in_addr_t Addr);
-
+		void	setAutoindex(std::string const &);
 
 		//---- Server getters ------//
 		ListeningSocket *getListening(int i);
@@ -94,6 +91,7 @@ class Server {
 		std::vector<int> getServerFds();
 
 		ListeningSocket *		getPort(int i); 
+		size_t			getClientBodySize();
 		bool getIsDefault();
 		std::string	getHost();
 		std::string	getServerName();
@@ -106,11 +104,11 @@ class Server {
 		std::string	getMaxClientBodySizeStr();
 		size_t		getMaxClientBodySize();
 		std::vector<Location *> getLocations();
-
-
+		bool getAutoIndex();
 		void	print();
 		void createListeningSockets();
 		void checkVariables();
+
 		//std::vector<class Location> getLocations();
 };
 

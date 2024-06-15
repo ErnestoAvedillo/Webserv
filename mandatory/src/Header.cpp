@@ -57,14 +57,15 @@ std::string Header::getMethod()
 {
 	return method;
 }
+
 std::string Header::getPath()
 {
 	return path;
 }
+
 std::string Header::generateHeader() const
 {
 	std::string header;
-	
 	// std::cout << "Version: $" << Version << "$" << std::endl;
 	header = protocol + " " + status + "\r\n"; 
 	header += "Server: " + server + "\r\n";
@@ -76,17 +77,13 @@ std::string Header::generateHeader() const
 	header += "Content-Type: " + contentType + "\r\n";
 	for (std::map<std::string, std::string>::const_iterator it = attributes.begin(); it != attributes.end(); ++it)
 		header += it->first + ": " + it->second + "\r\n";
-	
 	header += "\r\n";
-	
 	return header;
 }
 
-
-
-void Header::setProtocol(std::string protocol)
+void Header::setVersion(std::string version)
 {
-	this->protocol = protocol;
+	protocol = version;
 }
 
 void Header::setStatus(std::string status)
@@ -134,5 +131,6 @@ void Header::setContentType(std::string contentType)
 		this->contentType = Mimetype[extension];
 	else
 		this->contentType = "text/html";
+
 
 }

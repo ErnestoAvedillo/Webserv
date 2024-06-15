@@ -39,6 +39,8 @@ void WebServer::createListeningSockets()
 void WebServer::createServerSocket()
 {
 	std::vector<int> fd_set ;
+
+
 	for (size_t i = 0; i < this->servers.size(); i++)
 	{
 		fd_set = this->servers[i]->getServerFds();
@@ -49,6 +51,7 @@ void WebServer::createServerSocket()
 		}
 	}
 }
+
 void WebServer::launchServers()
 {
 	std::cout << CHR_YELLOW "Launching servers..." RESET << std::endl << std::endl;
@@ -89,9 +92,10 @@ void	WebServer::eventLoop()
 		num_events = waitEvent(evList);
 		if (num_events == -1)
 			continue ;
+		std::cerr << "Event " << num_events << std::endl;
 		for (int i = 0; i < num_events; i++)
 		{
-			#ifdef __APPLE__
+			#ifdef __APPLE__make
 				int currfd = evList[i].ident;
 				int type_event = evList[i].filter;
 				int flag = evList[i].flags;
@@ -102,11 +106,17 @@ void	WebServer::eventLoop()
 			#endif
 			if (serverSocket.find(currfd) != serverSocket.end() && acceptedSocket.find(currfd) == acceptedSocket.end())
 			{
+				std::cout << "Accepting new connection" << std::endl;
 				if (acceptNewEvent(currfd) == -1)
 					continue;
 			}
 			else if (flag & END_EVENT || flag & ERR_EVENT)
 			{
+				if (flag & END_EVENT)
+					std::cerr << "End event" << std::endl;
+				else if (flag & ERR_EVENT)
+					std::cerr << "Error event" << std::endl;
+				std::cout << "Closing connection" << std::endl;
 				delete acceptedSocket[currfd];
 				acceptedSocket.erase(currfd);
 				break ;
@@ -124,12 +134,6 @@ void	WebServer::eventLoop()
 				}
 				else
 				{
-					if (i == num_events - 1)
-					{
-						// std::cerr << "DELETE 2" << std::endl;
-						// delete acceptedSocket[currfd];
-						// acceptedSocket.erase(currfd);
-					}
 					continue;
 				}
 

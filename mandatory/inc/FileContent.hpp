@@ -7,11 +7,14 @@
 #include <filesystem>
 #include <vector>
 #include <map>
+#include <vector>
+#include <map>
 #include "../inc/colors.h"
 #include "../inc/CGI.hpp"
 #include "../inc/Server.hpp"
+#include "../inc/ListDir.hpp"
 
-#define MAX_SENT_BYTES 8192
+//#define MAX_SENT_BYTES 8192
 
 class Client;
 #include "../inc/Client.hpp"
@@ -29,13 +32,17 @@ private:
 	struct stat fileStat;
 	CGI *cgiModule;
 	Server *server;
-
+	ListDir *listDir;
+	size_t completeContentSize;
+	std::string splitFileFromArgs(const std::string &);
+	bool FileOrFolerExtists(const std::string &);
+	bool isInputDirectory();
 public:
 	FileContent(Server *);
-	FileContent(std::string &, Server *);
+	FileContent(const std::string &, Server *);
 	~FileContent();
 	int openFile();
-	bool setFileName(std::string &);
+	bool setFileName(const std::string &);
 	std::string getFileName();
 	std::string getContent();
 	bool isSendComplete();
@@ -43,9 +50,4 @@ public:
 	bool getFirstFragment();
 	std::string getLastModified();
 	size_t getContentSize();
-	bool isCGIFile();
-	void setCGIFile(bool);
-	void setCGIFolder(const std::string &);
-	std::string getCGIFolder();
-	std::string getFileExtension();
 };

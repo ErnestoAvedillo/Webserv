@@ -12,7 +12,7 @@ std::map<std::string, int> var_names_server()
 	varnames[VAR_CGI_EXTENSION] = 0;
 	varnames[VAR_CGI_FOLDER] = 0;
 	varnames[VAR_CLIENT_MAX_BODY_SIZE] = 0;
-// 	varnames[VAR_LOCATIONS] = 0;
+	varnames[VAR_AUTOINDEX] = 0;
 	return varnames;
 }
 
@@ -29,37 +29,20 @@ std::map<std::string, void (Server::*)(const std::string &)> ServerSetters()
 	serverMethods[VAR_CGI_EXTENSION] = &Server::setCGIExtension;
 	serverMethods[VAR_CGI_FOLDER] = &Server::setCGIFolder;
 	serverMethods[VAR_CLIENT_MAX_BODY_SIZE] = &Server::setMaxClientBodySizeStr;
-	// serverMethods[VAR_LOCATIONS] = &Server::addLocation;
-// 	serverMethods[VAR_CLIENT_MAX_BODY_SIZE] = &Server::setClientMaxBodySize;
-// 	serverMethods[VAR_LOCATIONS] = &Server::addLocation;
+	serverMethods[VAR_AUTOINDEX] = &Server::setAutoindex;
 	return serverMethods;
 }
 
-// void	Server::setDefaultData()
-// {
-// 	this->isDefault = false;
-// 	this->port[443] = new ListeningSocket((size_t)443, this);
-// 	this->maxClientBodySize = 1024;
-// 	this->Host = "DefaultHost";
-// 	this->serverName = "DefaultServer";
-// 	this->errorPage = "/Error";
-// 	this->root = "/";
-// 	this->index = "index.html";
-// }
-
-// Server::Server()
-// {
-// 	//this->setDefaultData();
-// 	std::map<int, ListeningSocket*>::iterator itb = this->port.begin();
-// 	std::map<int, ListeningSocket*>::iterator ite = this->port.end();
-// 	while (itb != ite){
-// 		itb->second->startListening();
-// 		itb++;
-// 	}
-// }
-
 Server::Server(std::string &str) 
 {
+	isDefault = false;
+	maxBodySize = 1024;
+	Host = "";
+	serverName = "";
+	errorPage = "";
+	root = "";
+	index = "";
+	autoIndex = false;
 	this->cgiModule = new CGI();
 	while (str.find("location") != std::string::npos)
 	{
@@ -68,7 +51,6 @@ Server::Server(std::string &str)
 		str.erase(str.find("location"), aux.find("}") + 1);
 		this->addLocation(location);
 	}
-
 	if(this->loadData(str) == -1)
 	{
 		std::cerr << CHR_RED << "Error: No se ha podido cargar la configuración del servidor. Parámetros por defecto establecidos." << RESET << std::endl;
@@ -91,7 +73,6 @@ Server &Server::operator=(Server const &copy) {
 	if (this != &copy) {
 		this->isDefault = copy.isDefault;
 		this->port = copy.port;
-		this->maxBodySizeStr = copy.maxBodySizeStr;
 		this->maxBodySize = copy.maxBodySize;
 		this->Host = copy.Host;
 		this->serverName = copy.serverName;
@@ -151,7 +132,7 @@ void	Server::print()
 	std::cout << "Error Page: " << this->errorPage << std::endl;
 	std::cout << "Root: " << this->root << std::endl;
 	std::cout << "Index: " << this->index << std::endl;
-	std::cout << "Client Max Body Size: " << this->maxBodySizeStr << std::endl;
+	std::cout << "Client Max Body Size: " << this->maxBodySize << std::endl;
 	std::cout << "Is Default: " << this->isDefault << std::endl;
 	for (size_t i = 0; i < this->ports.size(); i++)
 		std::cout << "Port: " << this->ports[i] << std::endl;

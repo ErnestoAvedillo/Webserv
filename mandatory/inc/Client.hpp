@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Client.hpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/05/04 12:46:28 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/15 00:46:33 by jcheel-n         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #pragma once
 #include <iostream>
 #include <map>
@@ -18,7 +6,7 @@
 #include <fstream>
 #include <sstream>
 #include <cstring>
-#include "../inc/utils.hpp"
+#include "utils.hpp"
 #include <string>
 #include <algorithm>
 

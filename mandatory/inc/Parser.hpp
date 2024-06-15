@@ -10,7 +10,7 @@
 # include <cstring> // Required for memset
 # define DEFAULT_MAX_BOD_SIZE 1024
 
-class Location;
+
 
 class Parser
 {
@@ -22,7 +22,6 @@ class Parser
 		static bool checkServerName(std::string serverName);
 		static bool checkErrorPage(std::string errorPage);
 		static bool checkRoot(std::string root);
-		static bool checkPath(std::string root, std::string attributeName);
 		static bool checkIndex(std::string index, std::string root);
 		static in_addr_t	isValidHost(std::string hostname);
 		static size_t checkClientBodySize(std::string maxClientBodySize);

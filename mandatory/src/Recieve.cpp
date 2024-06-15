@@ -3,12 +3,10 @@
 #include <fstream>
 #include <string>
 #include <cstring>
-
 #include "../inc/Header.hpp"
 
 Receive::Receive() : buffer(""), request(""), body(""), isbody(false), maxSize(0), sizeSent(0), isform(false)
 {
-
 }
 
 Receive::~Receive()
@@ -80,6 +78,7 @@ bool Receive::receiveHeader(int fd)
                 return true;
             this->body = tmp.substr(tmp.find("\r\n\r\n") + 4, tmp.size() - tmp.find("\r\n\r\n") - 4);
 
+
             this->sizeSent += this->body.size();
             if (this->sizeSent >= this->maxSize)
             {
@@ -96,11 +95,12 @@ bool Receive::receiveHeader(int fd)
         std::memset(buf, 0, MAX_MSG_SIZE);
     }
  
+
     if (ret < 0) // This is not handle as an error 
         return false;
     else if (ret == 0)
     {
-        printLog("NOTICE", "Client disconnected");
+        std::cerr << "Client disconnected" << std::endl;
         return false;
     }
     return false;
@@ -110,10 +110,8 @@ bool Receive::receiveBody(int fd)
 {
     char buf[MAX_MSG_SIZE] = {0};
     int ret = 0;
-
     while ((ret = recv(fd, buf, MAX_MSG_SIZE, 0)) > 0)
     {
-
         this->sizeSent += ret;
         this->buffer.clear();
         this->buffer = std::string(buf, ret);
@@ -134,7 +132,7 @@ bool Receive::receiveBody(int fd)
         return false;
     else if (ret == 0)
     {
-        printLog("NOTICE", "Client disconnected");
+        std::cerr << "Client disconnected" << std::endl;
         return false;
     }
     return false;

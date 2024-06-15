@@ -1,14 +1,3 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2023/10/01 15:03:29 by eavedill          #+#    #+#              #
-#    Updated: 2024/06/01 15:42:45 by eavedill         ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
 
 RESET		:=	\033[1;97m
 RED			:=	\033[1;91m
@@ -47,7 +36,6 @@ ifeq (,$(findstring "Darwin",$(shell uname -s)))
 endif
 
 FLAGS := -Wall -Werror -Wextra -std=c++98 $(SYSTEM) -g #-fsanitize=address #-pedantic 
-
 
 all:	print_system $(NAME)  
 
