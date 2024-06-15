@@ -8,42 +8,16 @@ bool isrange(T value, T min, T max)
     return true;
 }
 
-bool isNumber(std::string str)
+template <typename T>
+T min(T a, T b)
 {
-	int i = 0;
-	if (str.empty())
-		return false;
-	if (str[i] == '-' || str[i] == '+')
-		i++;
-	for ( ; str[i]; i++)
-	{
-		if (std::isdigit(str[i]) == 0) 
-			return false;
-	}
-	return true;
+	return a < b ? a : b;
 }
-
-bool validIPAddress(std::string ip)
+template <typename T>
+T max(T a, T b)
 {
-	size_t pos = 0;
-	std::string token;
-	int count = 0;
-	
-	while ((pos = ip.find('.')) != std::string::npos)
-	{
-		token = ip.substr(0, pos);
-		if (!isNumber(token) || !isrange(std::atoi(token.c_str()), 0, 255))
-			return false;
-		ip.erase(0, pos + 1);
-		count++;
-	}
-	
-	if (count != 4 || !isNumber(ip) || !isrange(std::atoi(ip.c_str()), 0, 255))
-		return false;
-	
-	return count == 4;
+	return a > b ? a : b;
 }
-
 
 bool isDirPermissions(std::string path, int mode)
 {
@@ -73,66 +47,6 @@ int isFilePermissions(std::string path, int mode)
 	if (access(path.c_str(), mode) != 0)
 		return -4;
 	return 1;
-}
-
-size_t stringToSizeT(const std::string& str) {
-	std::stringstream ss(str);
-	size_t result = 0;
-	ss >> result;
-	return result;
-}
-
-
-std::vector<std::string> splitString(const std::string& str, char delimiter) {
-	std::vector<std::string> result;
-	std::string token;
-	std::istringstream tokenStream(str);
-
-	while (std::getline(tokenStream, token, delimiter)) {
-		// if (token != "")
-			result.push_back(token);
-	}
-
-	return result;
-}
-
-std::string removeCharFromString(const std::string& input, char c) {
-	std::string result;
-	for (size_t i = 0; i < input.size(); i++) {
-		if (input[i] != c) {
-			result += input[i];
-		}
-	}
-	return result;
-}
-
-std::string removeBlanksAndTabs(const std::string& input) {
-	std::string result;
-	for (size_t i = 0; i < input.size(); i++) {
-		if (input[i] != ' ' && input[i] != '\t') {
-			result += input[i];
-		}
-	}
-	return result;
-}
-
-
-void replaceString(std::string& mainString, const std::string& searchString, const std::string& replaceString) {
-	size_t pos = 0;
-	while ((pos = mainString.find(searchString, pos)) != std::string::npos) {
-		mainString.replace(pos, searchString.length(), replaceString);
-		pos += replaceString.length();
-	}
-}
-
-int count_chars(const std::string& str, char c) {
-	int count = 0;
-	for (size_t i = 0; i < str.size(); i++) {
-		if (str[i] == c) {
-			count++;
-		}
-	}
-	return count;
 }
 
 std::string getTime()
@@ -205,13 +119,104 @@ std::string decodeURL(const std::string& url)
 	}
 	return decoded;
 }
-template <typename T>
-T min(T a, T b)
+
+
+//the following functions are to be removed when the ExtendedString class is fully implemented
+
+bool isNumber(std::string str)
 {
-	return a < b ? a : b;
+	int i = 0;
+	if (str.empty())
+		return false;
+	if (str[i] == '-' || str[i] == '+')
+		i++;
+	for ( ; str[i]; i++)
+	{
+		if (std::isdigit(str[i]) == 0) 
+			return false;
+	}
+	return true;
 }
-template <typename T>
-T max(T a, T b)
+
+bool validIPAddress(std::string ip)
 {
-	return a > b ? a : b;
+	size_t pos = 0;
+	std::string token;
+	int count = 0;
+	
+	while ((pos = ip.find('.')) != std::string::npos)
+	{
+		token = ip.substr(0, pos);
+		if (!isNumber(token) || !isrange(std::atoi(token.c_str()), 0, 255))
+			return false;
+		ip.erase(0, pos + 1);
+		count++;
+	}
+	
+	if (count != 4 || !isNumber(ip) || !isrange(std::atoi(ip.c_str()), 0, 255))
+		return false;
+	
+	return count == 4;
 }
+
+int count_chars(const std::string& str, char c) {
+	int count = 0;
+	for (size_t i = 0; i < str.size(); i++) {
+		if (str[i] == c) {
+			count++;
+		}
+	}
+	return count;
+}
+
+
+size_t stringToSizeT(const std::string& str) {
+	std::stringstream ss(str);
+	size_t result = 0;
+	ss >> result;
+	return result;
+}
+
+
+std::vector<std::string> splitString(const std::string& str, char delimiter) {
+	std::vector<std::string> result;
+	std::string token;
+	std::istringstream tokenStream(str);
+
+	while (std::getline(tokenStream, token, delimiter)) {
+		// if (token != "")
+			result.push_back(token);
+	}
+
+	return result;
+}
+
+std::string removeCharFromString(const std::string& input, char c) {
+	std::string result;
+	for (size_t i = 0; i < input.size(); i++) {
+		if (input[i] != c) {
+			result += input[i];
+		}
+	}
+	return result;
+}
+
+std::string removeBlanksAndTabs(const std::string& input) {
+	std::string result;
+	for (size_t i = 0; i < input.size(); i++) {
+		if (input[i] != ' ' && input[i] != '\t') {
+			result += input[i];
+		}
+	}
+	return result;
+}
+
+
+void replaceString(std::string& mainString, const std::string& searchString, const std::string& replaceString) {
+	size_t pos = 0;
+	while ((pos = mainString.find(searchString, pos)) != std::string::npos) {
+		mainString.replace(pos, searchString.length(), replaceString);
+		pos += replaceString.length();
+	}
+}
+
