@@ -54,7 +54,6 @@ class WebServer {
 		std::map<std::string, std::string>	mimeTypes;
 		std::map<int, std::string>	errorPages;
 		int kq;
-		void	processConfigFile();
 
 	public:
 		static bool ExitFlag;

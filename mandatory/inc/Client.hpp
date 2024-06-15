@@ -24,7 +24,6 @@
 
 class Server;
 #include "../inc/Server.hpp"
-#include "../inc/toString.hpp"
 #include "../inc/colors.h"
 
 #define REQ_TYPE "Type"

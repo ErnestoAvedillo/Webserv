@@ -60,7 +60,7 @@ $(NAME): $(DSTS) $(OBJS)
 
 $(OBJDST_DIR)%.o: $(DIRSRC)%.cpp $(OBJDST_DIR)%.d Makefile
 	@mkdir -p $(OBJDST_DIR)
-	@printf "$(GREEN)$(CLEAN_CAR)Compiling $*.o: $(notdir $<)$(RESET)"
+	@printf "$(GREEN)$(CLEAN_CAR)Compiling $*.o: $(notdir $<) $(RESET)"
 	@$(CC) $(FLAGS) -c $(DIRSRC)$*.cpp -o $(OBJDST_DIR)$*.o 
 
 $(OBJDST_DIR)%.d: $(DIRSRC)%.cpp

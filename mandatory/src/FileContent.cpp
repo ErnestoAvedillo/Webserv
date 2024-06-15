@@ -9,7 +9,7 @@ FileContent::FileContent(Server *srv)
 	isFistFragment = true;
 	this->cgiModule = srv->cgiModuleClone();
 }
-FileContent::FileContent(const std::string &MyfileName, Server *srv) 
+FileContent::FileContent(std::string &MyfileName, Server *srv) 
 {
 	server = srv;
 	isFileOpen = this->setFileName(MyfileName);
