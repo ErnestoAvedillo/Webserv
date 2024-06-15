@@ -77,7 +77,7 @@ const std::string &Location::getAlias() const { return alias; }
 bool Location::getGetAllowed() const { return isGetAllowed; }
 bool Location::getPostAllowed() const { return isPostAllowed; }
 bool Location::getDeleteAllowed() const { return isDeleteAllowed; }
-enum LocationType Location::getLocationType() { return this->LocationType; }
+enum LocationType Location::getLocationType() { return this->locationType; }
 // Setter methods
 void Location::setName(const std::string &n) { name = n; }
 void Location::setRoot(const std::string &r) { root = r; }
@@ -217,10 +217,10 @@ void Location::checkVariables()
 	switch (Parser::checkRootAliasReturn(this->root, this->alias,this->return_))
 	{
 		case ROOT:
-			LocationType = ROOT;
+			locationType = ROOT;
 			break ;
 		case ALIAS:
-			LocationType = ALIAS;
+			locationType = ALIAS;
 			break ;
 		case RETURN:
 			if (this->isCgi)
@@ -229,7 +229,7 @@ void Location::checkVariables()
 				exit(1);
 			}
 			Parser::checkReturnIgnore(this->allowMethodsStr, this->autoindexStr, this->index);
-			LocationType = RETURN;
+			locationType = RETURN;
 			break ;
 		default:
 			break;
@@ -248,7 +248,7 @@ void Location::checkVariables()
 	this->setAllowMethods(this->allowMethodsStr);
 	if (!Parser::checkAllowedMethods(this->allowMethodsStr))
 		this->isGetAllowed = true;
-	if (LocationType != RETURN)
+	if (locationType != RETURN)
 		Parser::checkIndex(this->getIndex(), this->getRoot());
 	
 }
