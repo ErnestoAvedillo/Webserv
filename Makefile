@@ -1,14 +1,3 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2023/10/01 15:03:29 by eavedill          #+#    #+#              #
-#    Updated: 2024/06/11 17:27:17 by eavedill         ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
 
 RESET		:=	\033[1;97m
 RED			:=	\033[1;91m
@@ -47,7 +36,8 @@ ifeq (,$(findstring "Darwin",$(shell uname -s)))
 endif
 
 
-FLAGS := -Wall -Werror -Wextra -std=c++11 $(SYSTEM) -g -fsanitize=address #-pedantic 
+FLAGS := -Wall -Werror -Wextra -std=c++98 $(SYSTEM) -g #-fsanitize=address #-pedantic 
+
 
 all:	print_system $(NAME)  
 
@@ -60,7 +50,7 @@ $(NAME): $(DSTS) $(OBJS)
 
 $(OBJDST_DIR)%.o: $(DIRSRC)%.cpp $(OBJDST_DIR)%.d Makefile
 	@mkdir -p $(OBJDST_DIR)
-	@printf "$(GREEN)$(CLEAN_CAR)Compiling $*.o: $(notdir $<)$(RESET) "
+	@printf "$(GREEN)$(CLEAN_CAR)Compiling $*.o: $(notdir $<) $(RESET)"
 	@$(CC) $(FLAGS) -c $(DIRSRC)$*.cpp -o $(OBJDST_DIR)$*.o 
 
 $(OBJDST_DIR)%.d: $(DIRSRC)%.cpp

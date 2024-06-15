@@ -27,7 +27,8 @@ bool isNumber(std::string str);
 bool validIPAddress(std::string ip);
 bool isDirPermissions(std::string path, int mode);
 
-bool isFilePermissions(std::string path, int mode);
+int isFilePermissions(std::string path, int mode);
+
 
 #include "toString.hpp"
 
@@ -43,12 +44,17 @@ void replaceString(std::string &mainString, const std::string &searchString, con
 int count_chars(const std::string &str, char c);
 int count_chars(const std::string &str, char c);
 
+
 std::string getTime();
 std::string getLocalTime();
 void printLog(std::string type ,std::string message);
+
 
 template <typename T>
 T min(T a, T b);
 
 template <typename T>
 T max(T a, T b);
+
+std::string decodeURL(const std::string& url);
+

@@ -10,10 +10,12 @@
 # include <algorithm>
 # include "utils.hpp"
 # include "Location.hpp"
-# include "../inc/toString.hpp"
+
+
 # include "CGI.hpp"
-# include "../inc/toString.hpp"
-# include "CGI.hpp"
+
+//"
+
 
 #define VAR_PORT	"port"
 #define VAR_HOST	"host"
@@ -58,13 +60,14 @@ class Server {
 		std::vector<Location *> locations;
 		CGI *cgiModule;
 		in_addr_t hostAddr;
+
 		void	setDefaultData();
 
 	public:
 		// Server();
-		//Server(std::string  &);
-		// Server();
-		Server(std::string const &);
+
+		Server(std::string  &);
+
 		~Server();
 		Server(Server const &);
 		Server &operator=(Server const &);
@@ -87,6 +90,7 @@ class Server {
 		void	addLocation(std::string const &);
 		void	setIsDefault(std::string const &);
 		void	setAutoindex(std::string const &);
+
 
 		//---- Server getters ------//
 		ListeningSocket *getListening(int i);

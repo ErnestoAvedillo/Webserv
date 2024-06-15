@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Client.cpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2024/06/15 13:09:54 by eavedill         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 
 #include "../inc/Client.hpp"
 
@@ -28,75 +16,18 @@ Client::Client( Receive *receive, Server *srv)
 	this->loadCompleteClient(receive);
 }
 
-Client &Client::operator=(Client const &rsh)
-{
-	std::map<std::string, std::string>::const_iterator itb = rsh.Request.begin();
-	std::map<std::string, std::string>::const_iterator ite = rsh.Request.end();
-	while (itb != ite)
-	{
-		this->Request[itb->first] = itb->second;
-		itb++;
-	}
-	return (*this);
-}
 
 Client::~Client()
 {
 	delete this->fileContent;
 }
 
-void Client::addKeyReq(std::string const &key, std::string const &value)
-{
-	this->Request[key] = value;
-}
 
-void Client::addKeyType(std::string const &value)
-{
-	this->Request[REQ_TYPE] = value;
-}
-
-void Client::addKeyFile(std::string const &value)
-{
-	this->Request[REQ_FILE] = this->server->getRoot() + value;
-//	if (value == "/")
-//   		this->Request[REQ_FILE] += this->server->getIndex();
-	replaceString(this->Request[REQ_FILE], "%20", " ");
-}
-
-void Client::addKeyVers(std::string const &value)
-{
-	this->Request[REQ_VER] = value;
-}
-
-std::map<std::string, std::string>::iterator Client::findClient(std::string const &key)
-{
-	return (this->Request.find(key));
-}
-
-std::map<std::string, std::string>::iterator Client::getBeginClient()
-{
-	return (this->Request.begin());
-}
-
-std::map<std::string, std::string>::iterator Client::getEndClient()
-{
-	return (this->Request.end());
-}
-
-void Client::clearClient()
-{
-	this->Request.clear();
-}
-
-void Client::deleteClient(std::string const &key)
-{
-	this->Request.erase(key);
-}
-
-void Client::updateClient(std::string const &key, std::string const &value)
-{
-	this->Request[key] = value;
-}
+// Cambiar nombres a setters ?
+void Client::addKeyReq(std::string const &key, std::string const &value){ this->Request[key] = value; }
+void Client::addKeyType(std::string const &value) { this->Request[REQ_TYPE] = value; }
+void Client::addKeyFile(std::string const &value) { this->Request[REQ_FILE] = value; }
+void Client::addKeyVers(std::string const &value) { this->Request[REQ_VER] = value; }
 
 void Client::loadCompleteClient(Receive *receiver)
 {
@@ -116,6 +47,10 @@ void Client::loadCompleteClient(Receive *receiver)
 	this->loadDataHeader(receiver);
 }
 
+
+/*
+Normalize the path, removes .., adds ./ at teh beggining if necessary, removes / at the end, removes duplicate /.
+*/
 std::string Client::normalizePath(std::string path)
 {
 	while (path.find("..") != std::string::npos)
@@ -179,8 +114,92 @@ bool Client::isSendComplete()
 	return this->fileContent->isSendComplete();
 }
 
+
+int Client::isAllowedMethod(Location *location)
+{
+	if (this->Request[REQ_TYPE] == "GET")
+	{
+		if (location->getGetAllowed() == false)
+		{
+			header.setStatus("405 Method Not Allowed");
+			return NOT_ALLOWED;
+		}
+	}
+	else if (this->Request[REQ_TYPE] == "POST")
+	{
+		if (location->getPostAllowed() == false)
+		{
+			header.setStatus("405 Method Not Allowed");
+			return NOT_ALLOWED;
+		}
+
+	}
+	else if (this->Request[REQ_TYPE] == "DELETE")
+	{
+		if (location->getDeleteAllowed() == false)
+		{
+			header.setStatus("405 Method Not Allowed");
+			return NOT_ALLOWED;
+		}
+	}
+	return OK;
+}
+
+int Client::matchingLocation()
+{
+	std::vector<Location *> locations = this->server->getLocations();
+	for (size_t i = 0; i < locations.size(); i++)
+	{
+		if (this->Request[REQ_FILE].find(locations[i]->getName()) != std::string::npos)
+		{
+			if (isAllowedMethod(locations[i]) == NOT_ALLOWED)
+				return NOT_ALLOWED;
+			switch (locations[i]->getLocationType())
+			{
+				case RETURN:
+					header.setStatus("301 Moved Permanently");
+					header.setAttribute("Location", locations[i]->getReturn());
+					return REDIRECT;
+				case ALIAS:
+					replaceString(this->Request[REQ_FILE],  locations[i]->getName(), locations[i]->getAlias());
+					if (!locations[i]->getIndex().empty() && isDirPermissions(this->Request[REQ_FILE], F_OK | R_OK) == true && this->Request[REQ_TYPE] != "POST")
+						this->Request[REQ_FILE] += "/" + locations[i]->getIndex();
+					break ;
+				case ROOT:
+					replaceString(this->Request[REQ_FILE],  locations[i]->getName(), locations[i]->getRoot() + locations[i]->getName());
+					if (!locations[i]->getIndex().empty() && isDirPermissions(this->Request[REQ_FILE], F_OK | R_OK) == true && this->Request[REQ_TYPE] != "POST")
+						this->Request[REQ_FILE] += "/" + locations[i]->getIndex();
+					break ;
+
+				default:
+					std::cerr << "This is incorrect. Should not arrive here" << std::endl;
+					break ;
+			}
+			return true;
+		} 
+	}
+	return NO_LOCATION;
+
+}
+
 void Client::loadDataHeader(Receive *receiver)
 {
+
+	switch (this->matchingLocation())
+	{
+		case NO_LOCATION:
+			this->Request[REQ_FILE] = this->server->getRoot() + this->Request[REQ_FILE];
+			if (isDirPermissions(this->Request[REQ_FILE], F_OK | R_OK) == true)
+				this->Request[REQ_FILE] += this->server->getIndex();
+			break ;
+		case NOT_ALLOWED :
+			return ;
+		case REDIRECT:
+			return ;
+	}
+
+	this->Request[REQ_FILE] = decodeURL(this->Request[REQ_FILE]);
+	// std::cout << this->Request[REQ_FILE] << std::endl;
 	if (this->Request[REQ_TYPE] == "GET")
 	{
 		if (this->fileContent->setFileName(this->Request[REQ_FILE]))
@@ -226,6 +245,9 @@ void Client::loadDataHeader(Receive *receiver)
 		{
 			header.setStatus("201 Created");
 		}
+		else
+			std::cout << "form: " << receiver->getBody() << std::endl;
+
 		header.setServer(server->getServerName());
 	}
 	else if (this->Request[REQ_TYPE] == "DELETE")

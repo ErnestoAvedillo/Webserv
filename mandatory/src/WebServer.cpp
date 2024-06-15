@@ -9,7 +9,7 @@ WebServer::~WebServer()
 {
 	for (size_t i = 0; i < this->servers.size(); i++)
 		delete this->servers[i];
-    for (std::map<int, ListeningSocket *>::iterator it = serverSocket.begin(); it != serverSocket.end(); ++it)
+  for (std::map<int, ListeningSocket *>::iterator it = serverSocket.begin(); it != serverSocket.end(); ++it)
 		delete it->second;
 	for (std::map<int, ListeningSocket *>::iterator it = acceptedSocket.begin(); it != acceptedSocket.end(); ++it)
 		delete it->second;
@@ -63,6 +63,7 @@ void WebServer::launchServers()
 	this->eventLoop();
 }
 
+
 bool WebServer::ExitFlag = false;
 
 void	WebServer::eventLoop()
@@ -73,17 +74,13 @@ void	WebServer::eventLoop()
 		struct epoll_event evList[MAX_EVENTS];
 	#endif
 	signal(SIGINT, &WebServer::exit_handler);
-	int currfd = 0;
-	int fd;
-	int type_event;
-	int flag;
 	int num_events = 0;
 	while (!WebServer::ExitFlag)
 	{
 		num_events = waitEvent(evList);
 		if (num_events == -1)
 			continue ;
-		std::cerr << "Event " << num_events << std::endl;
+
 		for (int i = 0; i < num_events; i++)
 		{
 			#ifdef __APPLE__make
@@ -129,14 +126,23 @@ void	WebServer::eventLoop()
 						modifEvent(evList[i], WRITE_EVENT);
 					#endif
 				}
+				else
+				{
+					if (i == num_events - 1)
+					{
+						// std::cerr << "DELETE 2" << std::endl;
+						// delete acceptedSocket[currfd];
+						// acceptedSocket.erase(currfd);
+					}
+					continue;
+				}
+
+
 			}
 			else if (type_event == (WRITE_EVENT))
 			{
-				std::cout << "Sending data" << std::endl;
 				if (acceptedSocket[currfd]->sendData(currfd))
 				{
-					std::cerr << "DELETE " << currfd << std::endl;
-					std::cout << "Curffd " << currfd << std::endl; 
 					delete acceptedSocket[currfd];
 					acceptedSocket.erase(currfd);
 				}

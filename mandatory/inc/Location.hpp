@@ -16,6 +16,14 @@
 #define VAR_LOC_CGI_PATH "cgi_path"
 #define VAR_LOC_CGI_EXTENSION "cgi_ext"
 #define STR_START "location:{"
+
+
+enum LocationType {
+	ROOT=1,
+	ALIAS,
+	RETURN,
+};
+
 class Location 
 {
 	private:
@@ -28,6 +36,15 @@ class Location
 		std::string alias;
 		std::string cgi_path;
 		std::string cgi_extension;
+		std::string cgiPathStr;
+		std::vector<std::string> cgiPath;
+		std::string cgiExtensionStr;
+		std::vector<std::string> cgiExtension;
+		LocationType LocationType;
+		bool isGetAllowed;
+		bool isPostAllowed;
+		bool isDeleteAllowed;
+		bool isCgi;
 		int loadData(const std::string &data);
 
 	public:
@@ -50,7 +67,7 @@ class Location
 		const std::string& getAllowMethods() const;
 		const std::string& getAutoIndex() const ;
 		const std::string& getAlias() const ;
-
+		enum LocationType getLocationType();
 		// Setter methods
 		void setName(const std::string&);
 		void setRoot(const std::string&);

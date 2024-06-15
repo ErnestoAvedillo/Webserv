@@ -40,6 +40,8 @@ private:
 public:
 	FileContent(Server *);
 	FileContent(const std::string &, Server *);
+// 	FileContent(std::string &, Server *);
+
 	~FileContent();
 	int openFile();
 	bool setFileName(const std::string &);

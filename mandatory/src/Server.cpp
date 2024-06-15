@@ -1,14 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Server.cpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/27 14:24:35 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/11 22:26:51 by eavedill         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
 
 #include "../inc/Server.hpp"
 
@@ -24,8 +13,10 @@ std::map<std::string, int> var_names_server()
 	varnames[VAR_CGI_EXTENSION] = 0;
 	varnames[VAR_CGI_FOLDER] = 0;
 	varnames[VAR_CLIENT_MAX_BODY_SIZE] = 0;
-	varnames[VAR_LOCATIONS] = 0;
+
+// 	varnames[VAR_LOCATIONS] = 0;
 	varnames[VAR_AUTOINDEX] = 0;
+
 	return varnames;
 }
 
@@ -41,10 +32,12 @@ std::map<std::string, void (Server::*)(const std::string &)> ServerSetters()
 	serverMethods[VAR_INDEX] = &Server::setIndex;
 	serverMethods[VAR_CGI_EXTENSION] = &Server::setCGIExtension;
 	serverMethods[VAR_CGI_FOLDER] = &Server::setCGIFolder;
-	serverMethods[VAR_CLIENT_MAX_BODY_SIZE] = &Server::setClientMaxBodySize;
-	serverMethods[VAR_LOCATIONS] = &Server::addLocation;\
-	serverMethods[VAR_AUTOINDEX] = &Server::setAutoindex;
 
+  	serverMethods[VAR_AUTOINDEX] = &Server::setAutoindex;
+	serverMethods[VAR_CLIENT_MAX_BODY_SIZE] = &Server::setMaxClientBodySizeStr;
+	// serverMethods[VAR_LOCATIONS] = &Server::addLocation;
+// 	serverMethods[VAR_CLIENT_MAX_BODY_SIZE] = &Server::setClientMaxBodySize;
+// 	serverMethods[VAR_LOCATIONS] = &Server::addLocation;
 	return serverMethods;
 }
 
@@ -89,6 +82,7 @@ Server::Server(std::string const &str)
 		//str.erase(str.find("location"), aux.find("}") + 1);
 		this->addLocation(location);
 	}
+
 	if(this->loadData(str) == -1)
 	{
 		std::cerr << CHR_RED << "Error: No se ha podido cargar la configuración del servidor. Parámetros por defecto establecidos." << RESET << std::endl;
@@ -124,7 +118,7 @@ int Server::loadData(std::string const &content) {
 	std::string straux;
 	std::map<std::string, int> varnames = var_names_server();
 
-	std::istringstream fileContentStream(content.substr(9, content.length() - 1));
+	std::istringstream fileContentStream(content.substr(8, content.length() - 1));
 	while (std::getline(fileContentStream, line,';'))
 	{
 		line.erase(std::remove(line.begin(), line.end(), '\n'), line.end());

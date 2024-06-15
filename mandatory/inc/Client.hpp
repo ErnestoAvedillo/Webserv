@@ -1,14 +1,4 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Client.hpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/05/04 12:46:28 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/11 14:07:35 by eavedill         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+
 
 #pragma once
 #include <iostream>
@@ -20,6 +10,7 @@
 #include <cstring>
 #include "../inc/utils.hpp"
 #include <string>
+#include <algorithm>
 
 class Server;
 #include "../inc/Server.hpp"
@@ -34,6 +25,27 @@ class Server;
 
 #include "Header.hpp"
 #include "Receive.hpp"
+
+class FileContent;
+#include "../inc/FileContent.hpp"
+
+
+
+enum LocationStatus
+{
+	/* Correct */
+	NO_LOCATION,
+	OK,
+	NOT_ALLOWED,
+	NOT_FOUND,
+	NOT_IMPLEMENTED,
+	REQUEST_ENTITY_TOO_LARGE,
+	REQUEST_URI_TOO_LONG,
+	INTERNAL_SERVER_ERROR,
+	NOT_MODIFIED,
+	REDIRECT,
+
+};
 
 class FileContent;
 #include "../inc/FileContent.hpp"
@@ -54,12 +66,13 @@ public:
 	void addKeyType(std::string const &);
 	void addKeyFile(std::string const &);
 	void addKeyVers(std::string const &);
-	std::map<std::string, std::string>::iterator findClient(std::string const &);
-	std::map<std::string, std::string>::iterator getBeginClient();
-	std::map<std::string, std::string>::iterator getEndClient();
-	void clearClient();
-	void deleteClient(std::string const &);
-	void updateClient(std::string const &, std::string const &);
+	// std::map<std::string, std::string>::iterator findClient(std::string const &);
+	// std::map<std::string, std::string>::iterator getBeginClient();
+	// std::map<std::string, std::string>::iterator getEndClient();
+	// void clearClient();
+	// void deleteClient(std::string const &);
+	// void updateClient(std::string const &, std::string const &);
+
 	std::string getAnswerToSend();
 	std::string getFilePath();
 	std::string getFileContent(std::string filename);
@@ -68,5 +81,7 @@ public:
 	bool isSendComplete();
 	void loadCompleteClient(Receive *receiver);
 	void loadDataHeader(Receive *receiver);
+	int matchingLocation();
+	int isAllowedMethod(Location *location);
 };
 

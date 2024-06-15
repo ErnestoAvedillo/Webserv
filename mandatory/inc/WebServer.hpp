@@ -54,6 +54,7 @@ class WebServer {
 		std::map<int, std::string>	errorPages;
 
 		int kq;
+
 	public:
 		WebServer();
 		~WebServer();

@@ -173,8 +173,8 @@ int ListeningSocket::getFd()
 bool ListeningSocket::sendData(int clientSocketFd)
 {
 	std::string answer = this->client->getAnswerToSend();
-	int n = send(clientSocketFd, answer.c_str(), answer.size(), 0);
-	if (n < 0)
+
+	if ((send(clientSocketFd, answer.c_str(), answer.size(), 0)) < 0)
 	{
 		std::cerr << RED << "Failed to write to client" << RESET << std::endl;
 	}

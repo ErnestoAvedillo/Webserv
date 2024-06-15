@@ -21,4 +21,15 @@ class Parser
 		static bool checkRoot(std::string root);
 		static bool checkIndex(std::string index, std::string root);
 		static in_addr_t	isValidHost(std::string hostname);
+
+		static size_t checkClientBodySize(std::string maxClientBodySize);
+
+		static bool checkAutoIndex(std::string autoindex);
+		static int checkLocationName(std::string name);
+		static int checkRootAliasReturn(std::string root, std::string alias, std::string return_);
+		static bool checkReturnIgnore(std::string allowMethods, std::string autoindex, std::string index);
+		static bool checkCgiString(std::string cgiPath, std::string cgiExtension);
+		static bool checkCgi(std::vector<std::string> paths, std::vector<std::string> extensions);
+		static bool checkAllowedMethods(std::string allowMethods);
+
 };
