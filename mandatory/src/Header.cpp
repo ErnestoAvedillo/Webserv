@@ -130,7 +130,6 @@ void Header::setContentType(std::string contentType)
 
 	/* Create once only */
 	std::map<std::string, std::string> Mimetype = create_filetypes();
-
 	if (Mimetype.find(extension) != Mimetype.end())
 		this->contentType = Mimetype[extension];
 	else

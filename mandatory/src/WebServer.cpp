@@ -9,7 +9,7 @@ WebServer::~WebServer()
 {
 	for (size_t i = 0; i < this->servers.size(); i++)
 		delete this->servers[i];
-    for (std::map<int, ListeningSocket *>::iterator it = serverSocket.begin(); it != serverSocket.end(); ++it)
+  for (std::map<int, ListeningSocket *>::iterator it = serverSocket.begin(); it != serverSocket.end(); ++it)
 		delete it->second;
 	for (std::map<int, ListeningSocket *>::iterator it = acceptedSocket.begin(); it != acceptedSocket.end(); ++it)
 		delete it->second;
@@ -54,6 +54,7 @@ void WebServer::launchServers()
 	std::cout << CHR_YELLOW "Launching servers..." RESET << std::endl << std::endl;
 	std::cout << "\e[4;37m    Date & time    \t\t\t\t\t\t\tport\tfd" << RESET << std::endl;
 
+
 	this->createListeningSockets();
 	std::cout << std::endl;
 	try
@@ -70,6 +71,7 @@ void WebServer::launchServers()
 	this->eventLoop();
 }
 
+
 bool WebServer::ExitFlag = false;
 
 void	WebServer::eventLoop()
@@ -81,6 +83,7 @@ void	WebServer::eventLoop()
 	#endif
 	int num_events = 0;
 	signal(SIGINT, &WebServer::exit_handler);
+
 	while (!WebServer::ExitFlag)
 	{
 		num_events = waitEvent(evList);
@@ -129,6 +132,7 @@ void	WebServer::eventLoop()
 					}
 					continue;
 				}
+
 			}
 			else if (type_event == (WRITE_EVENT))
 			{

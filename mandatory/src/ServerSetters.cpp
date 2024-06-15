@@ -10,6 +10,7 @@ void Server::setIndex(std::string const &index) { this->index = index; }
 void Server::setCGIFolder(std::string const &str) { this->cgiModule->setCGIFolder(str); }
 void Server::addLocation(std::string const &content) { this->locations.push_back(new Location(content)); }
 
+
 void Server::setHostAddr(in_addr_t Addr) { this->hostAddr = Addr; }
 
 void Server::setCGIExtension(std::string const &str) 
@@ -76,39 +77,3 @@ void Server::setPorts(std::string const &portsLine)
 		}
 	}
 }
-
-// void Server::setPort(std::string const &port)
-// {
-// 	ListeningSocket *ls;
-// 	std::string aux;
-// 	std::istringstream portStream(port);
-// 	if(this->port.size() != 0)
-// 		this->port.clear();
-// 	while (std::getline(portStream, aux, ','))
-// 	{	
-// 		if(aux.find(":") != std::string::npos)
-// 		{
-// 			std::vector<std::string>  aux2 = splitString(aux, ':');
-// 			if (aux2.size() != 2)
-// 			{
-// 				std::cerr << "Error: Puerto mal definido." << std::endl;
-// 				exit(1);
-// 			}
-// 			if(stringToSizeT(aux2[0]) >= stringToSizeT(aux2[1]))
-// 			{
-// 				std::cerr << "Error: puerto " << aux2[0] << "<" << aux[1] << "Definicion de puertos incorrecta." << std::endl;
-// 			}
-
-// 			for(size_t i = stringToSizeT(aux2[0]); i <= stringToSizeT(aux2[1]); i++)
-// 			{
-// 				ls = new ListeningSocket(i, this);
-// 				this->port[ls->getFd()] = ls;
-// 			}
-// 		}
-// 		else
-// 		{
-// 			ls = new ListeningSocket(stringToSizeT(aux), this);
-// 			this->port[ls->getFd()] = ls;
-// 		}
-// 	}
-// }

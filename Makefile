@@ -6,7 +6,7 @@
 #    By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/01 15:03:29 by eavedill          #+#    #+#              #
-#    Updated: 2024/06/12 03:12:58 by jcheel-n         ###   ########.fr        #
+#    Updated: 2024/06/01 15:42:45 by eavedill         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -46,8 +46,8 @@ ifeq (,$(findstring "Darwin",$(shell uname -s)))
 	SYSTEM := -DMAC
 endif
 
-
 FLAGS := -Wall -Werror -Wextra -std=c++98 $(SYSTEM) -g #-fsanitize=address #-pedantic 
+
 
 all:	print_system $(NAME)  
 

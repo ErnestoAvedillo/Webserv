@@ -24,6 +24,7 @@
 
 class Server;
 #include "../inc/Server.hpp"
+#include "../inc/toString.hpp"
 #include "../inc/colors.h"
 
 #define REQ_TYPE "Type"
@@ -55,6 +56,8 @@ enum LocationStatus
 
 };
 
+class FileContent;
+#include "../inc/FileContent.hpp"
 class Client
 {
 private:
@@ -78,6 +81,7 @@ public:
 	// void clearClient();
 	// void deleteClient(std::string const &);
 	// void updateClient(std::string const &, std::string const &);
+
 	std::string getAnswerToSend();
 	std::string getFilePath();
 	std::string getFileContent(std::string filename);

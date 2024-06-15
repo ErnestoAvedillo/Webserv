@@ -1,14 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Client.cpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2024/06/15 00:53:07 by jcheel-n         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
 
 #include "../inc/Client.hpp"
 
@@ -27,17 +16,6 @@ Client::Client(Receive *receive, Server *srv)
 	this->loadCompleteClient(receive);
 }
 
-// Client &Client::operator=(Client const &rsh)
-// {
-// 	std::map<std::string, std::string>::const_iterator itb = rsh.Request.begin();
-// 	std::map<std::string, std::string>::const_iterator ite = rsh.Request.end();
-// 	while (itb != ite)
-// 	{
-// 		this->Request[itb->first] = itb->second;
-// 		itb++;
-// 	}
-// 	return (*this);
-// }
 
 Client::~Client()
 {
@@ -49,18 +27,6 @@ void Client::addKeyReq(std::string const &key, std::string const &value){ this->
 void Client::addKeyType(std::string const &value) { this->Request[REQ_TYPE] = value; }
 void Client::addKeyFile(std::string const &value) { this->Request[REQ_FILE] = value; }
 void Client::addKeyVers(std::string const &value) { this->Request[REQ_VER] = value; }
-
-// std::map<std::string, std::string>::iterator Client::findClient(std::string const &key) { return (this->Request.find(key)); }
-
-// std::map<std::string, std::string>::iterator Client::getBeginClient() { return (this->Request.begin()); }
-
-// std::map<std::string, std::string>::iterator Client::getEndClient() { return (this->Request.end()); }
-
-// void Client::clearClient() { this->Request.clear(); }
-
-// void Client::deleteClient(std::string const &key) { this->Request.erase(key); }
-
-// void Client::updateClient(std::string const &key, std::string const &value) { this->Request[key] = value; }
 
 void Client::loadCompleteClient(Receive *receiver)
 {
@@ -79,6 +45,7 @@ void Client::loadCompleteClient(Receive *receiver)
 		this->addKeyReq(lines[i].substr(0, lines[i].find(":")), lines[i].substr(lines[i].find(":") + 1, lines.size()));
 	this->loadDataHeader(receiver);
 }
+
 
 /*
 Normalize the path, removes .., adds ./ at teh beggining if necessary, removes / at the end, removes duplicate /.
@@ -144,6 +111,7 @@ bool Client::isSendComplete()
 {
 	return this->fileContent->isSendComplete();
 }
+
 
 int Client::isAllowedMethod(Location *location)
 {
@@ -277,6 +245,7 @@ void Client::loadDataHeader(Receive *receiver)
 			std::cout << "form: " << receiver->getBody() << std::endl;
 			header.setStatus("201 Created");
 		}
+
 		else
 			std::cout << "form: " << receiver->getBody() << std::endl;
 		header.setServer(server->getServerName());

@@ -186,6 +186,7 @@ void printLog(std::string type ,std::string message)
 		std::cout << getLocalTime() << " [" << type << "]" << CHR_BLUE " | " RESET << message << std::endl;
 }
 
+
 static int hexStringToInt(const std::string& hexStr) {
     int value;
     std::stringstream ss;
@@ -217,5 +218,23 @@ std::string decodeURL(const std::string& url)
 		i++;
 	}
 	return decoded;
+}
+
+void replaceString(std::string& mainString, const std::string& searchString, const std::string& replaceString) {
+	size_t pos = 0;
+	while ((pos = mainString.find(searchString, pos)) != std::string::npos) {
+		mainString.replace(pos, searchString.length(), replaceString);
+		pos += replaceString.length();
+	}
+}
+
+int count_chars(const std::string& str, char c) {
+	int count = 0;
+	for (size_t i = 0; i < str.size(); i++) {
+		if (str[i] == c) {
+			count++;
+		}
+	}
+	return count;
 }
 

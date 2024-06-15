@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Server.cpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/27 14:24:35 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/12 19:56:30 by jcheel-n         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../inc/Server.hpp"
 
 std::map<std::string, int> var_names_server()
@@ -24,7 +12,7 @@ std::map<std::string, int> var_names_server()
 	varnames[VAR_CGI_EXTENSION] = 0;
 	varnames[VAR_CGI_FOLDER] = 0;
 	varnames[VAR_CLIENT_MAX_BODY_SIZE] = 0;
-	varnames[VAR_LOCATIONS] = 0;
+// 	varnames[VAR_LOCATIONS] = 0;
 	return varnames;
 }
 
@@ -42,6 +30,8 @@ std::map<std::string, void (Server::*)(const std::string &)> ServerSetters()
 	serverMethods[VAR_CGI_FOLDER] = &Server::setCGIFolder;
 	serverMethods[VAR_CLIENT_MAX_BODY_SIZE] = &Server::setMaxClientBodySizeStr;
 	// serverMethods[VAR_LOCATIONS] = &Server::addLocation;
+// 	serverMethods[VAR_CLIENT_MAX_BODY_SIZE] = &Server::setClientMaxBodySize;
+// 	serverMethods[VAR_LOCATIONS] = &Server::addLocation;
 	return serverMethods;
 }
 
@@ -78,6 +68,7 @@ Server::Server(std::string &str)
 		str.erase(str.find("location"), aux.find("}") + 1);
 		this->addLocation(location);
 	}
+
 	if(this->loadData(str) == -1)
 	{
 		std::cerr << CHR_RED << "Error: No se ha podido cargar la configuración del servidor. Parámetros por defecto establecidos." << RESET << std::endl;

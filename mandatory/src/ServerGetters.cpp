@@ -3,6 +3,7 @@
 
 size_t Server::getMaxClientBodySize() { return this->maxBodySize; }
 std::string Server::getMaxClientBodySizeStr() { return this->maxBodySizeStr; }
+
 bool Server::getIsDefault() { return this->isDefault; }
 std::string Server::getHost() { return this->Host; }
 std::string Server::getServerName() { return this->serverName; }

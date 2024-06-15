@@ -9,7 +9,7 @@ FileContent::FileContent(Server *srv)
 	isFistFragment = true;
 	this->cgiModule = srv->cgiModuleClone();
 }
-FileContent::FileContent(std::string &MyfileName, Server *srv) 
+FileContent::FileContent(const std::string &MyfileName, Server *srv) 
 {
 	server = srv;
 	isFileOpen = this->setFileName(MyfileName);
@@ -45,7 +45,6 @@ std::string FileContent::getContent()
 		}
 		else
 		{
-			// std::cout << "is a normal file: " << fileName << std::endl;
 			content = "";
 			char buffer[MAX_SENT_BYTES];
 			if(file.read(buffer, MAX_SENT_BYTES))
@@ -76,6 +75,7 @@ std::string FileContent::getContent()
 bool FileContent::setFileName(std::string &file_name)
 {
 	std::string tmp = file_name.substr(0, file_name.find("?"));
+
 	if (access(tmp.c_str(), F_OK) == 0)
 	{
 		file_name = tmp;

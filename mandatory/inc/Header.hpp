@@ -1,14 +1,4 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Header.hpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/05/20 16:05:31 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/14 23:38:42 by jcheel-n         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+
 
 #pragma once
 #include <string>
@@ -17,6 +7,7 @@
 #include <ctime>
 #include "../inc/utils.hpp"
 #include <algorithm>
+
 class Header 
 {
 	private:
