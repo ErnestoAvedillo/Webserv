@@ -88,6 +88,7 @@ void ListDir::setContentToList()
 		contentToSend.append(buffer, file.gcount());
 	}
 	contentToSend.append(buffer, file.gcount());
+	//replaceString(contentToSend, "LOCATION", path);
 	contentToSend = contentToSend + "<body>" + this->getDirFileList() + "</body></html>";
 }
 
@@ -142,6 +143,7 @@ std::string ListDir::getContentToSend()
 
 size_t ListDir::getSizeToSend()
 {
+	return contentToSend.size();
 }
 
 void ListDir::setSubdirectory(const std::string &subDir)

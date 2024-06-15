@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: Invalid date        by                   #+#    #+#             */
-/*   Updated: 2024/06/13 21:32:22 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/14 21:22:39 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -192,11 +192,11 @@ std::string Client::getAnswerToSend()
 	std::string file_content = getFileContent();
 	if (this->fileContent->getFirstFragment())
 	{
-		answer += header.generateHeader() + file_content;
+		answer = header.generateHeader() + file_content;
 		this->fileContent->setFirstFragment(false);
 	}
 	else
-		answer += file_content;
+		answer = file_content;
 
 	return (answer);
 }

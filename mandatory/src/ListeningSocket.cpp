@@ -174,6 +174,7 @@ int ListeningSocket::getFd()
 bool ListeningSocket::sendData(int clientSocketFd)
 {
 	std::string answer = this->client->getAnswerToSend();
+	std::cout << "Answer to send: " << answer << std::endl;
 	int n = send(clientSocketFd, answer.c_str(), answer.size(), 0);
 	if (n < 0)
 	{

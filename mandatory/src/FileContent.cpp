@@ -62,11 +62,14 @@ std::string FileContent::getContent()
 		if (cgiModule->getIsCGI())
 		{
 			sendComplete = true;
-			return cgiModule->execute();
+			content = cgiModule->execute();
+			completeContentSize = content.size();
+			return content;
 		}
 		else if (server->getAutoIndex() && this->fileStat.st_mode & S_IFDIR)
 		{
 			content = listDir->getContentToSend();
+			completeContentSize = content.size();
 			sendComplete = listDir->getIsSendComlete();
 			return content;
 		}
@@ -122,9 +125,15 @@ bool FileContent::setFileName(const std::string &file_name)
 		else
 		{
 			if (this->isInputDirectory())
+			{
 				fileName = FileAndFolder + server->getIndex();
+			}
 			else
+			{
 				fileName = FileAndFolder;
+			}
+			stat(fileName.c_str(), &fileStat);
+			completeContentSize = fileStat.st_size;
 			isFileOpen = this->openFile();
 			isFileOpen = true;
 			return isFileOpen;
@@ -173,7 +182,7 @@ std::string FileContent::getLastModified()
 
 size_t FileContent::getContentSize()
 {
-	return fileStat.st_size;
+	return completeContentSize;
 }
 
 bool FileContent::FileOrFolerExtists(const std::string &str)

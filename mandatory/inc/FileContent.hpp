@@ -33,6 +33,7 @@ private:
 	CGI *cgiModule;
 	Server *server;
 	ListDir *listDir;
+	size_t completeContentSize;
 	std::string splitFileFromArgs(const std::string &);
 	bool FileOrFolerExtists(const std::string &);
 	bool isInputDirectory();
@@ -49,9 +50,4 @@ public:
 	bool getFirstFragment();
 	std::string getLastModified();
 	size_t getContentSize();
-	bool isCGIFile();
-	void setCGIFile(bool);
-	void setCGIFolder(const std::string &);
-	std::string getCGIFolder();
-	std::string getFileExtension();
 };
