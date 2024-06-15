@@ -59,7 +59,7 @@ Location::Location()
 }
 Location::Location(std::string const &content)
 {
-	// std::cout << "Location constructor" << std::endl;
+	isCgi = false;
 	this->loadData(content);
 }
 // Copy constructor
@@ -108,7 +108,7 @@ void Location::setAllowMethods(const std::string& methods)
 	{
 		if (line.length() == 0)
 			continue;
-		if (line == "GET")// || line == "POST" || line == "DELETE")
+		if (line == "GET")
 		{
 			this->allowMethods.push_back(line);
 			this->isGetAllowed = true;
@@ -205,75 +205,6 @@ void Location::print()
 	std::cout << "Cgi Path: " << cgiPathStr << std::endl;
 	std::cout << "Cgi Extension: " << cgiExtensionStr << std::endl;
 }
-
-// location:{                   
-//       name:/tours;
-//       root:docs/fusion_web;           # root folder of the location, if not specified, taken from the server. 
-//                                       # EX: - URI /tours           --> docs/fusion_web/tours
-//                                       #     - URI /tours/page.html --> docs/fusion_web/tours/page.html 
-//       autoindex:on;                   # turn on/off directory listing
-//       allow_methods: POST,GET;         # allowed methods in location, GET only by default
-//       index:index.html;               # default page when requesting a directory, copies root index by default
-//       return:abc/index1.html;         # redirection
-//       alias: docs/fusion_web;         # replaces location part of URI. 
-//                                       # EX: - URI /tours           --> docs/fusion_web
-//                                       #     - URI /tours/page.html --> docs/fusion_web/page.html 
-//   }
-
-// bool isValidUrl(const std::string& url)
-// {
-// 	// Check if the URL starts with a valid scheme
-// 	std::string validSchemes[] = {"http://", "https://", "ftp://"};
-// 	bool validScheme = false;
-// 	for (const std::string& scheme : validSchemes) {
-// 		if (url.substr(0, scheme.length()) == scheme) {
-// 			validScheme = true;
-// 			break;
-// 		}
-// 	}
-// 	if (!validScheme) {
-// 		return false;
-// 	}
-
-// 	// Check if the URL contains only valid characters
-// 	std::string validCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~:/?#[]@!$&'()*+,;=";
-// 	for (char c : url) {
-// 		if (validCharacters.find(c) == std::string::npos) {
-// 			return false;
-// 		}
-// 	}
-
-// 	return true;
-// }
-
-// #include <string>
-// #include <algorithm>
-
-// bool isValidUrl(const std::string& url)
-// {
-//     // Check if the URL starts with a valid scheme
-//     std::string validSchemes[] = {"http://", "https://", "ftp://"};
-//     bool validScheme = false;
-//     for (int i = 0; i < 3; ++i) {
-//         if (url.substr(0, validSchemes[i].length()) == validSchemes[i]) {
-//             validScheme = true;
-//             break;
-//         }
-//     }
-//     if (!validScheme) {
-//         return false;
-//     }
-
-//     // Check if the URL contains only valid characters
-//     std::string validCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~:/?#[]@!$&'()*+,;=";
-//     for (std::string::const_iterator it = url.begin(); it != url.end(); ++it) {
-//         if (validCharacters.find(*it) == std::string::npos) {
-//             return false;
-//         }
-//     }
-
-//     return true;
-// }
 
 void Location::checkVariables()
 {
