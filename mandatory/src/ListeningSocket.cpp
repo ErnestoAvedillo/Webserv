@@ -92,8 +92,10 @@ ListeningSocket::ListeningSocket(int myPort, Server *srv)
 	this->client = new Client(srv);
 	this->receiver = new Receive();
 	socketFd = -1;
-	this->startListening();
+	if (this->startListening())
+		printLog("NOTICE", "Listening on port: " CHR_GREEN + toString(myPort) + RESET " with file descriptor " CHR_GREEN + toString(this->socketFd));
 }
+
 ListeningSocket::ListeningSocket(Server *srv)
 {
 	this->client = new Client(srv);
@@ -172,6 +174,7 @@ int ListeningSocket::getFd()
 
 bool ListeningSocket::sendData(int clientSocketFd)
 {
+	
 	std::string answer = this->client->getAnswerToSend();
 	if ((send(clientSocketFd, answer.c_str(), answer.size(), 0)) < 0)
 		std::cerr << RED << "Failed to write to client" << RESET << std::endl;

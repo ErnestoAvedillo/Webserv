@@ -37,6 +37,7 @@ private:
 	std::string splitFileFromArgs(const std::string &);
 	bool FileOrFolerExtists(const std::string &);
 	bool isInputDirectory();
+	size_t startRange;
 public:
 	FileContent(Server *);
 	FileContent(const std::string &, Server *);
@@ -50,4 +51,5 @@ public:
 	bool getFirstFragment();
 	std::string getLastModified();
 	size_t getContentSize();
+	void setRange(size_t );
 };

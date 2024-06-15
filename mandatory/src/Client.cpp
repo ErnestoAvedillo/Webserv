@@ -95,6 +95,7 @@ std::string Client::getAnswerToSend()
 	std::string file_content = getFileContent();
 	if (this->fileContent->getFirstFragment())
 	{
+		header.setAttribute("Accept-Ranges", "bytes");
 		answer = header.generateHeader() + file_content;
 		this->fileContent->setFirstFragment(false);
 	}
@@ -194,9 +195,13 @@ void Client::loadDataHeader(Receive *receiver)
 	}
 
 	this->Request[REQ_FILE] = decodeURL(this->Request[REQ_FILE]);
-	// std::cout << this->Request[REQ_FILE] << std::endl;
 	if (this->Request[REQ_TYPE] == "GET")
 	{
+		std::cout << receiver->getRequest() << std::endl;
+		Header header(receiver->getRequest());
+		std::map<std::string, std::string>  Attributes = header.getAttributes();
+		std::cout << Attributes["Range"] << std::endl;
+		this->fileContent->setRange(stringToSizeT(Attributes["Range"]));
 		if (this->fileContent->setFileName(this->Request[REQ_FILE]))
 		{
 			header.setContentType(this->Request[REQ_FILE]);

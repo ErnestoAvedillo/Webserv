@@ -4,6 +4,7 @@ FileContent::FileContent(Server *srv)
 {
 	server = srv;
 	fileName = "";
+	startRange = 0;
 	sendComplete = false;
 	isFileOpen = false;
 	isFistFragment = true;
@@ -22,6 +23,8 @@ FileContent::FileContent(Server *srv)
 FileContent::FileContent(const std::string &MyfileName, Server *srv) 
 {
 	server = srv;
+
+	startRange = 0;
 	sendComplete = false;
 	isFistFragment = true;
 	this->cgiModule = srv->cgiModuleClone();
@@ -82,6 +85,7 @@ std::string FileContent::getContent()
 		}
 		else
 		{
+			file.seekg(startRange, std::ios::beg);
 			content = "";
 			char buffer[MAX_SENT_BYTES];
 			if(file.read(buffer, MAX_SENT_BYTES))
@@ -205,4 +209,9 @@ bool FileContent::isInputDirectory()
 std::string FileContent::splitFileFromArgs(const std::string &str)
 {
 	return str.substr(0, str.find("?"));
+}
+
+void FileContent::setRange(size_t range)
+{
+	this->startRange = range;
 }
