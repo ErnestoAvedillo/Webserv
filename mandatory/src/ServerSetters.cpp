@@ -79,10 +79,5 @@ void Server::setPorts(std::string const &portsLine)
 
 void Server::setAutoindex(std::string const &theAutoIndex)
 {
-	if (theAutoIndex == "on")
-		this->autoIndex = true;
-	else if (theAutoIndex == "off")
-		this->autoIndex = false;
-	else
-		throw std::runtime_error("Error: Valor de autoindex no reconocido.");
+	this->autoIndexStr = theAutoIndex;
 }

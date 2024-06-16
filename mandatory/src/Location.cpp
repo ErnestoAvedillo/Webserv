@@ -6,7 +6,7 @@
 /*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/29 17:38:18 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/16 14:42:08 by jcheel-n         ###   ########.fr       */
+/*   Updated: 2024/06/16 15:13:01 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -182,7 +182,7 @@ int Location::loadData(const std::string &content)
 		if (line.length() == 0 || line == "}" || line == "{")
 			continue;
 		else if (it == varnames.end())
-			std::cerr << "Error: Unrecognized variable " << line.substr(0, line.find(":")) << "$" << std::endl;
+			printLog("ERROR", "Unrecognized variable " + line.substr(0, line.find(":")));
 		else
 		{
 			straux = line.substr(line.find(":") + 1, line.size());

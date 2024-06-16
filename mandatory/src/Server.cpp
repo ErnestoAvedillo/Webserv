@@ -9,8 +9,8 @@ std::map<std::string, int> var_names_server()
 	varnames[VAR_ERROR_PAGE] = 0;
 	varnames[VAR_ROOT] = 0;
 	varnames[VAR_INDEX] = 0;
-	varnames[VAR_CGI_EXTENSION] = 0;
-	varnames[VAR_CGI_FOLDER] = 0;
+	// varnames[VAR_CGI_EXTENSION] = 0;
+	// varnames[VAR_CGI_FOLDER] = 0;
 	varnames[VAR_CLIENT_MAX_BODY_SIZE] = 0;
 	varnames[VAR_AUTOINDEX] = 0;
 	return varnames;
@@ -26,8 +26,8 @@ std::map<std::string, void (Server::*)(const std::string &)> ServerSetters()
 	serverMethods[VAR_ERROR_PAGE] = &Server::setErrorPage;
 	serverMethods[VAR_ROOT] = &Server::setRoot;
 	serverMethods[VAR_INDEX] = &Server::setIndex;
-	serverMethods[VAR_CGI_EXTENSION] = &Server::setCGIExtension;
-	serverMethods[VAR_CGI_FOLDER] = &Server::setCGIFolder;
+	// serverMethods[VAR_CGI_EXTENSION] = &Server::setCGIExtension;
+	// serverMethods[VAR_CGI_FOLDER] = &Server::setCGIFolder;
 	serverMethods[VAR_CLIENT_MAX_BODY_SIZE] = &Server::setMaxClientBodySizeStr;
 	serverMethods[VAR_AUTOINDEX] = &Server::setAutoindex;
 	return serverMethods;
@@ -102,7 +102,7 @@ int Server::loadData(std::string const &content) {
 		if(line.length() == 0 || line == "}" || line == "{" )
 			continue;
 		else if (it == varnames.end())
-			std::cerr << "Error: Unrecognized variable " << line.substr(0, line.find(":")) << "$" << std::endl;
+			printLog("ERROR", "Unrecognized variable " + line.substr(0, line.find(":")));
 		else
 		{
 			straux = line.substr(line.find(":") + 1, line.size());
@@ -160,6 +160,7 @@ void Server::checkVariables()
 	Parser::checkErrorPage(this->getErrorPage());
 	Parser::checkIndex(this->getIndex(), this->getRoot());
 	this->setMaxClientBodySize(Parser::checkClientBodySize(this->getMaxClientBodySizeStr()));
+	this->autoIndex = Parser::checkAutoIndex(this->autoIndexStr);
 	if (this->locations.size())
 		std::cout << std::endl;
 	for (size_t i = 0; i < this->locations.size(); i++)
