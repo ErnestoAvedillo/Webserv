@@ -92,10 +92,10 @@ void	WebServer::eventLoop()
 		num_events = waitEvent(evList);
 		if (num_events == -1)
 			continue ;
-		std::cerr << "Event " << num_events << std::endl;
+		// std::cerr << "Event " << num_events << std::endl;
 		for (int i = 0; i < num_events; i++)
 		{
-			#ifdef __APPLE__make
+			#ifdef __APPLE__
 				int currfd = evList[i].ident;
 				int type_event = evList[i].filter;
 				int flag = evList[i].flags;
@@ -133,10 +133,7 @@ void	WebServer::eventLoop()
 					#endif
 				}
 				else
-				{
 					continue;
-				}
-
 			}
 			else if (type_event == (WRITE_EVENT))
 			{

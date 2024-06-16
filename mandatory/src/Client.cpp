@@ -29,6 +29,19 @@ void Client::addKeyFile(std::string const &value) { this->Request[REQ_FILE] = va
 void Client::addKeyVers(std::string const &value) { this->Request[REQ_VER] = value; }
 
 
+static std::string getMimeType(std::string contentType)
+{
+	size_t point = contentType.find_last_of(".");
+	std::string extension = contentType.substr(point + 1, contentType.size());
+
+	/* Create once only */
+	std::map<std::string, std::string> Mimetype = create_filetypes();
+	if (Mimetype.find(extension) != Mimetype.end())
+		return(Mimetype[extension]);
+	else
+		 return ("text/html");
+}
+
 void Client::loadCompleteClient(Receive *receiver)
 {
 	std::string str = receiver->getRequest();
@@ -95,7 +108,8 @@ std::string Client::getAnswerToSend()
 	std::string file_content = getFileContent();
 	if (this->fileContent->getFirstFragment())
 	{
-		header.setAttribute("Accept-Ranges", "bytes");
+		if (header.getContentType().find("video/") != std::string::npos && Request["Sec-Fetch-Dest"].find("document") != std::string::npos)
+			header.setAttribute("Accept-Ranges", "bytes");
 		answer = header.generateHeader() + file_content;
 		this->fileContent->setFirstFragment(false);
 	}
@@ -178,6 +192,8 @@ int Client::matchingLocation()
 
 }
 
+
+
 void Client::loadDataHeader(Receive *receiver)
 {
 
@@ -197,16 +213,33 @@ void Client::loadDataHeader(Receive *receiver)
 	this->Request[REQ_FILE] = decodeURL(this->Request[REQ_FILE]);
 	if (this->Request[REQ_TYPE] == "GET")
 	{
-		std::cout << receiver->getRequest() << std::endl;
-		Header header(receiver->getRequest());
-		std::map<std::string, std::string>  Attributes = header.getAttributes();
-		std::cout << Attributes["Range"] << std::endl;
-		this->fileContent->setRange(stringToSizeT(Attributes["Range"]));
+
+		Header receiveHeader(receiver->getRequest());
+		std::map<std::string, std::string>  Attributes = receiveHeader.getAttributes();
+		// std::cout << receiver->getRequest() << std::endl;
+		if (getMimeType(this->Request[REQ_FILE]).find("video") != std::string::npos)
+		{
+			// std::cout << "vvvideo" << std::endl;
+			// header.setAttribute("Accept-Ranges", "bytes");
+			// std::cout << Attributes["Sec-Fetch-Dest"] << std::endl;	
+			// std::cout << Attributes["Range"] << std::endl;
+			this->fileContent->setRange(stringToSizeT(Attributes["Range"]));
+			if (this->fileContent->setFileName(this->Request[REQ_FILE]))
+			{
+				header.setStatus("206 Partial Content");
+				header.setContentType(this->Request[REQ_FILE]);
+				header.setLastModified(this->fileContent->getLastModified());
+				header.setContentLength(this->fileContent->getContentSize() - stringToSizeT(Attributes["Range"]));
+				header.setAttribute("Content-Range", "bytes 0-" + toString(this->fileContent->getContentSize() - 1) + "/" + toString(this->fileContent->getContentSize()) );
+				// header.setStatus("200 OK");
+				header.setServer(server->getServerName());
+			}
+		}
 		if (this->fileContent->setFileName(this->Request[REQ_FILE]))
 		{
 			header.setContentType(this->Request[REQ_FILE]);
 			header.setLastModified(this->fileContent->getLastModified());
-			header.setContentLength(this->fileContent->getContentSize());
+			header.setContentLength(this->fileContent->getContentSize() - stringToSizeT(Attributes["Range"]));
 			header.setStatus("200 OK");
 			header.setServer(server->getServerName());
 		}

@@ -39,5 +39,6 @@ public:
 	std::string getMethod();
 	std::string getPath();
 	std::map<std::string, std::string> getAttributes();
+	std::string getContentType();
 
 };

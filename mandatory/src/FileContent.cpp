@@ -85,7 +85,6 @@ std::string FileContent::getContent()
 		}
 		else
 		{
-			file.seekg(startRange, std::ios::beg);
 			content = "";
 			char buffer[MAX_SENT_BYTES];
 			if(file.read(buffer, MAX_SENT_BYTES))
@@ -147,6 +146,8 @@ bool FileContent::setFileName(const std::string &file_name)
 			completeContentSize = fileStat.st_size;
 			isFileOpen = this->openFile();
 			isFileOpen = true;
+			if (isFileOpen)
+				file.seekg(startRange, std::ios::beg);
 			return isFileOpen;
 		}
 	}

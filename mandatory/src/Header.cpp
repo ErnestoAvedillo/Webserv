@@ -41,6 +41,11 @@ Header::Header(std::string receiveHeader)
 	}
 }
 
+std::string Header::getContentType()
+{
+	return contentType;
+}
+
 void Header::setAttribute(std::string key, std::string value)
 {
 	this->attributes[key] = value;
@@ -131,6 +136,4 @@ void Header::setContentType(std::string contentType)
 		this->contentType = Mimetype[extension];
 	else
 		this->contentType = "text/html";
-
-
 }
