@@ -11,12 +11,13 @@
 
 ### To-dos
 ##### File configuration
-- [ ] Define file configuration. Explore Nginx file configurations and define the properties that our file config would have.
-- [ ] File configuration parser (syntax errors, comments etc).
+- [X] Define file configuration. Explore Nginx file configurations and define the properties that our file config would have.
+- [X] File configuration parser (syntax errors, comments etc).
 ##### WebServer Communications
-- [ ] Get ready to listen to specified ip:port(s), in an own process.
-- [ ] Process the requests and send back the information.
-
+- [X] Get ready to listen to specified ip:port(s), in an own process.
+- [X] Process the requests and send back the information.
+- [ ] Video Transfering
+- [ ] Locations Parser
 ### Resources
 
 * **[Chat-GPT Simple Function Explanation and Differences between poll(), select(), kqueue(), or epoll().](https://chat.openai.com/share/71fe729c-be31-4b8c-9c2b-4c10c7807177)**
@@ -31,3 +32,6 @@
 * **[WebServer with kqueue](https://github.com/bsomers42/webserv)** Author: Bsomers42
 ### Interesting WEBS
 * **[CGI in HTTP protocoll](https://www.tutorialspoint.com/cplusplus/cpp_web_programming.htm)** 
+
+### Video Transfer
+* **[Http Range Request and MP4 Video Play in Browser](https://www.zeng.dev/post/2023-http-range-and-play-mp4-in-browser/)**
