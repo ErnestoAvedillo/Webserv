@@ -9,6 +9,7 @@ void Server::setRoot(std::string const &root) { this->root = root; }
 void Server::setIndex(std::string const &index) { this->index = index; }
 void Server::setCGIFolder(std::string const &str) { this->cgiModule->setCGIFolder(str); }
 void Server::addLocation(std::string const &content) { this->locations.push_back(new Location(content)); }
+
 void Server::setHostAddr(in_addr_t Addr) { this->hostAddr = Addr; }
 
 void Server::setCGIExtension(std::string const &str) 
@@ -40,12 +41,22 @@ void Server::setPorts(std::string const &portsLine)
 			std::vector<std::string> ports = splitString(aux, ':');
 			if (ports.size() != 2)
 			{
-				std::cerr << "Error: Wrong range of ports defined" << std::endl;
+				printLog("ERROR", "Port\t\t\t\tWrong range of ports defined.");
 				exit(1);
 			}
 			if (isNumber(ports[0]) == false || isNumber(ports[1]) == false)
 			{
-				std::cerr << "Error: Port not a number." << std::endl;
+				printLog("ERROR", "Port\t\t<" + ports[0] + "> or <" + ports[1] + ">\t\tnot a number.");
+				exit(1);
+			}
+			if (stringToSizeT(ports[0]) > stringToSizeT(ports[1]))
+			{
+				printLog("ERROR", "Port\t\t<" + ports[0] + ">:<" + ports[1] + ">\tports range must be ascendent");
+				exit(1);
+			}
+			if (stringToSizeT(ports[1]) - stringToSizeT(ports[0]) > 10)
+			{
+				printLog("ERROR", "Port\t\t<" + ports[0] + ">:<" + ports[1] + ">\tports range can't have more than 10 ports");
 				exit(1);
 			}
 			for (size_t i = stringToSizeT(ports[0]); i <= stringToSizeT(ports[1]); i++)
@@ -58,7 +69,7 @@ void Server::setPorts(std::string const &portsLine)
 		{
 			if (isNumber(aux) == false)
 			{
-				std::cerr << "Error: Port not a number." << std::endl;
+				printLog("ERROR", "Port\t\t<" + aux + ">\t\tnot a number.");
 				exit(1);
 			}
 			this->ports.push_back(aux);

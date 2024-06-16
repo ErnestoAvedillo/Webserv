@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Location.cpp                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/04/29 17:38:18 by eavedill          #+#    #+#             */
+/*   Updated: 2024/06/16 14:42:08 by jcheel-n         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "../inc/Location.hpp"
 
@@ -48,7 +59,7 @@ Location::Location()
 }
 Location::Location(std::string const &content)
 {
-	isCgi = false;
+	// std::cout << "Location constructor" << std::endl;
 	this->loadData(content);
 }
 // Copy constructor
@@ -77,7 +88,7 @@ const std::string &Location::getAlias() const { return alias; }
 bool Location::getGetAllowed() const { return isGetAllowed; }
 bool Location::getPostAllowed() const { return isPostAllowed; }
 bool Location::getDeleteAllowed() const { return isDeleteAllowed; }
-enum LocationType Location::getLocationType() { return this->locationType; }
+enum LocationType Location::getLocationType() { return this->LocationType; }
 // Setter methods
 void Location::setName(const std::string &n) { name = n; }
 void Location::setRoot(const std::string &r) { root = r; }
@@ -97,7 +108,7 @@ void Location::setAllowMethods(const std::string& methods)
 	{
 		if (line.length() == 0)
 			continue;
-		if (line == "GET")
+		if (line == "GET")// || line == "POST" || line == "DELETE")
 		{
 			this->allowMethods.push_back(line);
 			this->isGetAllowed = true;
@@ -195,6 +206,75 @@ void Location::print()
 	std::cout << "Cgi Extension: " << cgiExtensionStr << std::endl;
 }
 
+// location:{                   
+//       name:/tours;
+//       root:docs/fusion_web;           # root folder of the location, if not specified, taken from the server. 
+//                                       # EX: - URI /tours           --> docs/fusion_web/tours
+//                                       #     - URI /tours/page.html --> docs/fusion_web/tours/page.html 
+//       autoindex:on;                   # turn on/off directory listing
+//       allow_methods: POST,GET;         # allowed methods in location, GET only by default
+//       index:index.html;               # default page when requesting a directory, copies root index by default
+//       return:abc/index1.html;         # redirection
+//       alias: docs/fusion_web;         # replaces location part of URI. 
+//                                       # EX: - URI /tours           --> docs/fusion_web
+//                                       #     - URI /tours/page.html --> docs/fusion_web/page.html 
+//   }
+
+// bool isValidUrl(const std::string& url)
+// {
+// 	// Check if the URL starts with a valid scheme
+// 	std::string validSchemes[] = {"http://", "https://", "ftp://"};
+// 	bool validScheme = false;
+// 	for (const std::string& scheme : validSchemes) {
+// 		if (url.substr(0, scheme.length()) == scheme) {
+// 			validScheme = true;
+// 			break;
+// 		}
+// 	}
+// 	if (!validScheme) {
+// 		return false;
+// 	}
+
+// 	// Check if the URL contains only valid characters
+// 	std::string validCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~:/?#[]@!$&'()*+,;=";
+// 	for (char c : url) {
+// 		if (validCharacters.find(c) == std::string::npos) {
+// 			return false;
+// 		}
+// 	}
+
+// 	return true;
+// }
+
+// #include <string>
+// #include <algorithm>
+
+// bool isValidUrl(const std::string& url)
+// {
+//     // Check if the URL starts with a valid scheme
+//     std::string validSchemes[] = {"http://", "https://", "ftp://"};
+//     bool validScheme = false;
+//     for (int i = 0; i < 3; ++i) {
+//         if (url.substr(0, validSchemes[i].length()) == validSchemes[i]) {
+//             validScheme = true;
+//             break;
+//         }
+//     }
+//     if (!validScheme) {
+//         return false;
+//     }
+
+//     // Check if the URL contains only valid characters
+//     std::string validCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~:/?#[]@!$&'()*+,;=";
+//     for (std::string::const_iterator it = url.begin(); it != url.end(); ++it) {
+//         if (validCharacters.find(*it) == std::string::npos) {
+//             return false;
+//         }
+//     }
+
+//     return true;
+// }
+
 void Location::checkVariables()
 {
 	switch (Parser::checkLocationName(this->name))
@@ -217,10 +297,10 @@ void Location::checkVariables()
 	switch (Parser::checkRootAliasReturn(this->root, this->alias,this->return_))
 	{
 		case ROOT:
-			locationType = ROOT;
+			LocationType = ROOT;
 			break ;
 		case ALIAS:
-			locationType = ALIAS;
+			LocationType = ALIAS;
 			break ;
 		case RETURN:
 			if (this->isCgi)
@@ -229,7 +309,7 @@ void Location::checkVariables()
 				exit(1);
 			}
 			Parser::checkReturnIgnore(this->allowMethodsStr, this->autoindexStr, this->index);
-			locationType = RETURN;
+			LocationType = RETURN;
 			break ;
 		default:
 			break;
@@ -248,7 +328,7 @@ void Location::checkVariables()
 	this->setAllowMethods(this->allowMethodsStr);
 	if (!Parser::checkAllowedMethods(this->allowMethodsStr))
 		this->isGetAllowed = true;
-	if (locationType != RETURN)
+	if (LocationType != RETURN)
 		Parser::checkIndex(this->getIndex(), this->getRoot());
 	
 }

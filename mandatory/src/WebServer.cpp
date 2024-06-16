@@ -9,7 +9,7 @@ WebServer::~WebServer()
 {
 	for (size_t i = 0; i < this->servers.size(); i++)
 		delete this->servers[i];
-  for (std::map<int, ListeningSocket *>::iterator it = serverSocket.begin(); it != serverSocket.end(); ++it)
+    for (std::map<int, ListeningSocket *>::iterator it = serverSocket.begin(); it != serverSocket.end(); ++it)
 		delete it->second;
 	for (std::map<int, ListeningSocket *>::iterator it = acceptedSocket.begin(); it != acceptedSocket.end(); ++it)
 		delete it->second;
@@ -39,8 +39,6 @@ void WebServer::createListeningSockets()
 void WebServer::createServerSocket()
 {
 	std::vector<int> fd_set ;
-
-
 	for (size_t i = 0; i < this->servers.size(); i++)
 	{
 		fd_set = this->servers[i]->getServerFds();
@@ -51,12 +49,10 @@ void WebServer::createServerSocket()
 		}
 	}
 }
-
 void WebServer::launchServers()
 {
 	std::cout << CHR_YELLOW "Launching servers..." RESET << std::endl << std::endl;
 	std::cout << "\e[4;37m    Date & time    \t\t\t\t\t\t\tport\tfd" << RESET << std::endl;
-
 
 	this->createListeningSockets();
 	std::cout << std::endl;
@@ -74,7 +70,6 @@ void WebServer::launchServers()
 	this->eventLoop();
 }
 
-
 bool WebServer::ExitFlag = false;
 
 void	WebServer::eventLoop()
@@ -86,7 +81,6 @@ void	WebServer::eventLoop()
 	#endif
 	int num_events = 0;
 	signal(SIGINT, &WebServer::exit_handler);
-
 	while (!WebServer::ExitFlag)
 	{
 		num_events = waitEvent(evList);
@@ -106,17 +100,11 @@ void	WebServer::eventLoop()
 			#endif
 			if (serverSocket.find(currfd) != serverSocket.end() && acceptedSocket.find(currfd) == acceptedSocket.end())
 			{
-				std::cout << "Accepting new connection" << std::endl;
 				if (acceptNewEvent(currfd) == -1)
 					continue;
 			}
 			else if (flag & END_EVENT || flag & ERR_EVENT)
 			{
-				if (flag & END_EVENT)
-					std::cerr << "End event" << std::endl;
-				else if (flag & ERR_EVENT)
-					std::cerr << "Error event" << std::endl;
-				std::cout << "Closing connection" << std::endl;
 				delete acceptedSocket[currfd];
 				acceptedSocket.erase(currfd);
 				break ;
@@ -133,12 +121,22 @@ void	WebServer::eventLoop()
 					#endif
 				}
 				else
+				{
+					if (i == num_events - 1)
+					{
+						// std::cerr << "DELETE 2" << std::endl;
+						// delete acceptedSocket[currfd];
+						// acceptedSocket.erase(currfd);
+					}
 					continue;
+				}
 			}
 			else if (type_event == (WRITE_EVENT))
 			{
 				if (acceptedSocket[currfd]->sendData(currfd))
 				{
+				// 	std::cerr << "DELETE " << currfd << std::endl;
+				// 	std::cout << "Curffd " << currfd << std::endl; 
 					delete acceptedSocket[currfd];
 					acceptedSocket.erase(currfd);
 				}

@@ -36,6 +36,9 @@ public:
 	void setContentLength(size_t contentLength);
 	void setContentType(std::string contentType);
 	void setAttribute(std::string key, std::string value);
+	void setMethod(std::string method);
+	void setPath(std::string path);
+	void setProtocol(std::string protocol);
 	std::string getMethod();
 	std::string getPath();
 	std::map<std::string, std::string> getAttributes();

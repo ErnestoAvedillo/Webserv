@@ -41,11 +41,6 @@ Header::Header(std::string receiveHeader)
 	}
 }
 
-std::string Header::getContentType()
-{
-	return contentType;
-}
-
 void Header::setAttribute(std::string key, std::string value)
 {
 	this->attributes[key] = value;
@@ -62,15 +57,14 @@ std::string Header::getMethod()
 {
 	return method;
 }
-
 std::string Header::getPath()
 {
 	return path;
 }
-
 std::string Header::generateHeader() const
 {
 	std::string header;
+	
 	// std::cout << "Version: $" << Version << "$" << std::endl;
 	header = protocol + " " + status + "\r\n"; 
 	header += "Server: " + server + "\r\n";
@@ -82,13 +76,20 @@ std::string Header::generateHeader() const
 	header += "Content-Type: " + contentType + "\r\n";
 	for (std::map<std::string, std::string>::const_iterator it = attributes.begin(); it != attributes.end(); ++it)
 		header += it->first + ": " + it->second + "\r\n";
+	
 	header += "\r\n";
+	
 	return header;
 }
 
-void Header::setVersion(std::string version)
+std::string Header::getContentType() 
 {
-	protocol = version;
+	return contentType;
+}
+
+void Header::setProtocol(std::string protocol)
+{
+	this->protocol = protocol;
 }
 
 void Header::setStatus(std::string status)
@@ -132,8 +133,10 @@ void Header::setContentType(std::string contentType)
 
 	/* Create once only */
 	std::map<std::string, std::string> Mimetype = create_filetypes();
+
 	if (Mimetype.find(extension) != Mimetype.end())
 		this->contentType = Mimetype[extension];
 	else
 		this->contentType = "text/html";
+
 }

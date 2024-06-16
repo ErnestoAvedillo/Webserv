@@ -35,14 +35,6 @@ std::map<std::string, void (Server::*)(const std::string &)> ServerSetters()
 
 Server::Server(std::string &str) 
 {
-	isDefault = false;
-	maxBodySize = 1024;
-	Host = "";
-	serverName = "";
-	errorPage = "";
-	root = "";
-	index = "";
-	autoIndex = false;
 	this->cgiModule = new CGI();
 	while (str.find("location") != std::string::npos)
 	{
@@ -73,6 +65,7 @@ Server &Server::operator=(Server const &copy) {
 	if (this != &copy) {
 		this->isDefault = copy.isDefault;
 		this->port = copy.port;
+		this->maxBodySizeStr = copy.maxBodySizeStr;
 		this->maxBodySize = copy.maxBodySize;
 		this->Host = copy.Host;
 		this->serverName = copy.serverName;
@@ -132,7 +125,7 @@ void	Server::print()
 	std::cout << "Error Page: " << this->errorPage << std::endl;
 	std::cout << "Root: " << this->root << std::endl;
 	std::cout << "Index: " << this->index << std::endl;
-	std::cout << "Client Max Body Size: " << this->maxBodySize << std::endl;
+	std::cout << "Client Max Body Size: " << this->maxBodySizeStr << std::endl;
 	std::cout << "Is Default: " << this->isDefault << std::endl;
 	for (size_t i = 0; i < this->ports.size(); i++)
 		std::cout << "Port: " << this->ports[i] << std::endl;

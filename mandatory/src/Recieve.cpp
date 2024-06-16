@@ -7,10 +7,12 @@
 
 Receive::Receive() : buffer(""), request(""), body(""), isbody(false), maxSize(0), sizeSent(0), isform(false)
 {
+    // std::cerr << "Receive created" << std::endl;
 }
 
 Receive::~Receive()
 {
+    // std::cerr << "Receive destroyed" << std::endl;
 }
 
 Receive::Receive(Receive const &copy)
@@ -77,8 +79,6 @@ bool Receive::receiveHeader(int fd)
             else
                 return true;
             this->body = tmp.substr(tmp.find("\r\n\r\n") + 4, tmp.size() - tmp.find("\r\n\r\n") - 4);
-
-
             this->sizeSent += this->body.size();
             if (this->sizeSent >= this->maxSize)
             {
@@ -90,17 +90,15 @@ bool Receive::receiveHeader(int fd)
             return false;
         }
         else
-
             request += tmp;
         std::memset(buf, 0, MAX_MSG_SIZE);
     }
- 
-
+    
     if (ret < 0) // This is not handle as an error 
         return false;
     else if (ret == 0)
     {
-        std::cerr << "Client disconnected" << std::endl;
+        printLog("NOTICE", "Client disconnected");
         return false;
     }
     return false;
@@ -110,6 +108,7 @@ bool Receive::receiveBody(int fd)
 {
     char buf[MAX_MSG_SIZE] = {0};
     int ret = 0;
+
     while ((ret = recv(fd, buf, MAX_MSG_SIZE, 0)) > 0)
     {
         this->sizeSent += ret;
@@ -119,7 +118,6 @@ bool Receive::receiveBody(int fd)
         {
             if (this->boundary.length())
                 this->buffer = this->buffer.substr(0, this->buffer.find(this->boundary) - 4);
-
             this->body += this->buffer;
             this->isbody = false;
             return true;
@@ -132,7 +130,7 @@ bool Receive::receiveBody(int fd)
         return false;
     else if (ret == 0)
     {
-        std::cerr << "Client disconnected" << std::endl;
+        printLog("NOTICE", "Client disconnected");
         return false;
     }
     return false;
