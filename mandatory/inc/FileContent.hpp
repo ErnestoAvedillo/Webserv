@@ -9,11 +9,12 @@
 #include <map>
 #include <vector>
 #include <map>
-#include "../inc/colors.h"
-#include "../inc/CGI.hpp"
-#include "../inc/Server.hpp"
-#include "../inc/ListDir.hpp"
-
+#include "colors.h"
+#include "CGI.hpp"
+#include "Server.hpp"
+#include "ListDir.hpp"
+#include "ExtendedString.hpp"
+#include "StateCode.hpp"
 //#define MAX_SENT_BYTES 8192
 
 class Client;
@@ -24,7 +25,7 @@ class FileContent
 private:
 	std::string fileName;
 	std::vector <std::string> args;
-	std::string content;
+	ExtendedString content;
 	std::ifstream file;
 	bool isFistFragment;
 	bool isFileOpen;
@@ -33,6 +34,8 @@ private:
 	CGI *cgiModule;
 	Server *server;
 	ListDir *listDir;
+	StateCode *stateCode;
+
 	size_t completeContentSize;
 	std::string splitFileFromArgs(const std::string &);
 	bool FileOrFolerExtists(const std::string &);
@@ -49,6 +52,7 @@ public:
 	void setIsCGI(bool isCgi);
 	std::string getFileName();
 	std::string getContent();
+	void setIsSendComplete(bool);
 	bool isSendComplete();
 	void setFirstFragment(bool);
 	bool getFirstFragment();

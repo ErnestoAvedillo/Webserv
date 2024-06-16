@@ -92,7 +92,9 @@ int ListeningSocket::getFd()
 
 bool ListeningSocket::sendData(int clientSocketFd)
 {
-	std::string answer = this->getAnswerToSend();
+	ExtendedString answer = this->client->getAnswerToSend();
+	// std::cout << "answer: " << answer.size() << std::endl;
+	// std::cout << "My answer: " << answer << std::endl;
 	if ((send(clientSocketFd, answer.c_str(), answer.size(), 0)) < 0)
 		std::cerr << "Failed to write to client" << std::endl;
 	return this->fileContent->isSendComplete();

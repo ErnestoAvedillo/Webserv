@@ -2,7 +2,7 @@
 
 void Server::setHost(std::string const &host) { this->Host = host; }
 void Server::setServerName(std::string const &server_name) { this->serverName = server_name; }
-void Server::setErrorPage(std::string const &error_page) { this->errorPage = error_page; }
+void Server::setErrorPage(std::string const &error_page) {this->errorPage = error_page;}
 void Server::setMaxClientBodySizeStr(std::string const &max_client_body_size) { this->maxBodySizeStr = max_client_body_size; }
 void Server::setMaxClientBodySize(size_t const &max_client_body_size) { this->maxBodySize = max_client_body_size; }
 void Server::setRoot(std::string const &root) { this->root = root; }

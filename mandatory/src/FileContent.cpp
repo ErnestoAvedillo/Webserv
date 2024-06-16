@@ -63,8 +63,6 @@ int FileContent::openFile()
 
 std::string FileContent::getContent() 
 {
-	std::string errorReturn = "Error: " + fileName + " File not found";
-
 	if (isFileOpen)
 	{
 		if (cgiModule->getIsCGI())
@@ -75,7 +73,7 @@ std::string FileContent::getContent()
 			}
 			catch(const std::exception& e)
 			{
-				content = e.what();
+				content = server->getCodeContent(INTERNAL_SERVER_ERROR_CODE);
 			}
 			completeContentSize = content.size();
 			return content;
@@ -110,7 +108,7 @@ std::string FileContent::getContent()
 	}
 	else
 	{
-		content = errorReturn;
+		content = server->getCodeContent(NOT_FOUND_CODE);
 	}
 	sendComplete = true;
 	return content;
@@ -158,6 +156,10 @@ void FileContent::setIsAutoIndex(bool autoIndex)
 std::string FileContent::getFileName()
 {
 	return fileName;
+}
+
+void FileContent::setIsSendComplete(bool sendComplete){
+	this->sendComplete = sendComplete;
 }
 
 bool FileContent::isSendComplete()

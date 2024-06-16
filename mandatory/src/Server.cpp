@@ -33,7 +33,7 @@ std::map<std::string, void (Server::*)(const std::string &)> ServerSetters()
 	return serverMethods;
 }
 
-Server::Server(std::string &str) 
+Server::Server(std::string &str):StateCode()
 {
 	this->cgiModule = new CGI();
 	while (str.find("location") != std::string::npos)

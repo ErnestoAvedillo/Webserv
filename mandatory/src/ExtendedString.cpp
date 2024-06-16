@@ -1,5 +1,17 @@
 #include "../inc/ExtendedString.hpp"
 
+ExtendedString::ExtendedString() : std::string() {}
+
+ExtendedString::ExtendedString(const std::string &str) : std::string(str) {}
+
+ExtendedString::~ExtendedString() {}
+
+ExtendedString &ExtendedString::operator=(const std::string &str)
+{
+	std::string::operator=(str);
+	return *this;
+}
+
 bool ExtendedString::isNumber() const {
     size_t position = 0;
     if (this->empty())
