@@ -42,7 +42,7 @@ class Location
 		std::vector<std::string> cgiPath;
 		std::string cgiExtensionStr;
 		std::vector<std::string> cgiExtension;
-		LocationType LocationType;
+		enum LocationType LocationType;
 		bool isGetAllowed;
 		bool isPostAllowed;
 		bool isDeleteAllowed;

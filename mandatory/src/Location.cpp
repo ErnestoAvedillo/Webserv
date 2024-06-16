@@ -59,6 +59,7 @@ Location::Location()
 }
 Location::Location(std::string const &content)
 {
+	this->isCgi = false;
 	// std::cout << "Location constructor" << std::endl;
 	this->loadData(content);
 }
