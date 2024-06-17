@@ -190,6 +190,7 @@ bool ListeningSocket::sendData(int clientSocketFd)
 
 bool ListeningSocket::receive()
 {
+
 	bool ret = receiver->receive(this->socketFd);
 	return(ret);
 }
@@ -224,11 +225,9 @@ ListeningSocket *ListeningSocket::clone(int fd)
 //     }
 // }
 
-void ListeningSocket::loadRequest()
+void ListeningSocket::loadRequest(std::vector<Server *> servers)
 {
-	// std::cout << "-------------Request-------------" << std::endl;
-	// std::cout << receiver->getRequest() << std::endl;
-	this->client->loadCompleteClient(this->receiver);
+	this->client->loadCompleteClient(this->receiver, servers);
 }
 
 std::string ListeningSocket::getServerName()

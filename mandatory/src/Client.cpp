@@ -8,26 +8,18 @@ Client::Client(Server *srv)
 	this->server = srv;
 }
 
-Client::Client(Receive *receive, Server *srv)
-
-{
-	this->fileContent = new FileContent(srv);
-	this->server = srv;
-	this->loadCompleteClient(receive);
-}
-
-
 Client::~Client()
 {
 	delete this->fileContent;
 }
 
 // Cambiar nombres a setters ?
-void Client::addKeyReq(std::string const &key, std::string const &value){ this->Request[key] = value; }
-void Client::addKeyType(std::string const &value) { this->Request[REQ_TYPE] = value; }
-void Client::addKeyFile(std::string const &value) { this->Request[REQ_FILE] = value; }
-void Client::addKeyVers(std::string const &value) { this->Request[REQ_VER] = value; }
+// void Client::addKeyReq(std::string const &key, std::string const &value){ this->Request[key] = value; }
+// void Client::addKeyType(std::string const &value) { this->Request[REQ_TYPE] = value; }
+// void Client::addKeyFile(std::string const &value) { this->Request[REQ_FILE] = value; }
+// void Client::addKeyVers(std::string const &value) { this->Request[REQ_VER] = value; }
 
+void Client::setServer(Server *srv) { this->server = srv; }
 
 static std::string getMimeType(std::string contentType)
 {
@@ -42,21 +34,25 @@ static std::string getMimeType(std::string contentType)
 		 return ("text/html");
 }
 
-void Client::loadCompleteClient(Receive *receiver)
+void Client::matchServerName(std::vector<Server *> servers)
 {
-	std::string str = receiver->getRequest();
-	if (str.length() == 0)
+	std::string server_name = request.getAttribute("Host").substr(0, request.getAttribute("Host").find(":"));
+	if (server_name.empty())
 		return ;
-	std::vector<std::string> lines = splitString(str, '\n');
-	std::vector<std::string> parts = splitString(lines[0], ' ');
-	if (parts.size() == 3)
+	for (size_t i = 0; i < servers.size(); i++)
 	{
-		this->addKeyType(parts[0]);
-		this->addKeyFile(parts[1]);
-		this->addKeyVers(parts[2]);
+		if (servers[i]->getServerName() == server_name)
+		{
+			this->setServer(servers[i]);
+			break;
+		}
 	}
-	for (size_t i = 1; i < lines.size(); i++)
-		this->addKeyReq(lines[i].substr(0, lines[i].find(":")), lines[i].substr(lines[i].find(":") + 1, lines.size()));
+}
+
+void Client::loadCompleteClient(Receive *receiver, std::vector<Server *> servers)
+{
+	this->setRequestHeader(receiver->getRequest());
+	matchServerName(servers);
 	this->loadDataHeader(receiver);
 }
 std::string Client::normalizePath(std::string path)
@@ -87,7 +83,7 @@ std::string Client::normalizePath(std::string path)
 
 std::string Client::getFilePath()
 {
-	std::string filePath = normalizePath(server->getRoot()) + this->Request[REQ_FILE];
+	std::string filePath = normalizePath(server->getRoot()) + this->request.getPath();
 	if (filePath.at(filePath.size() - 1) == '/')
 		filePath += server->getIndex();
 	filePath = filePath.substr(0, filePath.find("?"));
@@ -108,9 +104,9 @@ std::string Client::getAnswerToSend()
 	std::string file_content = getFileContent();
 	if (this->fileContent->getFirstFragment())
 	{
-		if (header.getContentType().find("video/") != std::string::npos && Request["Sec-Fetch-Dest"].find("document") != std::string::npos)
-			header.setAttribute("Accept-Ranges", "bytes");
-		answer = header.generateHeader() + file_content;
+		if (response.getContentType().find("video/") != std::string::npos && this->request.getAttribute("Sec-Fetch-Dest").find("document") != std::string::npos)
+			response.setAttribute("Accept-Ranges", "bytes");
+		answer = response.generateHeader() + file_content;
 		this->fileContent->setFirstFragment(false);
 	}
 	else
@@ -125,30 +121,35 @@ bool Client::isSendComplete()
 }
 
 
+void Client::setRequestHeader(std::string requestHeader)
+{
+	this->request = Header(requestHeader);
+}
+
 int Client::isAllowedMethod(Location *location)
 {
-	if (this->Request[REQ_TYPE] == "GET")
+	if (this->request.getMethod() == "GET")
 	{
 		if (location->getGetAllowed() == false)
 		{
-			header.setStatus("405 Method Not Allowed");
+			response.setStatus("405 Method Not Allowed");
 			return NOT_ALLOWED;
 		}
 	}
-	else if (this->Request[REQ_TYPE] == "POST")
+	else if (this->request.getMethod() == "POST")
 	{
 		if (location->getPostAllowed() == false)
 		{
-			header.setStatus("405 Method Not Allowed");
+			response.setStatus("405 Method Not Allowed");
 			return NOT_ALLOWED;
 		}
 
 	}
-	else if (this->Request[REQ_TYPE] == "DELETE")
+	else if (this->request.getMethod() == "DELETE")
 	{
 		if (location->getDeleteAllowed() == false)
 		{
-			header.setStatus("405 Method Not Allowed");
+			response.setStatus("405 Method Not Allowed");
 			return NOT_ALLOWED;
 		}
 	}
@@ -160,27 +161,34 @@ int Client::matchingLocation()
 	std::vector<Location *> locations = this->server->getLocations();
 	for (size_t i = 0; i < locations.size(); i++)
 	{
-		if (this->Request[REQ_FILE].find(locations[i]->getName()) != std::string::npos)
+		if (this->request.getPath().find(locations[i]->getName()) != std::string::npos)
 		{
 			if (isAllowedMethod(locations[i]) == NOT_ALLOWED)
 				return NOT_ALLOWED;
+			this->fileContent->setAutoIndex(locations[i]->getAutoIndex());
+			this->fileContent->setIsCGI(locations[i]->getIsCgi());
+			ExtendedString tmp;
 			switch (locations[i]->getLocationType())
 			{
 				case RETURN:
-					header.setStatus("301 Moved Permanently");
-					header.setAttribute("Location", locations[i]->getReturn());
+					response.setStatus("301 Moved Permanently");
+					response.setAttribute("Location", locations[i]->getReturn());
 					return REDIRECT;
 				case ALIAS:
-					replaceString(this->Request[REQ_FILE],  locations[i]->getName(), locations[i]->getAlias());
-					if (!locations[i]->getIndex().empty() && isDirPermissions(this->Request[REQ_FILE], F_OK | R_OK) == true && this->Request[REQ_TYPE] != "POST")
-						this->Request[REQ_FILE] += "/" + locations[i]->getIndex();
+					tmp = this->request.getPath();
+					tmp.replaceString(locations[i]->getName(), locations[i]->getAlias() + "/");
+					if (!locations[i]->getIndex().empty() && isDirPermissions(tmp, F_OK | R_OK) == true && this->request.getMethod() != "POST")
+						tmp += "/" + locations[i]->getIndex();
+					request.setPath(tmp);
+					// findCgiExtension(this->request.getPath(), this->locations[i]->getCgiExtension());
 					break ;
 				case ROOT:
-					replaceString(this->Request[REQ_FILE],  locations[i]->getName(), locations[i]->getRoot() + locations[i]->getName());
-					if (!locations[i]->getIndex().empty() && isDirPermissions(this->Request[REQ_FILE], F_OK | R_OK) == true && this->Request[REQ_TYPE] != "POST")
-						this->Request[REQ_FILE] += "/" + locations[i]->getIndex();
+					tmp = this->request.getPath();
+					tmp.replaceString(locations[i]->getName(), locations[i]->getRoot()  + locations[i]->getName());
+					if (!locations[i]->getIndex().empty() && isDirPermissions(tmp, F_OK | R_OK) == true && this->request.getMethod() != "POST")
+						tmp += "/" + locations[i]->getIndex();
+					request.setPath(tmp);
 					break ;
-
 				default:
 					std::cerr << "This is incorrect. Should not arrive here" << std::endl;
 					break ;
@@ -192,17 +200,27 @@ int Client::matchingLocation()
 
 }
 
+off_t getFileSize(const std::string &filename)
+{
+	struct stat stat_buf;
+	int rc = stat(filename.c_str(), &stat_buf);
+	return rc == 0 ? stat_buf.st_size : -1;
+}
+
 
 
 void Client::loadDataHeader(Receive *receiver)
 {
-
+	std::string path;
 	switch (this->matchingLocation())
 	{
 		case NO_LOCATION:
-			this->Request[REQ_FILE] = this->server->getRoot() + this->Request[REQ_FILE];
-			if (isDirPermissions(this->Request[REQ_FILE], F_OK | R_OK) == true)
-				this->Request[REQ_FILE] += this->server->getIndex();
+			path = this->request.getPath();
+			path = this->server->getRoot() + path;
+			if (isDirPermissions(path, F_OK | R_OK) == true)
+				path += this->server->getIndex();
+			this->request.setPath(path);
+			this->fileContent->setAutoIndex(server->getAutoIndex());
 			break ;
 		case NOT_ALLOWED :
 			return ;
@@ -210,43 +228,45 @@ void Client::loadDataHeader(Receive *receiver)
 			return ;
 	}
 
-	this->Request[REQ_FILE] = decodeURL(this->Request[REQ_FILE]);
-	if (this->Request[REQ_TYPE] == "GET")
-	{
+	this->request.setPath(decodeURL(this->request.getPath()));
 
-		Header receiveHeader(receiver->getRequest());
-		std::map<std::string, std::string>  Attributes = receiveHeader.getAttributes();
-		// std::cout << receiver->getRequest() << std::endl;
-		if (getMimeType(this->Request[REQ_FILE]).find("video") != std::string::npos)
+	std::cout << request.getPath() << std::endl;
+	// std::cout << "FILESIZE " << getFileSize(this->request.getPath()) << std::endl;
+	// std::cout << "MAXFILESIZE " << this->server->getMaxClientBodySize() << std::endl;
+	if (getFileSize(this->request.getPath()) > this->server->getMaxClientBodySize())
+	{
+		response.setStatus("413 Request Entity Too Large");
+		return;
+	}
+	if (this->request.getMethod() == "GET")
+	{
+		if (getMimeType(this->request.getPath()).find("video") != std::string::npos)
 		{
-			// std::cout << "vvvideo" << std::endl;
-			// header.setAttribute("Accept-Ranges", "bytes");
-			// std::cout << Attributes["Sec-Fetch-Dest"] << std::endl;	
-			// std::cout << Attributes["Range"] << std::endl;
-			this->fileContent->setRange(stringToSizeT(Attributes["Range"]));
-			if (this->fileContent->setFileName(this->Request[REQ_FILE]))
+			this->fileContent->setRange(stringToSizeT(request.getAttribute("Range")));
+			if (this->fileContent->setFileName(this->request.getPath()))
 			{
-				header.setStatus("206 Partial Content");
-				header.setContentType(this->Request[REQ_FILE]);
-				header.setLastModified(this->fileContent->getLastModified());
-				header.setContentLength(this->fileContent->getContentSize() - stringToSizeT(Attributes["Range"]));
-				header.setAttribute("Content-Range", "bytes 0-" + toString(this->fileContent->getContentSize() - 1) + "/" + toString(this->fileContent->getContentSize()) );
-				// header.setStatus("200 OK");
-				header.setServer(server->getServerName());
+				response.setStatus("206 Partial Content");
+				response.setContentType(this->request.getPath());
+				response.setLastModified(this->fileContent->getLastModified());
+				response.setContentLength(this->fileContent->getContentSize() - stringToSizeT(request.getAttribute("Range")));
+				response.setAttribute("Content-Range", "bytes 0-" + toString(this->fileContent->getContentSize() - 1) + "/" + toString(this->fileContent->getContentSize()) );
+				response.setServer(server->getServerName());
 			}
+			else
+				response.setStatus("404 Not Found");
 		}
-		if (this->fileContent->setFileName(this->Request[REQ_FILE]))
+		if (this->fileContent->setFileName(this->request.getPath()))
 		{
-			header.setContentType(this->Request[REQ_FILE]);
-			header.setLastModified(this->fileContent->getLastModified());
-			header.setContentLength(this->fileContent->getContentSize() - stringToSizeT(Attributes["Range"]));
-			header.setStatus("200 OK");
-			header.setServer(server->getServerName());
+			response.setContentType(this->request.getPath());
+			response.setLastModified(this->fileContent->getLastModified());
+			response.setContentLength(this->fileContent->getContentSize());
+			response.setStatus("200 OK");
+			response.setServer(server->getServerName());
 		}
 		else
-			header.setStatus("404 Not Found");
+			response.setStatus("404 Not Found");
 	}
-	else if (this->Request[REQ_TYPE] == "POST")
+	else if (this->request.getMethod() == "POST")
 	{
 		if (receiver->getRequest().find("POST") != std::string::npos && receiver->getisform() == false)
 		{
@@ -260,39 +280,39 @@ void Client::loadDataHeader(Receive *receiver)
 				{
 					std::string filename = lines[i].substr(lines[i].find("filename=") + 10, lines[i].size());
 					filename = filename.substr(0, filename.find("\""));
-					this->Request[REQ_FILE] += "/" + filename;
-					if (access(this->Request[REQ_FILE].c_str(), F_OK) == 0)
+					std::string path = this->request.getPath() + "/" + filename;
+					if (access(path.c_str(), F_OK) == 0)
 					{
-						header.setStatus("403 Forbidden");
+						response.setStatus("403 Forbidden");
 						return;
 					}
-					std::fstream file(this->Request[REQ_FILE].c_str(), std::ios::out | std::ios::binary | std::ios::app);
+					std::fstream file(path.c_str(), std::ios::out | std::ios::binary | std::ios::app);
 					file.write(body.c_str(), body.size());
 					file.close();
-					header.setStatus("201 Created");
+					response.setStatus("201 Created");
 					return;
 				}
 			}
 		}
 		else if (receiver->getisform())
 		{
-			header.setStatus("201 Created");
+			response.setStatus("201 Created");
 		}
 		else
 			std::cout << "form: " << receiver->getBody() << std::endl;
-		header.setServer(server->getServerName());
+		response.setServer(server->getServerName());
 	}
-	else if (this->Request[REQ_TYPE] == "DELETE")
+	else if (this->request.getMethod() == "DELETE")
 	{
-		if (std::remove(this->Request[REQ_FILE].c_str()) == 0)
-			header.setStatus("200 OK");
+		if (std::remove(this->request.getPath().c_str()) == 0)
+			response.setStatus("200 OK");
 		else
-			header.setStatus("404 Not Found");
-		header.setServer(server->getServerName());
+			response.setStatus("404 Not Found");
+		response.setServer(server->getServerName());
 	}
 	else
 	{
-		header.setStatus("405 Method Not Allowed");
-		header.setServer(server->getServerName());
+		response.setStatus("405 Method Not Allowed");
+		response.setServer(server->getServerName());
 	}
 }

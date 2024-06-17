@@ -25,7 +25,7 @@ class Parser
 		static bool checkPath(std::string root, std::string attributeName);
 		static bool checkIndex(std::string index, std::string root);
 		static in_addr_t	isValidHost(std::string hostname);
-		static size_t checkClientBodySize(std::string maxClientBodySize);
+		static long long checkClientBodySize(std::string maxClientBodySize);
 
 		static bool checkAutoIndex(std::string autoindex);
 		static int checkLocationName(std::string name);

@@ -38,12 +38,15 @@ private:
 	bool FileOrFolerExtists(const std::string &);
 	bool isInputDirectory();
 	size_t startRange;
+	bool isAutoIndex;
+	bool isCgi;
 public:
 	FileContent(Server *);
 	FileContent(const std::string &, Server *);
 	~FileContent();
 	int openFile();
 	bool setFileName(const std::string &);
+	void setIsCGI(bool isCgi);
 	std::string getFileName();
 	std::string getContent();
 	bool isSendComplete();
@@ -52,4 +55,7 @@ public:
 	std::string getLastModified();
 	size_t getContentSize();
 	void setRange(size_t );
+	void setAutoIndex(bool autoIndex);
+	// void 
+			// this->fileContent->setCgiPath(locations[i]->getCgiPath());
 };

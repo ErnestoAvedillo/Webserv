@@ -1,4 +1,5 @@
 #include "../inc/Parser.hpp"
+#include <dirent.h>
 
 bool Parser::checkPorts(std::vector<std::string> const &ports)
 {
@@ -93,6 +94,41 @@ bool Parser::checkErrorPage(std::string errorPage)
 		printLog("WARNING", "error_page\t<" + errorPage + ">\tnot a valid directory." );
 		return false;
 	}
+	
+
+	std::vector<std::string> foundFiles;
+	DIR *errorDirectory = opendir(errorPage.c_str());
+	struct dirent *entry;
+	while ((entry = readdir(errorDirectory)) != NULL)
+	{
+		std::string errorfile = entry->d_name;
+		for (int code = 100; code <= 599; ++code) {
+            std::string errorCodeFile = std::to_string(code) + ".html";
+            if (errorfile == errorCodeFile) {
+                
+				foundFiles.push_back(errorfile);
+                break;
+            }
+        }
+
+	}
+	closedir(errorDirectory);
+
+	// std::cout << "Found files:" << std::endl;
+	std::sort(foundFiles.begin(), foundFiles.end());
+	std::cout << CHR_GREEN << getLocalTime() << " [" << "NOTICE" << "]" << "\t\t" << RESET ;//message << RESET << std::endl;
+
+	if (foundFiles.size() == 0)
+	{
+		printLog("WARNING", "error_page\t<" + errorPage + ">\tno error files found." );
+		return false;
+	}
+	for (std::vector<std::string>::const_iterator file = foundFiles.begin(); file != foundFiles.end(); ++file){
+        if (file + 1 == foundFiles.end())
+			std::cout <<CHR_GREEN << *file << RESET << std::endl;
+		else
+			std::cout <<CHR_GREEN << *file << " ";
+    }
 	return true;
 }
 
@@ -151,16 +187,93 @@ bool Parser::checkIndex(std::string index, std::string root)
 	return true;
 }
 
-size_t	Parser::checkClientBodySize(std::string maxClientBodySize)
+// Define the maximum number of bytes allowed
+const long long MAX_BYTES = 1099511627776; // 1 Terabyte for example
+
+long long convertToBytes(const std::string& sizeStr) {
+    // Find the position where the numeric part ends and the unit starts
+    size_t pos = 0;
+    while (pos < sizeStr.size() && (std::isdigit(sizeStr[pos]) || sizeStr[pos] == '.')) {
+        pos++;
+    }
+
+    if (pos == 0) {
+        throw std::invalid_argument("Invalid size format");
+    }
+
+    // Extract the numeric part and the unit part
+    double sizeValue = std::stod(sizeStr.substr(0, pos));
+    std::string unit = sizeStr.substr(pos);
+
+    // Convert the unit to lowercase for easier comparison
+    for (size_t i = 0; i < unit.size(); ++i) {
+        unit[i] = std::tolower(unit[i]);
+    }
+
+    // Conversion factors
+    const long long BYTES_IN_KB = 1024;
+    const long long BYTES_IN_MB = BYTES_IN_KB * 1024;
+    const long long BYTES_IN_GB = BYTES_IN_MB * 1024;
+    const long long BYTES_IN_TB = BYTES_IN_GB * 1024;
+    const long long BITS_IN_BYTE = 8;
+
+    // Calculate the byte value
+    long long bytes;
+    if (unit.empty() || unit == "b") {
+        bytes = static_cast<long long>(sizeValue);
+    } else if (unit == "kb") {
+        bytes = static_cast<long long>(sizeValue * BYTES_IN_KB);
+    } else if (unit == "mb") {
+        bytes = static_cast<long long>(sizeValue * BYTES_IN_MB);
+    } else if (unit == "gb") {
+        bytes = static_cast<long long>(sizeValue * BYTES_IN_GB);
+    } else if (unit == "tb") {
+        bytes = static_cast<long long>(sizeValue * BYTES_IN_TB);
+    } else if (unit == "bit") {
+        bytes = static_cast<long long>(sizeValue / BITS_IN_BYTE);
+    } else if (unit == "kbit") {
+        bytes = static_cast<long long>(sizeValue * BYTES_IN_KB / BITS_IN_BYTE);
+    } else if (unit == "mbit") {
+        bytes = static_cast<long long>(sizeValue * BYTES_IN_MB / BITS_IN_BYTE);
+    } else if (unit == "gbit") {
+        bytes = static_cast<long long>(sizeValue * BYTES_IN_GB / BITS_IN_BYTE);
+    } else if (unit == "tbit") {
+        bytes = static_cast<long long>(sizeValue * BYTES_IN_TB / BITS_IN_BYTE);
+    } else {
+        throw std::invalid_argument("Unknown size unit");
+    }
+
+    // Check if the byte value exceeds the maximum allowed
+    if (bytes > MAX_BYTES) {
+        throw std::overflow_error("Size exceeds the maximum allowed bytes");
+    }
+
+    return bytes;
+}
+
+long long	Parser::checkClientBodySize(std::string maxClientBodySize)
 {
 	if (maxClientBodySize.empty())
 		return (DEFAULT_MAX_BOD_SIZE);
-	if (!isNumber(maxClientBodySize))
-	{
-		printLog("ERROR", "max_client_body_size\t<" + maxClientBodySize + ">\tis not a number." );
+	
+	// if (!isNumber(maxClientBodySize))
+	// {
+	// 	printLog("ERROR", "max_client_body_size\t<" + maxClientBodySize + ">\tis not a number." );
+	// 	exit(1);
+	// }
+	
+	try {
+		long long nbr = convertToBytes(maxClientBodySize);
+		return (nbr);
+	}
+	catch (const std::invalid_argument& e) {
+		printLog("ERROR", "max_client_body_size\t<" + maxClientBodySize + ">\tinvalid size format." );
 		exit(1);
 	}
-
+	catch (const std::overflow_error& e) {
+		printLog("ERROR", "max_client_body_size\t<" + maxClientBodySize + ">\tsize exceeds the maximum allowed bytes." );
+		exit(1);
+	}
 	int nbr = std::atoi(maxClientBodySize.c_str());
 	if (nbr < 0)
 	{

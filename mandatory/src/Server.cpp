@@ -145,6 +145,7 @@ void Server::createListeningSockets()
 	}
 }
 
+
 void Server::checkVariables()
 {
 	if (Parser::checkPorts(this->getPorts()) == false)
@@ -166,8 +167,8 @@ void Server::checkVariables()
 	for (size_t i = 0; i < this->locations.size(); i++)
 	{
 		std::cout << CHR_MGENTA"---------Location [" << i + 1 << "]---------" RESET << std::endl;
-		this->locations[i]->checkVariables();
-		// std::cout << CHR_GREEN"OK! Location " << i << RESET<< std::endl;
+		this->locations[i]->checkVariables(this->autoIndex);
+		std::cout << std::endl;
 		printLog("NOTICE", "OK! Location " + toString(i + 1));
 		std::cout << CHR_MGENTA"------------------------------" RESET << std::endl;
 	}

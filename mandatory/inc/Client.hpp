@@ -48,10 +48,11 @@ class FileContent;
 class Client
 {
 private:
-	std::map<std::string, std::string> Request;
+	// std::map<std::string, std::string> Request;
 	FileContent *fileContent;
 	Server *server;
-	Header header;
+	Header response;
+	Header request;
 public:
 	Client();
 	Client(Receive *, Server *);
@@ -68,14 +69,18 @@ public:
 	// void clearClient();
 	// void deleteClient(std::string const &);
 	// void updateClient(std::string const &, std::string const &);
-
+	void setRequestHeader(std::string );
+	// void setResponseHeader(Header);
+	void setServer(Server *);
+	
 	std::string getAnswerToSend();
 	std::string getFilePath();
 	std::string getFileContent(std::string filename);
 	std::string	normalizePath(std::string path);
 	std::string getFileContent();
 	bool isSendComplete();
-	void loadCompleteClient(Receive *receiver);
+	void loadCompleteClient(Receive *receiver, std::vector<Server *> servers);
+	void matchServerName(std::vector<Server *> servers);
 	void loadDataHeader(Receive *receiver);
 	int matchingLocation();
 	int isAllowedMethod(Location *location);

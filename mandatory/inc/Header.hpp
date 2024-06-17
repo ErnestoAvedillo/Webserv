@@ -5,14 +5,14 @@
 #include <ctime>
 #include "../inc/utils.hpp"
 #include <algorithm>
-
+#include "../inc/ExtendedString.hpp"
 
 class Header 
 {
 	private:
 		/* Receive Header*/
 		std::string method;
-		std::string path;
+		ExtendedString path;
 		
 		std::string protocol;
 		std::string status;
@@ -40,8 +40,8 @@ public:
 	void setPath(std::string path);
 	void setProtocol(std::string protocol);
 	std::string getMethod();
-	std::string getPath();
+	ExtendedString getPath();
 	std::map<std::string, std::string> getAttributes();
 	std::string getContentType();
-
+	std::string getAttribute(std::string key);
 };

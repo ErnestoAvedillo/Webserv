@@ -13,6 +13,7 @@ Header::Header(std::string receiveHeader)
 {
 	std::istringstream iss(receiveHeader);
 	std::string line;
+
 	while (std::getline(iss, line))
 	{
 		size_t colonPos = line.find(':');
@@ -39,6 +40,11 @@ Header::Header(std::string receiveHeader)
 			}
 		}
 	}
+	// std::cout << "HEADER" << std::endl;
+	// for (std::map<std::string, std::string>::const_iterator it = attributes.begin(); it != attributes.end(); ++it)
+	// {
+	// 	std::cout << it->first << " => " << it->second << std::endl;
+	// }
 }
 
 void Header::setAttribute(std::string key, std::string value)
@@ -57,10 +63,16 @@ std::string Header::getMethod()
 {
 	return method;
 }
-std::string Header::getPath()
+ExtendedString Header::getPath()
 {
 	return path;
 }
+
+void Header::setPath(std::string path)
+{
+	this->path = path;
+}
+
 std::string Header::generateHeader() const
 {
 	std::string header;
@@ -80,6 +92,11 @@ std::string Header::generateHeader() const
 	header += "\r\n";
 	
 	return header;
+}
+
+std::string Header::getAttribute(std::string key)
+{
+	return attributes[key];
 }
 
 std::string Header::getContentType() 

@@ -118,7 +118,7 @@ bool FileContent::setFileName(const std::string &file_name)
 	bool fileOrFolderExists = this->FileOrFolerExtists(FileAndFolder);
 	if (fileOrFolderExists)
 	{
-		if (this->isInputDirectory() && server->getAutoIndex())
+		if (this->isInputDirectory() && this->isAutoIndex)
 		{
 			fileName = FileAndFolder;
 			isFileOpen = true;
@@ -126,7 +126,8 @@ bool FileContent::setFileName(const std::string &file_name)
 			listDir->setContentToList();
 			return isFileOpen;
 		}
-		else if (cgiModule->setIsCGI(file_name))
+		//else if (cgiModule->setIsCGI(file_name))
+		else if (this->isCgi)
 		{
 			cgiModule->setFileName(file_name);
 			isFileOpen = true;
@@ -134,24 +135,20 @@ bool FileContent::setFileName(const std::string &file_name)
 		}
 		else
 		{
-			if (this->isInputDirectory())
-			{
-				fileName = FileAndFolder + server->getIndex();
-			}
-			else
-			{
-				fileName = FileAndFolder;
-			}
+			fileName = FileAndFolder;
 			stat(fileName.c_str(), &fileStat);
 			completeContentSize = fileStat.st_size;
 			isFileOpen = this->openFile();
-			isFileOpen = true;
 			if (isFileOpen)
 				file.seekg(startRange, std::ios::beg);
 			return isFileOpen;
 		}
 	}
 	return isFileOpen;
+}
+void FileContent::setAutoIndex(bool autoIndex)
+{
+	this->isAutoIndex = autoIndex;
 }
 
 std::string FileContent::getFileName()
@@ -215,4 +212,9 @@ std::string FileContent::splitFileFromArgs(const std::string &str)
 void FileContent::setRange(size_t range)
 {
 	this->startRange = range;
+}
+
+void FileContent::setIsCGI(bool isCgi)
+{
+	this->isCgi = isCgi;
 }

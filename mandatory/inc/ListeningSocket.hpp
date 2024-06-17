@@ -59,7 +59,7 @@ public:
 	int getPort();
 	int getFd();
 	bool sendData(int);
-	void loadRequest();
+	void loadRequest(std::vector<Server *> servers);
 	std::string getServerName();
 	ListeningSocket *clone(int fd);
 	Client *getClientPtr();
