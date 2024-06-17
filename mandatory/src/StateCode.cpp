@@ -104,3 +104,24 @@ int StateCode::getCurrentCode()
 {
 	return this->currentCode;
 }
+
+void StateCode::loadErrorPageFromDir(const ExtendedString &dir)
+{
+	struct dirent *dirp;
+	DIR *dp;
+	if ((dp = opendir(dir.c_str())) == NULL)
+	{
+		throw std::runtime_error("Error opening directory");
+	}
+	while ((dirp = readdir(dp)) != NULL)
+	{
+		if (dirp->d_type == DT_REG)
+		{
+			std::string fileName = dir + "/" + dirp->d_name;
+			std::string code = dirp->d_name;
+			code = code.substr(0, code.find("."));
+			setFileContentForStateCode(atoi(code.c_str()), fileName);
+		}
+	}
+	closedir(dp);
+}

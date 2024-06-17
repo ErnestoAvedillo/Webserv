@@ -3,6 +3,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <dirent.h>
 #include "utils.hpp"
 #include "ExtendedString.hpp"
 #define DEFAULT_ERROR_FILE "./StateCodes/ErrorTemplate.html"
@@ -64,4 +65,5 @@ public:
 	ExtendedString getFileContentForStateCode(int);
 	void setCurrentCode(int);
 	int getCurrentCode();
+	void loadErrorPageFromDir(const ExtendedString &);
 };

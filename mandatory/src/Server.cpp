@@ -158,7 +158,8 @@ void Server::checkVariables()
 		exit(1);
 	if (Parser::checkRoot(this->getRoot()) == false)
 		exit (1);
-	Parser::checkErrorPage(this->getErrorPage());
+	if (Parser::checkErrorPage(this->getErrorPage()))
+		this->loadErrorPageFromDir(this->getErrorPage());
 	Parser::checkIndex(this->getIndex(), this->getRoot());
 	this->setMaxClientBodySize(Parser::checkClientBodySize(this->getMaxClientBodySizeStr()));
 	this->autoIndex = Parser::checkAutoIndex(this->autoIndexStr);
