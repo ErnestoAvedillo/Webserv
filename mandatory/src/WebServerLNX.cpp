@@ -98,7 +98,6 @@ int WebServer::acceptNewEvent(int curfd)
 			}
 		}
 		fcntl(fd, F_SETFL, O_NONBLOCK, O_CLOEXEC);
-		std::cout << "clonning fd: " << fd << std::endl;
 		acceptedSocket[fd] = serverSocket[curfd]->clone(fd);
 		this->addEvent(fd, EPOLLIN | EPOLLET);
 	}
