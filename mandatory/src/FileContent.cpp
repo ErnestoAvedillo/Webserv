@@ -8,6 +8,8 @@ FileContent::FileContent(Server *srv)
 	sendComplete = false;
 	isFileOpen = false;
 	isFistFragment = true;
+	isAutoIndex = false;
+	isCgi = false;
 	this->cgiModule = srv->cgiModuleClone();
 	if(server->getAutoIndex())
 	{
