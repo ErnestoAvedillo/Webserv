@@ -146,7 +146,7 @@ bool FileContent::setFileName(const std::string &file_name)
 	}
 	return isFileOpen;
 }
-void FileContent::setAutoIndex(bool autoIndex)
+void FileContent::setIsAutoIndex(bool autoIndex)
 {
 	this->isAutoIndex = autoIndex;
 }

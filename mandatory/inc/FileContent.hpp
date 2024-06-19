@@ -55,7 +55,5 @@ public:
 	std::string getLastModified();
 	size_t getContentSize();
 	void setRange(size_t );
-	void setAutoIndex(bool autoIndex);
-	// void 
-			// this->fileContent->setCgiPath(locations[i]->getCgiPath());
+	void setIsAutoIndex(bool autoIndex);
 };

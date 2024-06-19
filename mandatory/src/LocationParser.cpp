@@ -95,16 +95,77 @@ off_t getFileSize(const std::string &filename)
 	return rc == 0 ? stat_buf.st_size : -1;
 }
 
+std::string escapeNonPrintableChars(const std::string& str) {
+    std::string escapedStr;
+    for (size_t i = 0; i < str.size(); ++i) {
+        switch (str[i]) {
+            case '\n':
+                escapedStr += "\\n";
+                break;
+            case '\r':
+                escapedStr += "\\r";
+                break;
+            case '\t':
+                escapedStr += "\\t";
+                break;
+            // Add more cases for other non-printable characters if needed
+            default:
+                escapedStr += str[i];
+                break;
+        }
+    }
+    return escapedStr;
+}
 
-
-LocationParser::LocationParser(Header request, Server *server, Receive *receiver)
+bool isBadRequest(std::string request)
 {
-	this->request = request;
-	this->receiver = receiver;
-	this->server = server;
-	this->request = request;
+	// std::cout << "REQUEST: " << escapeNonPrintableChars(request) << std::endl;
+	std::istringstream iss(request);
+	std::string line;
 
-	this->server = server;
+	if (request.empty())
+        return true;
+	std::getline(iss, line);
+	if (std::count(line.begin(), line.end(), ' ') != 2 && splitString(line, ' ').size() != 3)
+		return true;
+    while (std::getline(iss, line))
+	{   
+       if (line.empty() || line == "\r")
+            break ;
+        size_t colonPos = line.find(':');
+		if (colonPos == std::string::npos)
+			return true;
+	}
+	return false;
+}
+
+bool isMethodImplemented(std::string method)
+{
+	if	(method == "HEAD" || method == "PUT" || method == "CONNECT" || method == "OPTIONS" || method == "TRACE" || method == "PATCH")
+		return false;
+	return true;
+}
+
+bool isVersionImplemented(std::string version)
+{
+	if (version == "HTTP/1.1")
+		return true;
+	return false;
+}
+
+bool isMethodNotStandard(std::string method)
+{
+	if (method != "GET" && method != "POST" && method != "DELETE")
+		return true;
+	return false;
+}
+
+
+LocationParser::LocationParser(Header request_, Server *server_, Receive *receiver_)
+{
+	this->request = request_;
+	this->receiver = receiver_;
+	this->server = server_;
 	std::string path;
 	switch (this->matchingLocation())
 	{
@@ -121,10 +182,36 @@ LocationParser::LocationParser(Header request, Server *server, Receive *receiver
 		case REDIRECT:
 			return ;
 	}
-
+	
 	this->request.setPath(decodeURL(this->request.getPath()));
 
-	std::cout << request.getPath() << std::endl;
+	// std::cout << request.getPath() << std::endl;
+	if (isBadRequest(receiver->getRequest()))//|| isURIMalformed(this->request.getPath())
+	{
+		response.setStatus("400 Bad Request");
+		return;
+	}
+	if (!isMethodImplemented(this->request.getMethod()))
+	{
+		response.setStatus("501 Not Implemented");
+		return;
+	}
+	if (isMethodNotStandard(this->request.getMethod()))
+	{
+		response.setStatus("405 Method Not Allowed");
+		return;
+	}
+	if (!isVersionImplemented(this->request.getProtocol()))
+	{
+		response.setStatus("505 HTTP Version Not Supported");
+		return;
+	}
+	if (getFileSize(this->request.getPath()) > this->server->getMaxClientBodySize())
+	{
+		response.setStatus("413 Request Entity Too Large");
+		return;
+	}
+	
 	// std::cout << "FILESIZE " << getFileSize(this->request.getPath()) << std::endl;
 	// std::cout << "MAXFILESIZE " << this->server->getMaxClientBodySize() << std::endl;
 	if (getFileSize(this->request.getPath()) > this->server->getMaxClientBodySize())
@@ -137,28 +224,29 @@ LocationParser::LocationParser(Header request, Server *server, Receive *receiver
 		if (getMimeType(this->request.getPath()).find("video") != std::string::npos)
 		{
 			// this->fileContent->setRange(stringToSizeT(request.getAttribute("Range")));
-			// if (this->fileContent->setFileName(this->request.getPath()))
-			// {
+			if (isFilePermissions(this->request.getPath(), F_OK | R_OK) == 1)
+			{
+			
 				response.setStatus("206 Partial Content");
 				response.setContentType(this->request.getPath());
 				// response.setLastModified(this->fileContent->getLastModified());
 				// response.setContentLength(this->fileContent->getContentSize() - stringToSizeT(request.getAttribute("Range")));
 				// response.setAttribute("Content-Range", "bytes 0-" + toString(this->fileContent->getContentSize() - 1) + "/" + toString(this->fileContent->getContentSize()) );
 				response.setServer(server->getServerName());
-			// }
-			// else
-			// 	response.setStatus("404 Not Found");
+			}
+			else
+				response.setStatus("404 Not Found");
 		}
-		// if (this->fileContent->setFileName(this->request.getPath()))
-		// {
+		if (isFilePermissions(this->request.getPath(), F_OK | R_OK) == 1)
+		{
 			response.setContentType(this->request.getPath());
 			// response.setLastModified(this->fileContent->getLastModified());
 			// response.setContentLength(this->fileContent->getContentSize());
 			response.setStatus("200 OK");
 			response.setServer(server->getServerName());
-		// }
-		// else
-		// 	response.setStatus("404 Not Found");
+		}
+		else
+			response.setStatus("404 Not Found");
 	}
 	else if (this->request.getMethod() == "POST")
 	{

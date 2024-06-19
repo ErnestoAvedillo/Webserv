@@ -41,6 +41,7 @@ public:
 	void setProtocol(std::string protocol);
 	std::string getMethod();
 	ExtendedString getPath();
+	std::string getProtocol();
 	std::map<std::string, std::string> getAttributes();
 	std::string getContentType();
 	std::string getAttribute(std::string key);

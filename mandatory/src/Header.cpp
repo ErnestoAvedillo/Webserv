@@ -36,6 +36,8 @@ Header::Header(std::string receiveHeader)
 				method = line.substr(0, firstSpace);
 				path = line.substr(firstSpace + 1, secondSpace - firstSpace - 1);
 				protocol = line.substr(secondSpace + 1);
+				if (!protocol.empty() && protocol[protocol.size() - 1] == '\r')
+					protocol.erase(protocol.size() - 1);
 
 			}
 		}
@@ -66,6 +68,11 @@ std::string Header::getMethod()
 ExtendedString Header::getPath()
 {
 	return path;
+}
+
+std::string Header::getProtocol()
+{
+	return protocol;
 }
 
 void Header::setPath(std::string path)

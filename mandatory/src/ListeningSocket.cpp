@@ -17,7 +17,6 @@ ListeningSocket::ListeningSocket(int myPort, Server *srv)
 
 ListeningSocket::ListeningSocket(Server *srv)
 {
-	std::cout << "ListeningSocket::ListeningSocket(Server *srv)" << std::endl;
 	// this->client = new Client(srv);
 	this->receiver = new Receive();
 	this->fileContent = new FileContent(srv);
@@ -150,7 +149,7 @@ void ListeningSocket::loadRequest(std::vector<Server *> servers)
 	LocationParser LocationParser(this->request, this->server, this->receiver);
 	this->request = LocationParser.getRequest();
 	this->response = LocationParser.getResponse();
-	// this->fileContent->setIsAutoIndex(this->server->getAutoIndex());
+	this->fileContent->setIsAutoIndex(this->server->getAutoIndex());
 	// this->fileContent->setIsCGI(this->server->getCGI());
 	this->fileContent->setFileName(this->request.getPath());
 }
