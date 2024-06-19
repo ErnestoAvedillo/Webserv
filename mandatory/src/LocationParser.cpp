@@ -1,25 +1,4 @@
-#include "../inc/Client.hpp"
-
-Client::Client() {}
-
-Client::Client(Server *srv)
-{
-	this->fileContent = new FileContent(srv);
-	this->server = srv;
-}
-
-Client::~Client()
-{
-	delete this->fileContent;
-}
-
-// Cambiar nombres a setters ?
-// void Client::addKeyReq(std::string const &key, std::string const &value){ this->Request[key] = value; }
-// void Client::addKeyType(std::string const &value) { this->Request[REQ_TYPE] = value; }
-// void Client::addKeyFile(std::string const &value) { this->Request[REQ_FILE] = value; }
-// void Client::addKeyVers(std::string const &value) { this->Request[REQ_VER] = value; }
-
-void Client::setServer(Server *srv) { this->server = srv; }
+#include "../inc/LocationParser.hpp"
 
 static std::string getMimeType(std::string contentType)
 {
@@ -34,99 +13,7 @@ static std::string getMimeType(std::string contentType)
 		 return ("text/html");
 }
 
-void Client::matchServerName(std::vector<Server *> servers)
-{
-	std::string server_name = request.getAttribute("Host").substr(0, request.getAttribute("Host").find(":"));
-	if (server_name.empty())
-		return ;
-	for (size_t i = 0; i < servers.size(); i++)
-	{
-		if (servers[i]->getServerName() == server_name)
-		{
-			this->setServer(servers[i]);
-			break;
-		}
-	}
-}
-
-void Client::loadCompleteClient(Receive *receiver, std::vector<Server *> servers)
-{
-	this->setRequestHeader(receiver->getRequest());
-	matchServerName(servers);
-	this->loadDataHeader(receiver);
-}
-std::string Client::normalizePath(std::string path)
-{
-	while (path.find("..") != std::string::npos)
-		path.erase(path.find(".."), 2);
-
-	std::vector<std::string> parts = splitString(path, '/');
-	std::string normalizePath;
-	for (size_t i = 0; i < parts.size(); i++)
-	{
-		if (i == 0)
-		{
-			if (parts[i] == ".")
-				normalizePath = parts[i] + "/";
-			else if (i == (parts.size() - 1))
-				normalizePath = "/" + parts[i];
-			else
-				normalizePath = "/" + parts[i] + "/";
-		}
-		else if (i == (parts.size() - 1))
-			normalizePath += parts[i];
-		else
-			normalizePath += parts[i] + "/";
-	}
-	return (normalizePath);
-}
-
-std::string Client::getFilePath()
-{
-	std::string filePath = normalizePath(server->getRoot()) + this->request.getPath();
-	if (filePath.at(filePath.size() - 1) == '/')
-		filePath += server->getIndex();
-	filePath = filePath.substr(0, filePath.find("?"));
-	return (filePath);
-}
-
-std::string Client::getFileContent()
-{
-	std::string content;
-	content = this->fileContent->getContent();
-	return (content);
-}
-
-std::string Client::getAnswerToSend()
-{
-	std::string answer;
-	std::string filePath = this->fileContent->getFileName();
-	std::string file_content = getFileContent();
-	if (this->fileContent->getFirstFragment())
-	{
-		if (response.getContentType().find("video/") != std::string::npos && this->request.getAttribute("Sec-Fetch-Dest").find("document") != std::string::npos)
-			response.setAttribute("Accept-Ranges", "bytes");
-		answer = response.generateHeader() + file_content;
-		this->fileContent->setFirstFragment(false);
-	}
-	else
-		answer = file_content;
-
-	return (answer);
-}
-
-bool Client::isSendComplete()
-{
-	return this->fileContent->isSendComplete();
-}
-
-
-void Client::setRequestHeader(std::string requestHeader)
-{
-	this->request = Header(requestHeader);
-}
-
-int Client::isAllowedMethod(Location *location)
+int LocationParser::isAllowedMethod(Location *location)
 {
 	if (this->request.getMethod() == "GET")
 	{
@@ -156,7 +43,8 @@ int Client::isAllowedMethod(Location *location)
 	return OK;
 }
 
-int Client::matchingLocation()
+
+int LocationParser::matchingLocation()
 {
 	std::vector<Location *> locations = this->server->getLocations();
 	for (size_t i = 0; i < locations.size(); i++)
@@ -165,8 +53,8 @@ int Client::matchingLocation()
 		{
 			if (isAllowedMethod(locations[i]) == NOT_ALLOWED)
 				return NOT_ALLOWED;
-			this->fileContent->setAutoIndex(locations[i]->getAutoIndex());
-			this->fileContent->setIsCGI(locations[i]->getIsCgi());
+			// this->fileContent->setAutoIndex(locations[i]->getAutoIndex());
+			// this->fileContent->setIsCGI(locations[i]->getIsCgi());
 			ExtendedString tmp;
 			switch (locations[i]->getLocationType())
 			{
@@ -209,8 +97,14 @@ off_t getFileSize(const std::string &filename)
 
 
 
-void Client::loadDataHeader(Receive *receiver)
+LocationParser::LocationParser(Header request, Server *server, Receive *receiver)
 {
+	this->request = request;
+	this->receiver = receiver;
+	this->server = server;
+	this->request = request;
+
+	this->server = server;
 	std::string path;
 	switch (this->matchingLocation())
 	{
@@ -220,7 +114,7 @@ void Client::loadDataHeader(Receive *receiver)
 			if (isDirPermissions(path, F_OK | R_OK) == true)
 				path += this->server->getIndex();
 			this->request.setPath(path);
-			this->fileContent->setAutoIndex(server->getAutoIndex());
+			// this->fileContent->setAutoIndex(server->getAutoIndex());
 			break ;
 		case NOT_ALLOWED :
 			return ;
@@ -242,33 +136,33 @@ void Client::loadDataHeader(Receive *receiver)
 	{
 		if (getMimeType(this->request.getPath()).find("video") != std::string::npos)
 		{
-			this->fileContent->setRange(stringToSizeT(request.getAttribute("Range")));
-			if (this->fileContent->setFileName(this->request.getPath()))
-			{
+			// this->fileContent->setRange(stringToSizeT(request.getAttribute("Range")));
+			// if (this->fileContent->setFileName(this->request.getPath()))
+			// {
 				response.setStatus("206 Partial Content");
 				response.setContentType(this->request.getPath());
-				response.setLastModified(this->fileContent->getLastModified());
-				response.setContentLength(this->fileContent->getContentSize() - stringToSizeT(request.getAttribute("Range")));
-				response.setAttribute("Content-Range", "bytes 0-" + toString(this->fileContent->getContentSize() - 1) + "/" + toString(this->fileContent->getContentSize()) );
+				// response.setLastModified(this->fileContent->getLastModified());
+				// response.setContentLength(this->fileContent->getContentSize() - stringToSizeT(request.getAttribute("Range")));
+				// response.setAttribute("Content-Range", "bytes 0-" + toString(this->fileContent->getContentSize() - 1) + "/" + toString(this->fileContent->getContentSize()) );
 				response.setServer(server->getServerName());
-			}
-			else
-				response.setStatus("404 Not Found");
+			// }
+			// else
+			// 	response.setStatus("404 Not Found");
 		}
-		if (this->fileContent->setFileName(this->request.getPath()))
-		{
+		// if (this->fileContent->setFileName(this->request.getPath()))
+		// {
 			response.setContentType(this->request.getPath());
-			response.setLastModified(this->fileContent->getLastModified());
-			response.setContentLength(this->fileContent->getContentSize());
+			// response.setLastModified(this->fileContent->getLastModified());
+			// response.setContentLength(this->fileContent->getContentSize());
 			response.setStatus("200 OK");
 			response.setServer(server->getServerName());
-		}
-		else
-			response.setStatus("404 Not Found");
+		// }
+		// else
+		// 	response.setStatus("404 Not Found");
 	}
 	else if (this->request.getMethod() == "POST")
 	{
-		if (receiver->getRequest().find("POST") != std::string::npos && receiver->getisform() == false)
+		if (this->request.getMethod() == "POST" && receiver->getisform() == false)
 		{
 			std::string body = receiver->getBody().substr(receiver->getBody().find("\r\n\r\n") + 4);
 			std::string postheader = receiver->getBody().substr(0, receiver->getBody().find("\r\n\r\n") + 4);
@@ -315,4 +209,21 @@ void Client::loadDataHeader(Receive *receiver)
 		response.setStatus("405 Method Not Allowed");
 		response.setServer(server->getServerName());
 	}
+
+}
+
+LocationParser::~LocationParser()
+{
+
+
+}
+
+Header LocationParser::getResponse()
+{
+	return this->response;
+}
+
+Header LocationParser::getRequest()
+{
+	return this->request;
 }

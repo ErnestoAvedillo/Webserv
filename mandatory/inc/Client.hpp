@@ -27,21 +27,21 @@ class FileContent;
 
 
 
-enum LocationStatus
-{
-	/* Correct */
-	NO_LOCATION,
-	OK,
-	NOT_ALLOWED,
-	NOT_FOUND,
-	NOT_IMPLEMENTED,
-	REQUEST_ENTITY_TOO_LARGE,
-	REQUEST_URI_TOO_LONG,
-	INTERNAL_SERVER_ERROR,
-	NOT_MODIFIED,
-	REDIRECT,
+// enum LocationStatus
+// {
+// 	/* Correct */
+// 	NO_LOCATION,
+// 	OK,
+// 	NOT_ALLOWED,
+// 	NOT_FOUND,
+// 	NOT_IMPLEMENTED,
+// 	REQUEST_ENTITY_TOO_LARGE,
+// 	REQUEST_URI_TOO_LONG,
+// 	INTERNAL_SERVER_ERROR,
+// 	NOT_MODIFIED,
+// 	REDIRECT,
 
-};
+// };
 
 class FileContent;
 #include "../inc/FileContent.hpp"
