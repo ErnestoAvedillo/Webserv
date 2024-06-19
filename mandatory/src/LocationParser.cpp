@@ -183,9 +183,9 @@ LocationParser::LocationParser(Header request_, Server *server_, Receive *receiv
 			return ;
 	}
 	
+	this->request.setPath(this->request.getPath().substr(0, this->request.getPath().find("?")));
 	this->request.setPath(decodeURL(this->request.getPath()));
-
-	// std::cout << request.getPath() << std::endl;
+	std::cout << request.getPath() << std::endl;
 	if (isBadRequest(receiver->getRequest()))//|| isURIMalformed(this->request.getPath())
 	{
 		response.setStatus("400 Bad Request");
