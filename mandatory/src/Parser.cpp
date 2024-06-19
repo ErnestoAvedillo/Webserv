@@ -103,7 +103,7 @@ bool Parser::checkErrorPage(std::string errorPage)
 	{
 		std::string errorfile = entry->d_name;
 		for (int code = 100; code <= 599; ++code) {
-            std::string errorCodeFile = std::to_string(code) + ".html";
+            std::string errorCodeFile = toString(code) + ".html";
             if (errorfile == errorCodeFile) {
                 
 				foundFiles.push_back(errorfile);
@@ -202,7 +202,7 @@ long long convertToBytes(const std::string& sizeStr) {
     }
 
     // Extract the numeric part and the unit part
-    double sizeValue = std::stod(sizeStr.substr(0, pos));
+    double sizeValue = std::atoll(sizeStr.substr(0, pos).c_str());
     std::string unit = sizeStr.substr(pos);
 
     // Convert the unit to lowercase for easier comparison

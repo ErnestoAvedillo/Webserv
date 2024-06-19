@@ -6,11 +6,12 @@ ListeningSocket::ListeningSocket(int myPort, Server *srv)
 	this->server = srv;
 	// this->client = new Client(srv);
 	this->receiver = new Receive();
-
+	this->fileContent = new FileContent(srv);
+	
 	this->socketFd = -1;
 	if (this->startListening())
 	{
-		std::string msg = "Listening on " + std::string(CHR_YELLOW) + srv->getHost() + RESET + "\t\t" + std::string(CHR_GREEN) + std::to_string(myPort) + RESET + "\t" + CHR_GREEN + std::to_string(this->socketFd);
+		std::string msg = "Listening on " + std::string(CHR_YELLOW) + srv->getHost() + RESET + "\t\t" + std::string(CHR_GREEN) + toString(myPort) + RESET + "\t" + CHR_GREEN + toString(this->socketFd);
 		printLog("NOTICE", msg);
 	}
 }
@@ -27,6 +28,7 @@ ListeningSocket::~ListeningSocket()
 {
 	stopListening();
 	delete this->receiver;
+	delete this->fileContent;
 }
 
 bool ListeningSocket::startListening()
@@ -61,7 +63,7 @@ bool ListeningSocket::startListening()
 	// Bind the socket to the server address
 	if (bind(socketFd, (struct sockaddr *)&serverAddress, sizeof(serverAddress)) < 0)
 	{
-		printLog("ERROR", "Failed to bind socket to address of port " CHR_RED + std::to_string(port) + RESET);
+		printLog("ERROR", "Failed to bind socket to address of port " CHR_RED + toString(port) + RESET);
 		return false;
 	}
 
