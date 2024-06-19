@@ -64,7 +64,7 @@ bool Receive::receiveHeader(int fd)
         std::string tmp = request + this->buffer;
         if (tmp.find("\r\n\r\n") != std::string::npos || tmp.find("\n\n") != std::string::npos)
         {
-            request += tmp.substr(0, tmp.find("\r\n\r\n"));
+            request = tmp.substr(0, tmp.find("\r\n\r\n"));
             Header header(request);
             std::map<std::string, std::string>  Attributes = header.getAttributes();
             std::string log = CHR_BLUE + header.getMethod() + RESET + "\t" + Attributes["Host"] + CHR_CYAN + header.getPath() + RESET;
