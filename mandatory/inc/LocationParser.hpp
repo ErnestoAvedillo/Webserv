@@ -33,6 +33,8 @@ class LocationParser
 		// FileContent *fileContent;
 		Receive *receiver;
 		std::string path;
+		bool isAutoIndex;
+		bool isCGI;
 		// std::string
 	public:
 		LocationParser(Header request, Server *server, Receive *receiver);
@@ -41,5 +43,7 @@ class LocationParser
 		int isAllowedMethod(Location *location);
 		Header getRequest();
 		Header getResponse();
+		bool getIsAutoIndex();
+		bool getIsCGI();
 
 };

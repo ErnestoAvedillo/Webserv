@@ -13,6 +13,16 @@ static std::string getMimeType(std::string contentType)
 		 return ("text/html");
 }
 
+bool LocationParser::getIsAutoIndex()
+{
+	return this->isAutoIndex;
+}
+
+bool LocationParser::getIsCGI()
+{
+	return this->isCGI;
+}
+
 int LocationParser::isAllowedMethod(Location *location)
 {
 	if (this->request.getMethod() == "GET")
@@ -53,7 +63,8 @@ int LocationParser::matchingLocation()
 		{
 			if (isAllowedMethod(locations[i]) == NOT_ALLOWED)
 				return NOT_ALLOWED;
-			// this->fileContent->setAutoIndex(locations[i]->getAutoIndex());
+			this->isAutoIndex = locations[i]->getAutoIndex();
+			this->isCGI = locations[i]->getIsCgi();
 			// this->fileContent->setIsCGI(locations[i]->getIsCgi());
 			ExtendedString tmp;
 			switch (locations[i]->getLocationType())
@@ -242,6 +253,12 @@ LocationParser::LocationParser(Header request_, Server *server_, Receive *receiv
 			response.setContentType(this->request.getPath());
 			// response.setLastModified(this->fileContent->getLastModified());
 			// response.setContentLength(this->fileContent->getContentSize());
+			response.setStatus("200 OK");
+			response.setServer(server->getServerName());
+		}
+		else if (isDirPermissions(this->request.getPath(), F_OK | R_OK) == 1 && this->isAutoIndex == true)
+		{
+			response.setContentType("text/html");
 			response.setStatus("200 OK");
 			response.setServer(server->getServerName());
 		}
