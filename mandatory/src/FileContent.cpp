@@ -29,6 +29,8 @@ FileContent::FileContent(const std::string &MyfileName, Server *srv)
 	startRange = 0;
 	sendComplete = false;
 	isFistFragment = true;
+	isAutoIndex = false;
+	isCgi = false;
 	this->cgiModule = srv->cgiModuleClone();
 	if(server->getAutoIndex())
 	{
