@@ -76,7 +76,7 @@ std::string FileContent::getContent()
 			completeContentSize = content.size();
 			return content;
 		}
-		else if (server->getAutoIndex() && this->fileStat.st_mode & S_IFDIR)
+		else if (this->isAutoIndex && this->fileStat.st_mode & S_IFDIR)
 		{
 			content = listDir->getContentToSend();
 			completeContentSize = content.size();
