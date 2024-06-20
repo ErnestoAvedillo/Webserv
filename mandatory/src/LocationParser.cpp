@@ -132,21 +132,30 @@ std::string escapeNonPrintableChars(const std::string& str) {
 bool isBadRequest(std::string request)
 {
 	// std::cout << "REQUEST: " << escapeNonPrintableChars(request) << std::endl;
-	std::istringstream iss(request);
-	std::string line;
-
 	if (request.empty())
         return true;
-	std::getline(iss, line);
-	if (std::count(line.begin(), line.end(), ' ') != 2 && splitString(line, ' ').size() != 3)
-		return true;
+	std::istringstream iss(request);
+	std::string line;
+	bool firstLine = true;
+
     while (std::getline(iss, line))
 	{   
-       if (line.empty() || line == "\r")
-            break ;
-        size_t colonPos = line.find(':');
-		if (colonPos == std::string::npos)
-			return true;
+		if (firstLine)
+		{
+			if (std::count(line.begin(), line.end(), ' ') != 2 && splitString(line, ' ').size() != 3)
+				return true;
+			firstLine = false;
+			// std::cout << "FIRST LINE " << line << std::endl;
+		}
+		else 
+		{
+			// std::cout << "line " << line << std::endl; 
+			if (line.empty() || line == "\r")
+					break ;
+			
+			if (line.find(':') == std::string::npos)
+				return true;
+		}
 	}
 	return false;
 }
@@ -196,7 +205,7 @@ LocationParser::LocationParser(Header request_, Server *server_, Receive *receiv
 		case REDIRECT:
 			return ;
 	}
-	
+
 	if (this->request.getPath().find("?") != std::string::npos)
 		this->request.setPath(this->request.getPath().substr(0, this->request.getPath().find("?")));
 	this->request.setPath(decodeURL(this->request.getPath()));
@@ -226,7 +235,6 @@ LocationParser::LocationParser(Header request_, Server *server_, Receive *receiv
 		response.setStatus("413 Request Entity Too Large");
 		return;
 	}
-	
 	// std::cout << "FILESIZE " << getFileSize(this->request.getPath()) << std::endl;
 	// std::cout << "MAXFILESIZE " << this->server->getMaxClientBodySize() << std::endl;
 	if (getFileSize(this->request.getPath()) > this->server->getMaxClientBodySize())
@@ -275,9 +283,28 @@ LocationParser::LocationParser(Header request_, Server *server_, Receive *receiv
 	{
 		if (this->request.getMethod() == "POST" && receiver->getisform() == false)
 		{
-			std::string body = receiver->getBody().substr(receiver->getBody().find("\r\n\r\n") + 4);
-			std::string postheader = receiver->getBody().substr(0, receiver->getBody().find("\r\n\r\n") + 4);
-
+			std::string body;
+			std::string postheader;
+			if (receiver->getBody().empty())
+			{
+				response.setStatus("400 Bad Request");
+				return ;
+			}
+			if (receiver->getBody().find("\r\n\r\n") != std::string::npos)
+			{
+				body = receiver->getBody().substr(receiver->getBody().find("\r\n\r\n") + 4);
+				postheader = receiver->getBody().substr(0, receiver->getBody().find("\r\n\r\n") + 4);
+			}
+			if (receiver->getBody().find("\n\n") != std::string::npos)
+			{
+				body = receiver->getBody().substr(receiver->getBody().find("\n\n") + 4);
+				postheader = receiver->getBody().substr(0, receiver->getBody().find("\n\n") + 4);
+			}
+			if (this->request.getAttribute("Content-Length") == "")
+			{
+				response.setStatus("411 Length Required");
+				return ;
+			}
 			std::vector<std::string> lines = splitString(postheader, '\n');
 			for (size_t i = 0; i < lines.size(); i++)
 			{
@@ -320,7 +347,7 @@ LocationParser::LocationParser(Header request_, Server *server_, Receive *receiv
 		response.setStatus("405 Method Not Allowed");
 		response.setServer(server->getServerName());
 	}
-
+	// /zzz
 }
 
 LocationParser::~LocationParser()
