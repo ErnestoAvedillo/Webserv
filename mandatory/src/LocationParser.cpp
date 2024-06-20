@@ -94,7 +94,7 @@ int LocationParser::matchingLocation()
 					break ;
 			}
 			return true;
-		} 
+		}
 	}
 	return NO_LOCATION;
 
@@ -179,7 +179,7 @@ LocationParser::LocationParser(Header request_, Server *server_, Receive *receiv
 	this->receiver = receiver_;
 	this->server = server_;
 	this->isCGI = false;
-	this->isAutoIndex = false;
+	this->isAutoIndex = server->getAutoIndex();
 	std::string path;
 	switch (this->matchingLocation())
 	{
@@ -262,7 +262,7 @@ LocationParser::LocationParser(Header request_, Server *server_, Receive *receiv
 			response.setStatus("200 OK");
 			// response.setServer(server->getServerName());
 		}
-		else if (isDirPermissions(this->request.getPath(), F_OK | R_OK) == 1 && this->isAutoIndex == true)
+		else if (isDirPermissions(this->request.getPath(), F_OK | R_OK) == true && this->isAutoIndex == true)
 		{
 			response.setContentType("text/html");
 			response.setStatus("200 OK");
