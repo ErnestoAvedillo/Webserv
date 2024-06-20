@@ -6,7 +6,7 @@ ListeningSocket::ListeningSocket(int myPort, Server *srv)
 	this->server = srv;
 	// this->client = new Client(srv);
 	this->receiver = new Receive();
-	// this->fileContent = new FileContent(srv);
+	this->fileContent = new FileContent(srv);
 	
 	this->socketFd = -1;
 	if (this->startListening())
