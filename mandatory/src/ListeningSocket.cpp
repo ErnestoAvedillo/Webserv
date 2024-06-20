@@ -6,7 +6,7 @@ ListeningSocket::ListeningSocket(int myPort, Server *srv)
 	this->server = srv;
 	// this->client = new Client(srv);
 	this->receiver = new Receive();
-	this->fileContent = new FileContent(srv);
+	// this->fileContent = new FileContent(srv);
 	
 	this->socketFd = -1;
 	if (this->startListening())
@@ -115,6 +115,7 @@ std::string ListeningSocket::getAnswerToSend()
 {
 	std::string answer;
 	std::string filePath = this->fileContent->getFileName();
+
 	std::string file_content = this->fileContent->getContent();
 	if (this->fileContent->getFirstFragment())
 	{
@@ -153,5 +154,8 @@ void ListeningSocket::loadRequest(std::vector<Server *> servers)
 	this->response = LocationParser.getResponse();
 	this->fileContent->setIsAutoIndex(LocationParser.getIsAutoIndex());
 	this->fileContent->setIsCGI(LocationParser.getIsCGI());
-	this->fileContent->setFileName(this->request.getPath());
+	if (this->fileContent->setFileName(this->request.getPath()))
+	{
+		std::cout << "File name set" << std::endl;
+	}
 }

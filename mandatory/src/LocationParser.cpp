@@ -59,13 +59,14 @@ int LocationParser::matchingLocation()
 	std::vector<Location *> locations = this->server->getLocations();
 	for (size_t i = 0; i < locations.size(); i++)
 	{
+		// std::cout << "PATH: " << this->request.getPath() << std::endl;
 		if (this->request.getPath().find(locations[i]->getName()) != std::string::npos)
 		{
+			// std::cout << "LOCATION: " << locations[i]->getName() << std::endl;
 			if (isAllowedMethod(locations[i]) == NOT_ALLOWED)
 				return NOT_ALLOWED;
 			this->isAutoIndex = locations[i]->getAutoIndex();
 			this->isCGI = locations[i]->getIsCgi();
-			// this->fileContent->setIsCGI(locations[i]->getIsCgi());
 			ExtendedString tmp;
 			switch (locations[i]->getLocationType())
 			{
@@ -177,6 +178,8 @@ LocationParser::LocationParser(Header request_, Server *server_, Receive *receiv
 	this->request = request_;
 	this->receiver = receiver_;
 	this->server = server_;
+	this->isCGI = false;
+	this->isAutoIndex = false;
 	std::string path;
 	switch (this->matchingLocation())
 	{
@@ -194,9 +197,10 @@ LocationParser::LocationParser(Header request_, Server *server_, Receive *receiv
 			return ;
 	}
 	
-	this->request.setPath(this->request.getPath().substr(0, this->request.getPath().find("?")));
+	if (this->request.getPath().find("?") != std::string::npos)
+		this->request.setPath(this->request.getPath().substr(0, this->request.getPath().find("?")));
 	this->request.setPath(decodeURL(this->request.getPath()));
-	// std::cout << request.getPath() << std::endl;
+	std::cout << request.getPath() << std::endl;
 	if (isBadRequest(receiver->getRequest()))//|| isURIMalformed(this->request.getPath())
 	{
 		response.setStatus("400 Bad Request");
@@ -248,19 +252,21 @@ LocationParser::LocationParser(Header request_, Server *server_, Receive *receiv
 			else
 				response.setStatus("404 Not Found");
 		}
-		if (isFilePermissions(this->request.getPath(), F_OK | R_OK) == 1)
+		else if (isFilePermissions(this->request.getPath(), F_OK | R_OK) == 1)
 		{
+			std::cout << this->request.getPath() << std::endl;
+
 			response.setContentType(this->request.getPath());
 			// response.setLastModified(this->fileContent->getLastModified());
 			// response.setContentLength(this->fileContent->getContentSize());
 			response.setStatus("200 OK");
-			response.setServer(server->getServerName());
+			// response.setServer(server->getServerName());
 		}
 		else if (isDirPermissions(this->request.getPath(), F_OK | R_OK) == 1 && this->isAutoIndex == true)
 		{
 			response.setContentType("text/html");
 			response.setStatus("200 OK");
-			response.setServer(server->getServerName());
+			// response.setServer(server->getServerName());
 		}
 		else
 			response.setStatus("404 Not Found");
