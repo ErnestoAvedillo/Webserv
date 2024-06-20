@@ -222,14 +222,14 @@ LocationParser::LocationParser(Header request_, Server *server_, Receive *receiv
 	}
 	if (isMethodNotStandard(this->request.getMethod()))
 	{
-		response.setStatus("405 Method Not Allowed");
+		response.setStatus("405 Method Not Allowed"); 	
 		return;
 	}
 	if (!isVersionImplemented(this->request.getProtocol()))
 	{
 		response.setStatus("505 HTTP Version Not Supported");
 		return;
-	}
+	}	
 	if (getFileSize(this->request.getPath()) > this->server->getMaxClientBodySize())
 	{
 		response.setStatus("413 Request Entity Too Large");
@@ -242,8 +242,10 @@ LocationParser::LocationParser(Header request_, Server *server_, Receive *receiv
 		response.setStatus("413 Request Entity Too Large");
 		return;
 	}
+	// std::cout << request.getPath() << std::endl;
 	if (this->request.getMethod() == "GET")
 	{
+		std::cout << "GET" << std::endl;
 		if (getMimeType(this->request.getPath()).find("video") != std::string::npos)
 		{
 			// this->fileContent->setRange(stringToSizeT(request.getAttribute("Range")));
@@ -262,7 +264,7 @@ LocationParser::LocationParser(Header request_, Server *server_, Receive *receiv
 		}
 		else if (isFilePermissions(this->request.getPath(), F_OK | R_OK) == 1)
 		{
-			std::cout << this->request.getPath() << std::endl;
+			// std::cout << "FILEPERMISIOn" << this->request.getPath() << std::endl;
 
 			response.setContentType(this->request.getPath());
 			// response.setLastModified(this->fileContent->getLastModified());
@@ -272,34 +274,25 @@ LocationParser::LocationParser(Header request_, Server *server_, Receive *receiv
 		}
 		else if (isDirPermissions(this->request.getPath(), F_OK | R_OK) == true && this->isAutoIndex == true)
 		{
+			std::cout << "PATTTH" << this->request.getPath() << std::endl;
 			response.setContentType("text/html");
 			response.setStatus("200 OK");
-			
 		}
 		else
 			response.setStatus("404 Not Found");
 	}
 	else if (this->request.getMethod() == "POST")
 	{
+		std::cout << this->receiver->getisform() << std::endl;
 		if (this->request.getMethod() == "POST" && receiver->getisform() == false)
 		{
-			std::string body;
-			std::string postheader;
 			if (receiver->getBody().empty())
 			{
 				response.setStatus("400 Bad Request");
 				return ;
 			}
-			if (receiver->getBody().find("\r\n\r\n") != std::string::npos)
-			{
-				body = receiver->getBody().substr(receiver->getBody().find("\r\n\r\n") + 4);
-				postheader = receiver->getBody().substr(0, receiver->getBody().find("\r\n\r\n") + 4);
-			}
-			if (receiver->getBody().find("\n\n") != std::string::npos)
-			{
-				body = receiver->getBody().substr(receiver->getBody().find("\n\n") + 4);
-				postheader = receiver->getBody().substr(0, receiver->getBody().find("\n\n") + 4);
-			}
+			std::string body = receiver->getBody();
+			std::string postheader = receiver->getPostHeader();
 			if (this->request.getAttribute("Content-Length") == "")
 			{
 				response.setStatus("411 Length Required");
@@ -310,6 +303,7 @@ LocationParser::LocationParser(Header request_, Server *server_, Receive *receiv
 			{
 				if (lines[i].find("filename=") != std::string::npos)
 				{
+					std::cout << "filename: " << lines[i] << std::endl;
 					std::string filename = lines[i].substr(lines[i].find("filename=") + 10, lines[i].size());
 					filename = filename.substr(0, filename.find("\""));
 					std::string path = this->request.getPath() + "/" + filename;
@@ -328,10 +322,9 @@ LocationParser::LocationParser(Header request_, Server *server_, Receive *receiv
 		}
 		else if (receiver->getisform())
 		{
-			response.setStatus("201 Created");
-		}
-		else
 			std::cout << "form: " << receiver->getBody() << std::endl;
+			response.setStatus("200 Created");
+		}
 		response.setServer(server->getServerName());
 	}
 	else if (this->request.getMethod() == "DELETE")

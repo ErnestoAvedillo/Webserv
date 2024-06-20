@@ -41,6 +41,7 @@ void Receive::setmaxSize(size_t size) { this->maxSize = size; }
 std::string Receive::getBuffer() { return this->buffer; }
 std::string Receive::getRequest() { return this->request; }
 std::string Receive::getBody() { return this->body; }
+std::string Receive::getPostHeader() { return this->postHeader; }
 bool Receive::getisform() { return this->isform; }
 
 bool Receive::receive(int fd)
@@ -64,18 +65,19 @@ bool Receive::receiveHeader(int fd)
         std::string tmp = request + this->buffer;
         if (tmp.find("\r\n\r\n") != std::string::npos || tmp.find("\n\n") != std::string::npos)
         {
+            // std::cout << "TMP $" << tmp << "$" << std::endl;
             request = tmp.substr(0, tmp.find("\r\n\r\n"));
-            // std::cout << request << std::endl;
+            // std::cout << "REQUEST $" << request << "$" << std::endl;
             Header header(request);
-            std::map<std::string, std::string>  Attributes = header.getAttributes();
-            std::string log = CHR_BLUE + header.getMethod() + RESET + "\t" + Attributes["Host"] + CHR_CYAN + header.getPath() + RESET;
+            std::string log = CHR_BLUE + header.getMethod() + RESET + "\t" + header.getAttribute("Host") + CHR_CYAN + header.getPath() + RESET;
             printLog("NOTICE", log);
-            if (Attributes.find("Content-Length") != Attributes.end())
-                this->maxSize = std::atoi(Attributes["Content-Length"].c_str());
-            if (Attributes.find("Content-Type") != Attributes.end())
+            if (header.getAttribute("Content-Length") != "")
+                this->maxSize = std::atoi(header.getAttribute("Content-Length").c_str());
+            if (header.getAttribute("Content-Type") != "")
             {
-                if (Attributes["Content-Type"].find("boundary") != std::string::npos)
-                    this->boundary = Attributes["Content-Type"].substr(Attributes["Content-Type"].find("boundary=") + 9);
+                if (header.getAttribute("Content-Type").find("boundary") != std::string::npos)
+                    this->boundary = header.getAttribute("Content-Type").substr(header.getAttribute("Content-Type").find("boundary=") + 9);
+                // std::cout << "BOUNDARY $" << this->boundary << "$" << std::endl;
             }
             else
                 return true;
@@ -91,7 +93,7 @@ bool Receive::receiveHeader(int fd)
             return false;
         }
         else
-            request += tmp;
+           request += tmp;
         std::memset(buf, 0, MAX_MSG_SIZE);
     }
     
@@ -117,9 +119,15 @@ bool Receive::receiveBody(int fd)
         this->buffer = std::string(buf, ret);
         if (this->sizeSent >= this->maxSize)
         {
-            if (this->boundary.length())
-                this->buffer = this->buffer.substr(0, this->buffer.find(this->boundary) - 4);
-            this->body += this->buffer;
+            if (!this->boundary.empty())
+            {
+                this->body += this->buffer.substr(0, this->buffer.rfind(this->boundary) - 4);
+                this->body = this->body.substr(0, this->body.find(this->boundary) - 4);
+                this->postHeader = this->body.substr(this->body.find(this->boundary) + this->boundary.size() + 4, this->body.find("\r\n\r\n"));
+                this->body = this->body.substr(this->body.find("\r\n\r\n") + 4);
+            }
+            else
+                this->body += this->buffer;
             this->isbody = false;
             return true;
         }
