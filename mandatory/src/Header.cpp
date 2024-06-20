@@ -6,6 +6,7 @@ Header::Header()
 	protocol = "HTTP/1.1";
 	contentLength = 0;
 	contentType = "text/html";
+	server = "webserv";
 	this->setDate();
 }
 

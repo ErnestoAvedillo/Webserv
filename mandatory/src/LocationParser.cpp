@@ -266,7 +266,7 @@ LocationParser::LocationParser(Header request_, Server *server_, Receive *receiv
 		{
 			response.setContentType("text/html");
 			response.setStatus("200 OK");
-			// response.setServer(server->getServerName());
+			
 		}
 		else
 			response.setStatus("404 Not Found");
