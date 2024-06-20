@@ -1,12 +1,4 @@
-#pragma once
-#include <map>
-#include <string>
-#include <iostream>
-#include <fstream>
-#include <dirent.h>
-#include "utils.hpp"
-#include "ExtendedString.hpp"
-#define DEFAULT_ERROR_FILE "./StateCodes/ErrorTemplate.html"
+#define DEFAULT_ERROR_FILE "./StatusCodes/ErrorTemplate.html"
 #define CONTINUE_CODE 100
 #define SWITCHING_PROTOCOLS_CODE 101
 #define OK_CODE 200
@@ -47,23 +39,3 @@
 #define SERVICE_UNAVAILABLE_CODE 503
 #define GATEWAY_TIME_OUT_CODE 504
 #define HTTP_VERSION_NOT_SUPPORTED_CODE 505
-
-
-class StateCode {
-private:
-	std::map<int, std::string> mapCodes;
-	std::map<int, ExtendedString> mapCodesFileContent;
-	int currentCode;
-
-public:
-	StateCode();
-	~StateCode();
-
-	void createDefaultErrorCodes();
-	void setFileContentForStateCode(int, const std::string &);
-	std::string getCodeContent(int);
-	ExtendedString getFileContentForStateCode(int);
-	void setCurrentCode(int);
-	int getCurrentCode();
-	void loadErrorPageFromDir(const ExtendedString &);
-};

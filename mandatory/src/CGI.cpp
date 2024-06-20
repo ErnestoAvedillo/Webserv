@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CGI.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/25 17:42:08 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/15 13:14:05 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/20 20:24:30 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,8 @@ void CGI::setFileName(const std::string& str)
 	{
 		tmp = splitString(str, '?');
 		fileName = tmp[0];
-		args = splitString(tmp[1], '&');
+		if (args.size() != 0)
+			args = splitString(tmp[1], '&');
 	}
 	else
 	{
@@ -124,6 +125,9 @@ std::string CGI::getFileExtension()
 
 std::string CGI::execute()
 {
+	int timeout = 5;
+
+	signal(SIGALRM, &CGI::alarm_handler);
 	int fd[2], tmp_fd;
 	tmp_fd = dup(STDOUT_FILENO);
 	std::vector<char*> argsArray;
@@ -136,12 +140,12 @@ std::string CGI::execute()
 	}
 	argsArray.push_back(NULL);
 	if (pipe(fd) == -1) {
-		throw std::runtime_error("Pipe error on creation");
+		throw INTERNAL_SERVER_ERROR_CODE;
 	}
 	pid_t pid = fork();
 	if (pid == -1) {
 		// Handle error forking process
-		throw std::runtime_error("Fork error on creation");
+		throw INTERNAL_SERVER_ERROR_CODE;
 		return "";
 	}
 	if (pid == 0) {
@@ -160,25 +164,37 @@ std::string CGI::execute()
 	// Parent process
 	close(fd[1]);
 	// Wait for the child process to finish
+	CGI::ChildPID = pid;
+	alarm(timeout);
 	int status;
+	// pid_t result = waitpid(pid, &status, 0);
 	waitpid(pid, &status, 0);
 
 	// Check if the child process exited normally
-	if (WIFEXITED(status)) {
-		// Read the output from the file descriptor
-		char buffer[1024];
+	// std::cout << "Result: " << static_cast <int> (result) << "errno "<< EINTR << "vs" << errno << std::endl;
+	// if (result == -1 && errno == EINTR) 
+	// {
+	// 	kill(pid, SIGKILL);
+	// 	throw GATEWAY_TIME_OUT_CODE;
+	// }
+	// else 
+	// {
 		std::string output;
-		ssize_t bytesRead;
-		while ((bytesRead = read(fd[0], buffer, sizeof(buffer))) > 0) {
-			output += std::string(buffer, bytesRead);
+		if (WIFEXITED(status)) 
+		{
+			// Read the output from the file descriptor
+			char buffer[1024];
+			ssize_t bytesRead;
+			while ((bytesRead = read(fd[0], buffer, sizeof(buffer))) > 0) {
+				output += std::string(buffer, bytesRead);
+			}
+			close(fd[0]);
+			fd[1] = tmp_fd;
 		}
-		close(fd[0]);
-		fd[1] = tmp_fd;
+		else
+			throw INTERNAL_SERVER_ERROR_CODE;
+	// }
 		return output;
-	} else {
-		throw std::runtime_error("Child process exited abnormally");
-	}
-	return "";
 }
 
 void CGI::setCGIMapExtensions(std::string const &cgi_extension)
@@ -221,4 +237,13 @@ void CGI::setCGIMapExtensions(std::string const &cgi_extension)
 CGI *CGI::clone()
 {
 	return new CGI(*this);
+}
+
+int CGI::ChildPID = 0;
+
+void CGI::alarm_handler(int sig)
+{
+	printLog("CGI", "Timeout reached");
+	if (sig == SIGALRM && CGI::ChildPID > 0)
+		kill(CGI::ChildPID, SIGKILL);
 }

@@ -45,4 +45,7 @@ public:
 	std::map<std::string, std::string> getAttributes();
 	std::string getContentType();
 	std::string getAttribute(std::string key);
+	void printReceivedHeader();
+
+
 };

@@ -10,8 +10,6 @@
 #include <string>
 #include <algorithm>
 
-class Server;
-#include "../inc/Server.hpp"
 #include "../inc/colors.h"
 
 #define REQ_TYPE "Type"
@@ -45,8 +43,10 @@ class FileContent;
 
 class FileContent;
 #include "../inc/FileContent.hpp"
-class Client
-{
+class Server;
+#include "../inc/Server.hpp"
+
+class Client:public FileContent {
 private:
 	// std::map<std::string, std::string> Request;
 	FileContent *fileContent;
@@ -54,7 +54,6 @@ private:
 	Header response;
 	Header request;
 public:
-	Client();
 	Client(Receive *, Server *);
 	Client(Server *);
 	Client &operator=(Client const &);
@@ -75,7 +74,6 @@ public:
 	
 	std::string getAnswerToSend();
 	std::string getFilePath();
-	std::string getFileContent(std::string filename);
 	std::string	normalizePath(std::string path);
 	std::string getFileContent();
 	bool isSendComplete();

@@ -1,16 +1,16 @@
-#include "../inc/StateCode.hpp"
+#include "../inc/StatusCode.hpp"
 
-StateCode::StateCode()
+StatusCode::StatusCode()
 {
 	this->createDefaultErrorCodes();
-	this->setFileContentForStateCode(0, DEFAULT_ERROR_FILE);
+	this->setFileContentForStatusCode(0, DEFAULT_ERROR_FILE);
 }
 
-StateCode::~StateCode()
+StatusCode::~StatusCode()
 {
 }
 
-void StateCode::createDefaultErrorCodes(){
+void StatusCode::createDefaultErrorCodes(){
 	// Add HTTP error types to the map
 	this->mapCodes[0] = "000 Template";
 	this->mapCodes[100] = "100 Continue";
@@ -55,7 +55,7 @@ void StateCode::createDefaultErrorCodes(){
 	this->mapCodes[505] = "505 HTTP Version not supported";
 }
 
-void StateCode::setFileContentForStateCode(int CodeNumber, const std::string &CodeFileContent)
+void StatusCode::setFileContentForStatusCode(int CodeNumber, const std::string &CodeFileContent)
 {
 	ExtendedString content("");
 	std::ifstream fileStream;
@@ -70,19 +70,19 @@ void StateCode::setFileContentForStateCode(int CodeNumber, const std::string &Co
 	}
 	else
 	{
-		printLog("WARNING", "trying to set an Error Page with a non existing file.\t Set content page to default " CHR_GREEN "GET" RESET " value");
+		printLog("WARNING", CodeFileContent + " File does not exist.\t Set error page to default " CHR_GREEN "GET" RESET " value");
 	}
 
 	mapCodesFileContent[CodeNumber] = content;
 }
 
-std::string StateCode::getCodeContent(int errorCode)
+std::string StatusCode::getCodeContent(int errorCode)
 {
 	this->setCurrentCode(errorCode);
 	return mapCodes[errorCode];
 }
 
-ExtendedString StateCode::getFileContentForStateCode(int errorCode)
+ExtendedString StatusCode::getFileContentForStatusCode(int errorCode)
 {
 	this->setCurrentCode(errorCode);
 	ExtendedString content;
@@ -95,23 +95,23 @@ ExtendedString StateCode::getFileContentForStateCode(int errorCode)
 	return mapCodesFileContent[errorCode];
 }
 
-void StateCode::setCurrentCode(int code)
+void StatusCode::setCurrentCode(int code)
 {
 	this->currentCode = code;
 }
 
-int StateCode::getCurrentCode()
+int StatusCode::getCurrentCode()
 {
 	return this->currentCode;
 }
 
-void StateCode::loadErrorPageFromDir(const ExtendedString &dir)
+void StatusCode::loadErrorPageFromDir(const ExtendedString &dir)
 {
 	struct dirent *dirp;
 	DIR *dp;
 	if ((dp = opendir(dir.c_str())) == NULL)
 	{
-		throw std::runtime_error("Error opening directory");
+		return;
 	}
 	while ((dirp = readdir(dp)) != NULL)
 	{
@@ -120,7 +120,7 @@ void StateCode::loadErrorPageFromDir(const ExtendedString &dir)
 			std::string fileName = dir + "/" + dirp->d_name;
 			std::string code = dirp->d_name;
 			code = code.substr(0, code.find("."));
-			setFileContentForStateCode(atoi(code.c_str()), fileName);
+			setFileContentForStatusCode(atoi(code.c_str()), fileName);
 		}
 	}
 	closedir(dp);

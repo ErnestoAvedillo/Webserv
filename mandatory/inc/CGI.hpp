@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/25 17:42:25 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/04 13:27:20 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/20 19:38:40 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 #include "../inc/utils.hpp"
 #include <map>
 #include "colors.h"
+#include "StatusCodesDefinition.hpp"
 
 class CGI {
 private:
@@ -53,4 +54,7 @@ public:
 	//------ OTHER Methods ------//
 	std::string execute();
 	CGI *clone();
+
+	static int ChildPID;
+	static void alarm_handler(int);
 };

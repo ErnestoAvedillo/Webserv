@@ -13,7 +13,6 @@
 # include "CGI.hpp"
 # include "Parser.hpp"
 # include "ExtendedString.hpp"
-# include "StateCode.hpp"
 
 #define VAR_PORT	"port"
 #define VAR_HOST	"host"
@@ -39,7 +38,7 @@
 
 class ListeningSocket;
 #include "ListeningSocket.hpp"
-class Server : public StateCode
+class Server 
 {
 	protected:
 		bool		isDefault;

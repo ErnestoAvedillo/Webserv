@@ -18,6 +18,18 @@
 		<input type="text1" id="input_data" name="input_data" placeholder="Enter data...">
 		<button type="submit">Submit</button>
 	</form>
+	<h1>CGI Call Example</h1>
+	<p>The following example will give an inifinite loog error.</p>
+	<form action="cgi/infinite.cgi" method="get">
+		<label for="input_data">Input Data:</label>
+		<button type="submit">Submit</button>
+	</form>
+	<h1>CGI Call Example</h1>
+	<p>The following example will give segmentation fault error.</p>
+	<form action="cgi/segfault.cgi" method="get">
+		<label for="input_data">Input Data:</label>
+		<button type="submit">Submit</button>
+	</form>
 </body>
 
 </html>

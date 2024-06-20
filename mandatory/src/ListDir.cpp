@@ -125,10 +125,12 @@ size_t ListDir::getSizeToSend()
 
 void ListDir::setSubdirectory(const std::string &subDir)
 {
-	if (subDir[0] == '/')
-		path += subDir.substr(1);
+	if (subDir == "/")
+		this->path += subDir.substr(1);
 	else
-		path = subDir;
+	{
+		this->path = subDir;
+	}
 	path += (path[path.size() -1] == '/') ? "" :"/";
 	this->setListOfFiles();
 }

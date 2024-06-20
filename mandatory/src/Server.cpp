@@ -33,7 +33,7 @@ std::map<std::string, void (Server::*)(const std::string &)> ServerSetters()
 	return serverMethods;
 }
 
-Server::Server(std::string &str):StateCode()
+Server::Server(std::string &str)
 {
 	this->cgiModule = new CGI();
 	while (str.find("location") != std::string::npos)
@@ -158,8 +158,8 @@ void Server::checkVariables()
 		exit(1);
 	if (Parser::checkRoot(this->getRoot()) == false)
 		exit (1);
-	if (Parser::checkErrorPage(this->getErrorPage()))
-		this->loadErrorPageFromDir(this->getErrorPage());
+	Parser::checkErrorPage(this->getErrorPage());
+
 	Parser::checkIndex(this->getIndex(), this->getRoot());
 	this->setMaxClientBodySize(Parser::checkClientBodySize(this->getMaxClientBodySizeStr()));
 	this->autoIndex = Parser::checkAutoIndex(this->autoIndexStr);

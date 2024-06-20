@@ -165,3 +165,18 @@ void Header::setContentType(std::string contentType)
 		this->contentType = "text/html";
 
 }
+
+void Header::printReceivedHeader()
+{
+	std::cout << "Method: " << method << std::endl;
+	std::cout << "Path: " << path << std::endl;
+	std::cout << "Protocol: " << protocol << std::endl;
+	std::cout << "Status: " << status << std::endl;
+	std::cout << "Server: " << server << std::endl;
+	std::cout << "Date: " << date << std::endl;
+	std::cout << "Last-modified: " << lastModified << std::endl;
+	std::cout << "Content-length: " << contentLength << std::endl;
+	std::cout << "Content-Type: " << contentType << std::endl;
+	for (std::map<std::string, std::string>::const_iterator it = attributes.begin(); it != attributes.end(); ++it)
+		std::cout << it->first << ": " << it->second << std::endl;
+}
