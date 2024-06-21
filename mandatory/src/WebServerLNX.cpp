@@ -87,7 +87,6 @@ int WebServer::acceptNewEvent(int curfd)
 		struct sockaddr_storage addr;
 		socklen_t socklen = sizeof(addr);
 		fd = accept(curfd, (struct sockaddr *) &addr, &socklen);
-		std::cout << "Created new connection with new fd: " << fd << std::endl;
 		if (fd < 0)
 		{
 			if (errno == EAGAIN || errno == EWOULDBLOCK)
@@ -99,11 +98,9 @@ int WebServer::acceptNewEvent(int curfd)
 			}
 		}
 		fcntl(fd, F_SETFL, O_NONBLOCK, O_CLOEXEC);
-		std::cout << "clonning fd: " << fd << std::endl;
 		acceptedSocket[fd] = serverSocket[curfd]->clone(fd);
 		this->addEvent(fd, EPOLLIN | EPOLLET);
 	}
-	std::cout << "Accepted new connection with new fd: " << fd << std::endl;
 	return fd;
 }
 

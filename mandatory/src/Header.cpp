@@ -6,6 +6,7 @@ Header::Header()
 	protocol = "HTTP/1.1";
 	contentLength = 0;
 	contentType = "text/html";
+	server = "webserv";
 	this->setDate();
 }
 
@@ -13,6 +14,7 @@ Header::Header(std::string receiveHeader)
 {
 	std::istringstream iss(receiveHeader);
 	std::string line;
+
 	while (std::getline(iss, line))
 	{
 		size_t colonPos = line.find(':');
@@ -35,10 +37,17 @@ Header::Header(std::string receiveHeader)
 				method = line.substr(0, firstSpace);
 				path = line.substr(firstSpace + 1, secondSpace - firstSpace - 1);
 				protocol = line.substr(secondSpace + 1);
+				if (!protocol.empty() && protocol[protocol.size() - 1] == '\r')
+					protocol.erase(protocol.size() - 1);
 
 			}
 		}
 	}
+	// std::cout << "HEADER" << std::endl;
+	// for (std::map<std::string, std::string>::const_iterator it = attributes.begin(); it != attributes.end(); ++it)
+	// {
+	// 	std::cout << it->first << " => " << it->second << std::endl;
+	// }
 }
 
 void Header::setAttribute(std::string key, std::string value)
@@ -57,10 +66,21 @@ std::string Header::getMethod()
 {
 	return method;
 }
-std::string Header::getPath()
+ExtendedString Header::getPath()
 {
 	return path;
 }
+
+std::string Header::getProtocol()
+{
+	return protocol;
+}
+
+void Header::setPath(std::string path)
+{
+	this->path = path;
+}
+
 std::string Header::generateHeader() const
 {
 	std::string header;
@@ -80,6 +100,11 @@ std::string Header::generateHeader() const
 	header += "\r\n";
 	
 	return header;
+}
+
+std::string Header::getAttribute(std::string key)
+{
+	return attributes[key];
 }
 
 std::string Header::getContentType() 
@@ -139,4 +164,19 @@ void Header::setContentType(std::string contentType)
 	else
 		this->contentType = "text/html";
 
+}
+
+void Header::printReceivedHeader()
+{
+	std::cout << "Method: " << method << std::endl;
+	std::cout << "Path: " << path << std::endl;
+	std::cout << "Protocol: " << protocol << std::endl;
+	std::cout << "Status: " << status << std::endl;
+	std::cout << "Server: " << server << std::endl;
+	std::cout << "Date: " << date << std::endl;
+	std::cout << "Last-modified: " << lastModified << std::endl;
+	std::cout << "Content-length: " << contentLength << std::endl;
+	std::cout << "Content-Type: " << contentType << std::endl;
+	for (std::map<std::string, std::string>::const_iterator it = attributes.begin(); it != attributes.end(); ++it)
+		std::cout << it->first << ": " << it->second << std::endl;
 }

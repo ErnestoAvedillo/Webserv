@@ -10,8 +10,6 @@
 #include <string>
 #include <algorithm>
 
-class Server;
-#include "../inc/Server.hpp"
 #include "../inc/colors.h"
 
 #define REQ_TYPE "Type"
@@ -27,33 +25,35 @@ class FileContent;
 
 
 
-enum LocationStatus
-{
-	/* Correct */
-	NO_LOCATION,
-	OK,
-	NOT_ALLOWED,
-	NOT_FOUND,
-	NOT_IMPLEMENTED,
-	REQUEST_ENTITY_TOO_LARGE,
-	REQUEST_URI_TOO_LONG,
-	INTERNAL_SERVER_ERROR,
-	NOT_MODIFIED,
-	REDIRECT,
+// enum LocationStatus
+// {
+// 	/* Correct */
+// 	NO_LOCATION,
+// 	OK,
+// 	NOT_ALLOWED,
+// 	NOT_FOUND,
+// 	NOT_IMPLEMENTED,
+// 	REQUEST_ENTITY_TOO_LARGE,
+// 	REQUEST_URI_TOO_LONG,
+// 	INTERNAL_SERVER_ERROR,
+// 	NOT_MODIFIED,
+// 	REDIRECT,
 
-};
+// };
 
 class FileContent;
 #include "../inc/FileContent.hpp"
-class Client
-{
+class Server;
+#include "../inc/Server.hpp"
+
+class Client:public FileContent {
 private:
-	std::map<std::string, std::string> Request;
+	// std::map<std::string, std::string> Request;
 	FileContent *fileContent;
 	Server *server;
-	Header header;
+	Header response;
+	Header request;
 public:
-	Client();
 	Client(Receive *, Server *);
 	Client(Server *);
 	Client &operator=(Client const &);
@@ -68,14 +68,17 @@ public:
 	// void clearClient();
 	// void deleteClient(std::string const &);
 	// void updateClient(std::string const &, std::string const &);
-
+	void setRequestHeader(std::string );
+	// void setResponseHeader(Header);
+	void setServer(Server *);
+	
 	std::string getAnswerToSend();
 	std::string getFilePath();
-	std::string getFileContent(std::string filename);
 	std::string	normalizePath(std::string path);
 	std::string getFileContent();
 	bool isSendComplete();
-	void loadCompleteClient(Receive *receiver);
+	void loadCompleteClient(Receive *receiver, std::vector<Server *> servers);
+	void matchServerName(std::vector<Server *> servers);
 	void loadDataHeader(Receive *receiver);
 	int matchingLocation();
 	int isAllowedMethod(Location *location);

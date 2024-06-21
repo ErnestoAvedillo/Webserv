@@ -1,3 +1,4 @@
+#pragma once
 #include <sstream>
 #include <string>
 #include <unistd.h>
@@ -7,11 +8,10 @@
 class ExtendedString : public std::string {
 public:
 	//using std::string::string; // Inherit constructors from std::string
-
-	ExtendedString &operator=(const std::string &str) {
-		std::string::operator=(str);
-		return *this;
-	}
+	ExtendedString();
+	ExtendedString(const std::string &str);
+	~ExtendedString();
+	ExtendedString &operator=(const std::string &str);
 
 	bool isNumber() const;
 	bool firstCharIsSign() const;

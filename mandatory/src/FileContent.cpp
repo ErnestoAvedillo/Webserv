@@ -1,44 +1,28 @@
 #include "../inc/FileContent.hpp"
 
-FileContent::FileContent(Server *srv)
+// FileContent::FileContent(Server *srv) : StatusCode()
+FileContent::FileContent() : StatusCode()
 {
-	server = srv;
+	//server = srv;
+	// this->loadErrorPageFromDir(srv->getErrorPage());
 	fileName = "";
 	startRange = 0;
 	sendComplete = false;
 	isFileOpen = false;
 	isFistFragment = true;
-	this->cgiModule = srv->cgiModuleClone();
-	if(server->getAutoIndex())
-	{
-		listDir = new ListDir(srv->getRoot());
-		isFileOpen = true;
-	}
-	else
-	{
-		listDir = NULL;
-	}
-}
-
-FileContent::FileContent(const std::string &MyfileName, Server *srv) 
-{
-	server = srv;
-
-	startRange = 0;
-	sendComplete = false;
-	isFistFragment = true;
-	this->cgiModule = srv->cgiModuleClone();
-	if(server->getAutoIndex())
-	{
-		fileName = MyfileName;
-		listDir = new ListDir(MyfileName);
-		isFileOpen = true;
-	}
-	else
-	{
-		listDir = NULL;
-		isFileOpen = this->setFileName(MyfileName);
-	}
+	isAutoIndex = false;
+	// isAutoIndex = srv->getAutoIndex();
+	// indexInHomeFolder = srv->getRoot() + srv->getIndex();
+	// this->cgiModule = srv->cgiModuleClone();
+	// if (srv->getAutoIndex())
+	// {
+	// listDir = new ListDir("./");
+	// 	isFileOpen = true;
+	// }
+	// else
+	// {
+	 	listDir = NULL;
+	// }
 }
 
 FileContent::~FileContent() 
@@ -53,52 +37,62 @@ int FileContent::openFile()
 	file.open(fileName.c_str(), std::ios::out | std::ios::binary); //| std::ios::app | std::ios::ate
 
 	if (file.is_open())
+	{
 		return 1;
+	}
 	return 0;
 }
 
 std::string FileContent::getContent() 
 {
-	std::string errorReturn = "Error: " + fileName + " File not found";
-
-	if (isFileOpen)
+	std::cout << "StartRange: " << startRange << std::endl;
+	std::cout << "EndRange: " << endRange << std::endl;
+	std::string content;
+	if (this->getIsFileOpen())
 	{
 		if (cgiModule->getIsCGI())
 		{
-			sendComplete = true;
-			try{
-				content = cgiModule->execute();
-			}
-			catch(const std::exception& e)
+			this->setIsSendComplete(true);
+			try
 			{
-				content = e.what();
+				content = cgiModule->execute();
+				this->setCompleteContentSize(content.size());
 			}
-			completeContentSize = content.size();
+			catch (int e)
+			{
+				content = this->getFileContentForStatusCode(e);
+			}
 			return content;
 		}
-		else if (server->getAutoIndex() && this->fileStat.st_mode & S_IFDIR)
+		else if (isAutoIndex && this->isInputDirectory())
 		{
+			isFileOpen = true;
 			content = listDir->getContentToSend();
-			completeContentSize = content.size();
-			sendComplete = listDir->getIsSendComlete();
+			this->setCompleteContentSize(content.size());
+			this->setIsSendComplete(listDir->getIsSendComlete());
 			return content;
 		}
 		else
 		{
 			content = "";
 			char buffer[MAX_SENT_BYTES];
-			if(file.read(buffer, MAX_SENT_BYTES))
+			// (void)startRange;
+			// if (startRange)
+			//  	file.seekg(startRange, std::ios::beg);
+			std::cout << "enviando paquete:" << file.tellg() << std::endl;
+			if (file.read(buffer, MAX_SENT_BYTES))
 			{
-				if(file.eof())
+				if (file.eof())
 				{
 					file.close();
-					sendComplete = true;
+					this->setIsSendComplete(true);
 				}
 				content.append(buffer, file.gcount());
 				return content;
 			}
 			else
 			{
+				std::cout << "Cierro fichero " <<fileName<< std::endl;
 				file.close();
 				content.append(buffer, file.gcount());
 			}
@@ -106,10 +100,10 @@ std::string FileContent::getContent()
 	}
 	else
 	{
-		content = errorReturn;
+		content = this->getCodeContent(NOT_FOUND_CODE);
 	}
-	sendComplete = true;
-	return content;
+	this->setIsSendComplete(true);
+	return (content);
 }
 
 bool FileContent::setFileName(const std::string &file_name)
@@ -118,40 +112,41 @@ bool FileContent::setFileName(const std::string &file_name)
 	bool fileOrFolderExists = this->FileOrFolerExtists(FileAndFolder);
 	if (fileOrFolderExists)
 	{
-		if (this->isInputDirectory() && server->getAutoIndex())
+		if (this->isInputDirectory() && isAutoIndex)
 		{
+
 			fileName = FileAndFolder;
-			isFileOpen = true;
+			this->setIsFileOpen(true);
+			listDir = new ListDir(fileName, homeFolder);
 			listDir->setSubdirectory(FileAndFolder);
 			listDir->setContentToList();
-			return isFileOpen;
 		}
-		else if (cgiModule->setIsCGI(file_name))
+		// else if (cgiModule->setIdentifyCGIFromFileName(file_name))
+		// else if (this->isCgi)
+		else if (cgiModule->setIdentifyCGIFromFileName(file_name) || cgiModule->getIsCGI())
 		{
 			cgiModule->setFileName(file_name);
-			isFileOpen = true;
-			return isFileOpen;
+			this->setIsFileOpen(true);
 		}
 		else
 		{
-			if (this->isInputDirectory())
-			{
-				fileName = FileAndFolder + server->getIndex();
-			}
-			else
-			{
+			// if (this->isInputDirectory())
+			// {
+			// 	fileName = homeFolder + indexName;
+			// }
+			// else
+			// {
 				fileName = FileAndFolder;
-			}
+			// }
 			stat(fileName.c_str(), &fileStat);
 			completeContentSize = fileStat.st_size;
-			isFileOpen = this->openFile();
-			isFileOpen = true;
-			if (isFileOpen)
-				file.seekg(startRange, std::ios::beg);
-			return isFileOpen;
+			this->setIsFileOpen(this->openFile());
+			// isFileOpen = true;
+			// if (this->getIsFileOpen())
+			// 		file.seekg(startRange, std::ios::beg);
 		}
 	}
-	return isFileOpen;
+	return this->getIsFileOpen();
 }
 
 std::string FileContent::getFileName()
@@ -159,10 +154,26 @@ std::string FileContent::getFileName()
 	return fileName;
 }
 
-bool FileContent::isSendComplete()
+void FileContent::setIsFileOpen(bool isFileOpen)
+{
+	this->isFileOpen = isFileOpen;
+}
+
+bool FileContent::getIsFileOpen()
+{
+	return isFileOpen;
+}
+
+void FileContent::setIsSendComplete(bool value){
+	this->sendComplete = value;
+}
+
+bool FileContent::getIsSendComplete()
 {
 	return sendComplete;
 }
+
+
 
 void FileContent::setFirstFragment(bool first)
 {
@@ -186,7 +197,12 @@ std::string FileContent::getLastModified()
 	return buffer;
 }
 
-size_t FileContent::getContentSize()
+void FileContent::setCompleteContentSize(size_t size)
+{
+	completeContentSize = size;
+}
+
+size_t FileContent::getCompleteContentSize()
 {
 	return completeContentSize;
 }
@@ -215,4 +231,59 @@ std::string FileContent::splitFileFromArgs(const std::string &str)
 void FileContent::setRange(size_t range)
 {
 	this->startRange = range;
+}
+
+void FileContent::setIndexName(const std::string &index)
+{
+	indexName = index;
+}
+
+std::string FileContent::getIndexName()
+{
+	return indexName;
+}
+
+void FileContent::setHomeFolder(const std::string &home)
+{
+	homeFolder = home;
+}
+
+std::string FileContent::getHomeFolder()
+{
+	return homeFolder;
+}
+
+void FileContent::setCGIModule(CGI *cgi)
+{
+	cgiModule = cgi;
+}
+
+void FileContent::setIsAutoIndex(bool autoIndex)
+{
+	isAutoIndex = autoIndex;
+}
+
+bool FileContent::getIsAutoIndex()
+{
+	return isAutoIndex;
+}
+
+void FileContent::setIsCGI(bool isCgi)
+{
+	this->cgiModule->setIsCGI(isCgi);
+}
+
+
+void FileContent::setStartRange(size_t range)
+{
+	this->startRange = range;
+}
+size_t FileContent::getStartRange()
+{
+	return startRange;
+}
+
+void FileContent::setEndRange(size_t range)
+{
+	this->endRange = range;
 }

@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   CGI.hpp                                            :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/05/25 17:42:25 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/04 13:27:20 by eavedill         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #pragma once
 #include <iostream>
 #include <string>
@@ -21,6 +9,8 @@
 #include "../inc/utils.hpp"
 #include <map>
 #include "colors.h"
+#include "StatusCodesDefinition.hpp"
+#include <signal.h>
 
 class CGI {
 private:
@@ -39,12 +29,14 @@ public:
 	//setters
 	void setCGIFolder(const std::string &);
 	void setFileName(const std::string& str);
-	bool setIsCGI(const std::string& str);
+	void setIsCGI(bool);
+	bool setIdentifyCGIFromFileName(const std::string &str); 
+	bool getIsCGI();
+	//bool setIsCGI(const std::string &str);
 	void setArgs(const std::string &);
 	void setCGIMapExtensions(std::string const &cgi_extension);
 	//getters
 	std::string getFileName();
-	bool getIsCGI();
 	std::string getCGIFolder();
 	std::vector <std::string> getArgs();
 	std::string getCGIExtension(const std::string &);
@@ -53,4 +45,7 @@ public:
 	//------ OTHER Methods ------//
 	std::string execute();
 	CGI *clone();
+
+	static int ChildPID;
+	static void alarm_handler(int);
 };

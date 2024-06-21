@@ -18,6 +18,7 @@ class Receive {
         std::ofstream file;
         std::string boundary;
         bool isform;
+        std::string postHeader;
 
     public:
         Receive();
@@ -37,4 +38,5 @@ class Receive {
         std::string getRequest();
         std::string getBody();
         bool        getisform();
+        std::string getPostHeader();
 };

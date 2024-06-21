@@ -16,7 +16,7 @@
 #define VAR_LOC_AUTOINDEX "autoindex"
 #define VAR_LOC_ALIAS "alias"
 #define VAR_LOC_CGI_PATH "cgi_path"
-#define VAR_LOC_CGI_EXTENSION "cgi_ext"
+#define VAR_LOC_CGI_EXTENSION "cgi_extension"
 #define STR_START "location:{"
 
 
@@ -70,9 +70,11 @@ class Location
 		bool getGetAllowed() const;
 		bool getPostAllowed() const;
 		bool getDeleteAllowed() const;
-		const std::string& getAutoindex() const ;
+		const std::string& getAutoIndexStr() const ;
+		bool getAutoIndex() const;
 		const std::string& getAlias() const ;
 		enum LocationType getLocationType();
+		bool getIsCgi() const;
 		// Setter methods
 		void setName(const std::string&);
 		void setRoot(const std::string&);
@@ -88,7 +90,7 @@ class Location
 		void setCgiExtension(const std::string &extensions);
 		// Load data from a string configuration
 		void print();
-		void checkVariables();
+		void checkVariables(bool serverAutoIndex);
 };
 
 //typedef void (Location::*location)(std::string);

@@ -26,26 +26,28 @@
 #include "Client.hpp"
 #include "Server.hpp"
 #include "Receive.hpp"
+#include "FileContent.hpp"
+#include "Header.hpp"
+#include "LocationParser.hpp"
 
 
 #define MAX_CONNECTIONS 10
 
 class Server;
 
-class Client;
-
 class Receive;
 
 
 // #define MAX_EVENTS 10
-class ListeningSocket
+class ListeningSocket : public FileContent
 {
 private:
 	Server *server;
 	int port;
 	int socketFd;
-	Client *client;
 	Receive *receiver;
+	Header response;
+	Header request;
 
 	//void handleConnection(int clientSocketFd);
 
@@ -56,12 +58,11 @@ public:
 
 	bool startListening();
 	void stopListening();
-	int getPort();
 	int getFd();
 	bool sendData(int);
-	void loadRequest();
-	std::string getServerName();
+	void loadRequest(std::vector<Server *> servers);
 	ListeningSocket *clone(int fd);
-	Client *getClientPtr();
+	std::string getAnswerToSend();
 	bool receive();
+	void matchServerName(std::vector<Server *> servers);
 };

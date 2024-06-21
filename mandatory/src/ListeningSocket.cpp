@@ -1,37 +1,48 @@
 #include "../inc/ListeningSocket.hpp"
 
-#ifdef __APPLE__
-
-ListeningSocket::ListeningSocket(int myPort, Server *srv)
+ListeningSocket::ListeningSocket(int myPort, Server *srv): FileContent()
 {
 	this->port = myPort;
 	this->server = srv;
-	this->client = new Client(srv);
+	// this->client = new Client(srv);
 	this->receiver = new Receive();
+	// this->fileContent = new FileContent();
+	
 	this->socketFd = -1;
 	if (this->startListening())
 	{
-		std::string msg = "Listening on " + std::string(CHR_YELLOW) + srv->getHost() + RESET + "\t\t" + std::string(CHR_GREEN) + std::to_string(myPort) + RESET + "\t" + CHR_GREEN + std::to_string(this->socketFd);
+		std::string msg = "Listening on " + std::string(CHR_YELLOW) + srv->getHost() + RESET + "\t\t" + std::string(CHR_GREEN) + toString(myPort) + RESET + "\t" + CHR_GREEN + toString(this->socketFd);
 		printLog("NOTICE", msg);
 	}
+	this->loadErrorPageFromDir(srv->getErrorPage());
+	this->setIsAutoIndex(srv->getAutoIndex());
+	this->setIndexName(srv->getIndex());
+	this->setHomeFolder(srv->getRoot());
+	this->setCGIModule(srv->cgiModuleClone());
 }
-ListeningSocket::ListeningSocket(Server *srv)
+
+ListeningSocket::ListeningSocket(Server *srv): FileContent()
 {
-	this->client = new Client(srv);
+	// this->client = new Client(srv);
 	this->receiver = new Receive();
+	// this->fileContent = new FileContent();
 	this->server = srv;
+	this->loadErrorPageFromDir(srv->getErrorPage());
+	this->setIsAutoIndex(srv->getAutoIndex());
+	this->setIndexName(srv->getIndex());
+	this->setHomeFolder(srv->getRoot());
+	this->setCGIModule(srv->cgiModuleClone());
 }
 
 ListeningSocket::~ListeningSocket()
 {
 	stopListening();
-	delete this->client;
 	delete this->receiver;
+	// delete this->fileContent;
 }
 
 bool ListeningSocket::startListening()
 {
-	// Create a socket
 	socketFd = socket(AF_INET, SOCK_STREAM, 0);
 	if (socketFd == -1)
 	{
@@ -46,6 +57,7 @@ bool ListeningSocket::startListening()
 	}
 
 	int enable = 1;
+	setsockopt(socketFd, SOL_SOCKET, SO_KEEPALIVE, &enable, sizeof(enable));
 	if (setsockopt(socketFd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0)
 	{
 		std::cerr << "setsockopt(SO_REUSEADDR) failed" << std::endl;
@@ -61,7 +73,7 @@ bool ListeningSocket::startListening()
 	// Bind the socket to the server address
 	if (bind(socketFd, (struct sockaddr *)&serverAddress, sizeof(serverAddress)) < 0)
 	{
-		printLog("ERROR", "Failed to bind socket to address of port " CHR_RED + std::to_string(port) + RESET);
+		printLog("ERROR", "Failed to bind socket to address of port " CHR_RED + toString(port) + RESET);
 		return false;
 	}
 
@@ -71,8 +83,6 @@ bool ListeningSocket::startListening()
 		std::cerr << "Failed to start listening of port " << port << std::endl;
 		return false;
 	}
-
-	// Add the socket file descriptor to the kqueue
 	return true;
 }
 
@@ -83,92 +93,6 @@ void ListeningSocket::stopListening()
 		close(socketFd);
 		socketFd = -1;
 	}
-}
-
-#else
-
-ListeningSocket::ListeningSocket(int myPort, Server *srv)
-{
-	port = myPort;
-	server = srv;
-	this->client = new Client(srv);
-	this->receiver = new Receive();
-	socketFd = -1;
-	if (this->startListening())
-	{
-		std::string msg = "Listening on " + std::string(CHR_YELLOW) + srv->getHost() + RESET + "\t\t" + std::string(CHR_GREEN) + toString(myPort) + RESET + "\t" + CHR_GREEN + toString(this->socketFd);
-		printLog("NOTICE", msg);
-	}
-}
-ListeningSocket::ListeningSocket(Server *srv)
-{
-	this->client = new Client(srv);
-	this->receiver = new Receive();
-	this->server = srv;
-}
-
-ListeningSocket::~ListeningSocket()
-{
-	stopListening();
-	delete this->client;
-	delete this->receiver;
-}
-
-bool ListeningSocket::startListening()
-{
-	// Create a socket
-	socketFd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
-	if (socketFd == -1)
-	{
-		std::cerr << "Failed to create socket" << std::endl;
-		return false;
-	}
-
-	if (fcntl(socketFd, F_SETFL, O_NONBLOCK,FD_CLOEXEC) < 0)
-	{
-		std::cerr << "Error" << std::endl;
-		exit(1);
-	}
-
-	int enable = 1;
-	setsockopt(socketFd, SOL_SOCKET, SO_KEEPALIVE, &enable, sizeof(enable));
-	setsockopt(socketFd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(enable));
-
-	// Set up the server address
-	sockaddr_in serverAddress;
-	serverAddress.sin_family = AF_INET;
-	serverAddress.sin_addr.s_addr = this->server->getHostAddr();
-	serverAddress.sin_port = htons(port);
-	// Bind the socket to the server address
-	if (bind(socketFd, (struct sockaddr *)&serverAddress, sizeof(serverAddress)) < 0)
-	{
-		std::cerr << "Failed to bind socket to address " << port << std::endl;
-		return false;
-	}
-
-	// Start listening for incoming connections
-	if (listen(socketFd, SOMAXCONN) < 0)
-	{
-		std::cerr << "Failed to start listening" << std::endl;
-		return false;
-	}
-	return true;
-}
-void ListeningSocket::stopListening()
-{
-	if (socketFd != -1)
-	{
-		close(socketFd);
-		socketFd = -1;
-	}
-
-}
-
-#endif
-
-int ListeningSocket::getPort()
-{
-	return (this->port);
 }
 
 int ListeningSocket::getFd()
@@ -178,14 +102,12 @@ int ListeningSocket::getFd()
 
 bool ListeningSocket::sendData(int clientSocketFd)
 {
-	std::string answer = this->client->getAnswerToSend();
+	ExtendedString answer = this->getAnswerToSend();
 	// std::cout << "answer: " << answer.size() << std::endl;
-	// std::cout << "answer: " << answer << std::endl;
+	// std::cout << "My answer: " << answer << std::endl;
 	if ((send(clientSocketFd, answer.c_str(), answer.size(), 0)) < 0)
-	{
 		std::cerr << "Failed to write to client" << std::endl;
-	}
-	return this->client->isSendComplete();
+	return this->getIsSendComplete();
 }
 
 bool ListeningSocket::receive()
@@ -201,42 +123,57 @@ ListeningSocket *ListeningSocket::clone(int fd)
 	return newSocket;
 }
 
-// void print_visible(const std::string& str) {
-//     for (char ch : str) {
-//         switch (ch) {
-//             case '\n':
-//                 std::cout << "\\n";
-//                 break;
-//             case '\r':
-//                 std::cout << "\\r";
-//                 break;
-//             case '\t':
-//                 std::cout << "\\t";
-//                 break;
-//             default:
-//                 if (std::isprint(static_cast<unsigned char>(ch))) {
-//                     std::cout << ch;
-//                 } else {
-//                     std::cout << "\\x" << std::hex << std::uppercase << static_cast<int>(static_cast<unsigned char>(ch));
-//                     std::cout << std::dec;  // Reset to decimal for future use
-//                 }
-//         }
-//     }
-// }
-
-void ListeningSocket::loadRequest()
+std::string ListeningSocket::getAnswerToSend()
 {
-	// std::cout << "-------------Request-------------" << std::endl;
-	// std::cout << receiver->getRequest() << std::endl;
-	this->client->loadCompleteClient(this->receiver);
+	std::string answer;
+	std::string filePath = this->getFileName();
+	std::string file_content = this->getContent();
+	if (this->getFirstFragment())
+	{
+		if (response.getContentType().find("video/") != std::string::npos && this->request.getAttribute("Sec-Fetch-Dest").find("document") != std::string::npos)
+			response.setAttribute("Accept-Ranges", "bytes");
+		answer = response.generateHeader() + file_content;
+		this->setFirstFragment(false);
+	}
+	else
+		answer = file_content;
+
+	return (answer);
 }
 
-std::string ListeningSocket::getServerName()
+void ListeningSocket::matchServerName(std::vector<Server *> servers)
 {
-	return server->getServerName();
+	std::string server_name = request.getAttribute("Host").substr(0, request.getAttribute("Host").find(":"));
+	if (server_name.empty())
+		return ;
+	for (size_t i = 0; i < servers.size(); i++)
+	{
+		if (servers[i]->getServerName() == server_name)
+		{
+			this->server = servers[i];
+			break;
+		}
+	}
 }
 
-Client *ListeningSocket::getClientPtr()
+void ListeningSocket::loadRequest(std::vector<Server *> servers)
 {
-	return this->client;
+	this->request = Header(this->receiver->getRequest());
+	matchServerName(servers);
+	LocationParser Parser(this->request, this->server, this->receiver);
+	try 
+	{
+		 Parser.checks();
+	}
+	catch (int e)
+	{
+		this->getFileContentForStatusCode(e);
+	}
+	this->request = Parser.getRequest();
+	this->response = Parser.getResponse();
+	this->setIsAutoIndex(Parser.getIsAutoIndex());
+	this->setIsCGI(Parser.getIsCGI());
+	this->setStartRange(Parser.getStartRange());
+	this->setEndRange(Parser.getEndRange());
+	this->setFileName(this->request.getPath());
 }

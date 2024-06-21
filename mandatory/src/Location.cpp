@@ -6,7 +6,7 @@
 /*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/29 17:38:18 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/16 15:13:01 by jcheel-n         ###   ########.fr       */
+/*   Updated: 2024/06/17 03:13:46 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,12 +84,14 @@ const std::string &Location::getRoot() const { return root; }
 const std::string &Location::getReturn() const { return return_; }
 const std::string &Location::getIndex() const { return index; }
 const std::string &Location::getAllowMethodsStr() const { return allowMethodsStr; }
-const std::string &Location::getAutoindex() const { return autoindexStr; }
+const std::string &Location::getAutoIndexStr() const { return autoindexStr; }
+bool Location::getAutoIndex() const { return autoindex; }
 const std::string &Location::getAlias() const { return alias; }
 bool Location::getGetAllowed() const { return isGetAllowed; }
 bool Location::getPostAllowed() const { return isPostAllowed; }
 bool Location::getDeleteAllowed() const { return isDeleteAllowed; }
 enum LocationType Location::getLocationType() { return this->LocationType; }
+bool Location::getIsCgi() const { return isCgi; }
 // Setter methods
 void Location::setName(const std::string &n) { name = n; }
 void Location::setRoot(const std::string &r) { root = r; }
@@ -183,7 +185,7 @@ int Location::loadData(const std::string &content)
 		if (line.length() == 0 || line == "}" || line == "{")
 			continue;
 		else if (it == varnames.end())
-			printLog("ERROR", "Unrecognized variable " + line.substr(0, line.find(":")));
+			printLog("ERROR", "Unrecognized Location variable " + line.substr(0, line.find(":")));
 		else
 		{
 			straux = line.substr(line.find(":") + 1, line.size());
@@ -207,76 +209,7 @@ void Location::print()
 	std::cout << "Cgi Extension: " << cgiExtensionStr << std::endl;
 }
 
-// location:{                   
-//       name:/tours;
-//       root:docs/fusion_web;           # root folder of the location, if not specified, taken from the server. 
-//                                       # EX: - URI /tours           --> docs/fusion_web/tours
-//                                       #     - URI /tours/page.html --> docs/fusion_web/tours/page.html 
-//       autoindex:on;                   # turn on/off directory listing
-//       allow_methods: POST,GET;         # allowed methods in location, GET only by default
-//       index:index.html;               # default page when requesting a directory, copies root index by default
-//       return:abc/index1.html;         # redirection
-//       alias: docs/fusion_web;         # replaces location part of URI. 
-//                                       # EX: - URI /tours           --> docs/fusion_web
-//                                       #     - URI /tours/page.html --> docs/fusion_web/page.html 
-//   }
-
-// bool isValidUrl(const std::string& url)
-// {
-// 	// Check if the URL starts with a valid scheme
-// 	std::string validSchemes[] = {"http://", "https://", "ftp://"};
-// 	bool validScheme = false;
-// 	for (const std::string& scheme : validSchemes) {
-// 		if (url.substr(0, scheme.length()) == scheme) {
-// 			validScheme = true;
-// 			break;
-// 		}
-// 	}
-// 	if (!validScheme) {
-// 		return false;
-// 	}
-
-// 	// Check if the URL contains only valid characters
-// 	std::string validCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~:/?#[]@!$&'()*+,;=";
-// 	for (char c : url) {
-// 		if (validCharacters.find(c) == std::string::npos) {
-// 			return false;
-// 		}
-// 	}
-
-// 	return true;
-// }
-
-// #include <string>
-// #include <algorithm>
-
-// bool isValidUrl(const std::string& url)
-// {
-//     // Check if the URL starts with a valid scheme
-//     std::string validSchemes[] = {"http://", "https://", "ftp://"};
-//     bool validScheme = false;
-//     for (int i = 0; i < 3; ++i) {
-//         if (url.substr(0, validSchemes[i].length()) == validSchemes[i]) {
-//             validScheme = true;
-//             break;
-//         }
-//     }
-//     if (!validScheme) {
-//         return false;
-//     }
-
-//     // Check if the URL contains only valid characters
-//     std::string validCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~:/?#[]@!$&'()*+,;=";
-//     for (std::string::const_iterator it = url.begin(); it != url.end(); ++it) {
-//         if (validCharacters.find(*it) == std::string::npos) {
-//             return false;
-//         }
-//     }
-
-//     return true;
-// }
-
-void Location::checkVariables()
+void Location::checkVariables(bool serverAutoIndex)
 {
 	switch (Parser::checkLocationName(this->name))
 	{
@@ -316,13 +249,19 @@ void Location::checkVariables()
 			break;
 	}
 
-	switch (Parser::checkAutoIndex(this->getAutoindex()))
+	switch (Parser::checkAutoIndex(this->getAutoIndexStr()))
 	{
 		case true:
 			this->autoindex = true;
 			break;
 		case false:
-			this->autoindex = false;
+			if (this->getAutoIndexStr().empty())
+			{
+				printLog("NOTICE", "autoindex\t\tis not defined. Set to server value " CHR_GREEN + std::string(serverAutoIndex ? "on" : "off") + RESET);
+				this->autoindex = serverAutoIndex;
+			}
+			else
+				this->autoindex = false;
 			break;
 	}
 

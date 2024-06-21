@@ -45,7 +45,6 @@ std::string removeCharFromString(const std::string& input, char c);
 std::vector<std::string> splitString(const std::string &str, char delimiter);
 size_t stringToSizeT(const std::string& str);
 std::map<std::string, std::string> create_filetypes();
-std::map<int, std::string> createHttpErrorCodes();
 void replaceString(std::string &mainString, const std::string &searchString, const std::string &replaceString);
 int count_chars(const std::string &str, char c);
 

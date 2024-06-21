@@ -33,7 +33,7 @@ std::map<std::string, void (Server::*)(const std::string &)> ServerSetters()
 	return serverMethods;
 }
 
-Server::Server(std::string &str) 
+Server::Server(std::string &str)
 {
 	this->cgiModule = new CGI();
 	while (str.find("location") != std::string::npos)
@@ -145,6 +145,7 @@ void Server::createListeningSockets()
 	}
 }
 
+
 void Server::checkVariables()
 {
 	if (Parser::checkPorts(this->getPorts()) == false)
@@ -158,6 +159,7 @@ void Server::checkVariables()
 	if (Parser::checkRoot(this->getRoot()) == false)
 		exit (1);
 	Parser::checkErrorPage(this->getErrorPage());
+
 	Parser::checkIndex(this->getIndex(), this->getRoot());
 	this->setMaxClientBodySize(Parser::checkClientBodySize(this->getMaxClientBodySizeStr()));
 	this->autoIndex = Parser::checkAutoIndex(this->autoIndexStr);
@@ -166,8 +168,8 @@ void Server::checkVariables()
 	for (size_t i = 0; i < this->locations.size(); i++)
 	{
 		std::cout << CHR_MGENTA"---------Location [" << i + 1 << "]---------" RESET << std::endl;
-		this->locations[i]->checkVariables();
-		// std::cout << CHR_GREEN"OK! Location " << i << RESET<< std::endl;
+		this->locations[i]->checkVariables(this->autoIndex);
+		std::cout << std::endl;
 		printLog("NOTICE", "OK! Location " + toString(i + 1));
 		std::cout << CHR_MGENTA"------------------------------" RESET << std::endl;
 	}

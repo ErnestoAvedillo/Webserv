@@ -87,7 +87,7 @@
                 body: JSON.stringify({ fileName: fileName })
             })
             .then(response => {
-                if (response.ok) {
+                if (header.ok) {
                     alert("File deleted successfully.");
                     // Optionally, update the UI or perform other actions after successful deletion
                 } else {

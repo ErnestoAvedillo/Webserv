@@ -86,6 +86,7 @@ size_t stringToSizeT(const std::string& str) {
 std::vector<std::string> splitString(const std::string& str, char delimiter) {
 	std::vector<std::string> result;
 	std::string token;
+	std::cout << "str: " << str << std::endl;
 	std::istringstream tokenStream(str);
 
 	while (std::getline(tokenStream, token, delimiter)) {
@@ -219,3 +220,25 @@ std::string decodeURL(const std::string& url)
 	return decoded;
 }
 
+// void print_visible(const std::string& str) {
+//     for (char ch : str) {
+//         switch (ch) {
+//             case '\n':
+//                 std::cout << "\\n";
+//                 break;
+//             case '\r':
+//                 std::cout << "\\r";
+//                 break;
+//             case '\t':
+//                 std::cout << "\\t";
+//                 break;
+//             default:
+//                 if (std::isprint(static_cast<unsigned char>(ch))) {
+//                     std::cout << ch;
+//                 } else {
+//                     std::cout << "\\x" << std::hex << std::uppercase << static_cast<int>(static_cast<unsigned char>(ch));
+//                     std::cout << std::dec;  // Reset to decimal for future use
+//                 }
+//         }
+//     }
+// }

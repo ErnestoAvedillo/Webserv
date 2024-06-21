@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ListDir.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 19:03:57 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/15 13:11:41 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/21 14:35:44 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,13 +25,14 @@ class ListDir
     private:
         std::ifstream file;
         std::string path;
+        std::string homePath;
         std::string contentToSend;
         std::size_t      posToSend;
         std::map<std::string, Attributes *> files;
         bool        isSendComplete;
     public:
         ListDir();
-        ListDir(const std::string &);
+        ListDir(const std::string &, const std::string &);
         ~ListDir();
         void setListOfFiles();
         std::map <std::string, Attributes *>::iterator getBeginOfFiles();

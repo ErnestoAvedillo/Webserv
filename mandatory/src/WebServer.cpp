@@ -113,7 +113,7 @@ void	WebServer::eventLoop()
 			{
 				if (this->acceptedSocket[currfd]->receive() == true)
 				{
-					this->acceptedSocket[currfd]->loadRequest();
+					this->acceptedSocket[currfd]->loadRequest(this->servers);
 					#ifdef __APPLE__
 						modifEvent(evList[i], READ_EVENT, WRITE_EVENT);
 					#elif __linux__
@@ -153,7 +153,7 @@ void WebServer::exit_handler(int signum)
 {
 	if (signum == SIGINT)
 	{
-		std::cerr << "Exiting..." << std::endl;
+		std::cerr << "\rExiting..." << std::endl;
 		WebServer::ExitFlag = true;
 	}
 }
