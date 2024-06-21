@@ -45,9 +45,7 @@ private:
 	Server *server;
 	int port;
 	int socketFd;
-	// Client *client;
 	Receive *receiver;
-	FileContent *fileContent;
 	Header response;
 	Header request;
 

@@ -23,6 +23,16 @@ bool LocationParser::getIsCGI()
 	return this->isCGI;
 }
 
+size_t LocationParser::getStartRange()
+{
+	return this->startRange;
+}
+
+size_t LocationParser::getEndRange()
+{
+	return this->endRange;
+}
+
 int LocationParser::isAllowedMethod(Location *location)
 {
 	if (this->request.getMethod() == "GET")
@@ -181,14 +191,8 @@ bool isMethodNotStandard(std::string method)
 	return false;
 }
 
-
-LocationParser::LocationParser(Header request_, Server *server_, Receive *receiver_)
+void LocationParser::checks()
 {
-	this->request = request_;
-	this->receiver = receiver_;
-	this->server = server_;
-	this->isCGI = false;
-	this->isAutoIndex = server->getAutoIndex();
 	std::string path;
 	switch (this->matchingLocation())
 	{
@@ -206,61 +210,72 @@ LocationParser::LocationParser(Header request_, Server *server_, Receive *receiv
 			return ;
 	}
 
-	if (this->request.getPath().find("?") != std::string::npos)
-		this->request.setPath(this->request.getPath().substr(0, this->request.getPath().find("?")));
+	// if (this->request.getPath().find("?") != std::string::npos)
+	// 	this->request.setPath(this->request.getPath().substr(0, this->request.getPath().find("?")));
 	this->request.setPath(decodeURL(this->request.getPath()));
 	std::cout << request.getPath() << std::endl;
 	if (isBadRequest(receiver->getRequest()))//|| isURIMalformed(this->request.getPath())
 	{
 		response.setStatus("400 Bad Request");
+		throw BAD_REQUEST_CODE;
 		return;
 	}
 	if (!isMethodImplemented(this->request.getMethod()))
 	{
 		response.setStatus("501 Not Implemented");
+		throw NOT_IMPLEMENTED_CODE;
 		return;
 	}
 	if (isMethodNotStandard(this->request.getMethod()))
 	{
 		response.setStatus("405 Method Not Allowed"); 	
+		throw METHOD_NOT_ALLOWED_CODE;
 		return;
 	}
 	if (!isVersionImplemented(this->request.getProtocol()))
 	{
 		response.setStatus("505 HTTP Version Not Supported");
+		throw HTTP_VERSION_NOT_SUPPORTED_CODE;
 		return;
 	}	
-	if (getFileSize(this->request.getPath()) > this->server->getMaxClientBodySize())
-	{
-		response.setStatus("413 Request Entity Too Large");
-		return;
-	}
-	// std::cout << "FILESIZE " << getFileSize(this->request.getPath()) << std::endl;
-	// std::cout << "MAXFILESIZE " << this->server->getMaxClientBodySize() << std::endl;
-	if (getFileSize(this->request.getPath()) > this->server->getMaxClientBodySize())
-	{
-		response.setStatus("413 Request Entity Too Large");
-		return;
-	}
-	// std::cout << request.getPath() << std::endl;
 	if (this->request.getMethod() == "GET")
 	{
 		std::cout << "GET" << std::endl;
 		if (getMimeType(this->request.getPath()).find("video") != std::string::npos)
 		{
-			// this->fileContent->setRange(stringToSizeT(request.getAttribute("Range")));
-			if (isFilePermissions(this->request.getPath(), F_OK | R_OK) == 1)
+			if (isFilePermissions(this->request.getPath(), F_OK | R_OK) == 1 && request.getAttribute("Range") != "")
 			{
 			
 				response.setStatus("206 Partial Content");
 				response.setContentType(this->request.getPath());
-				// response.setLastModified(this->fileContent->getLastModified());
-				// response.setContentLength(this->fileContent->getContentSize() - stringToSizeT(request.getAttribute("Range")));
-				// response.setAttribute("Content-Range", "bytes 0-" + toString(this->fileContent->getContentSize() - 1) + "/" + toString(this->fileContent->getContentSize()) );
-				response.setServer(server->getServerName());
+				
+				if (this->request.getAttribute("Range") != "")
+				{
+					this->startRange = stringToSizeT(this->request.getAttribute("Range").substr(6, this->request.getAttribute("Range").find("-")));
+					std::string endRangeStr = this->request.getAttribute("Range").substr(this->request.getAttribute("Range").find("-") + 1, this->request.getAttribute("Range").size());
+					// std::cout << "ENDRANGE " << endRangeStr << std::endl;
+					if (endRangeStr.empty())
+					{
+						this->endRange = getFileSize(this->request.getPath());
+					}
+					else
+					{
+						this->endRange = stringToSizeT(endRangeStr);
+					}
+				}
+			}
+			else if (isFilePermissions(this->request.getPath(), F_OK | R_OK) == 1)
+			{
+				response.setContentType(this->request.getPath());
+				response.setContentLength(getFileSize(this->request.getPath()));
+				response.setStatus("200 OK");
+				// response.setAttribute("Accept-Ranges", "bytes");
 			}
 			else
+			{
 				response.setStatus("404 Not Found");
+				throw NOT_FOUND_CODE;
+			}
 		}
 		else if (isFilePermissions(this->request.getPath(), F_OK | R_OK) == 1)
 		{
@@ -279,16 +294,22 @@ LocationParser::LocationParser(Header request_, Server *server_, Receive *receiv
 			response.setStatus("200 OK");
 		}
 		else
+		{
+			std::cout << "THOROW";
 			response.setStatus("404 Not Found");
+			throw NOT_FOUND_CODE;
+		}
 	}
 	else if (this->request.getMethod() == "POST")
 	{
 		std::cout << this->receiver->getisform() << std::endl;
+		
 		if (this->request.getMethod() == "POST" && receiver->getisform() == false)
 		{
 			if (receiver->getBody().empty())
 			{
 				response.setStatus("400 Bad Request");
+				throw 400;
 				return ;
 			}
 			std::string body = receiver->getBody();
@@ -296,7 +317,14 @@ LocationParser::LocationParser(Header request_, Server *server_, Receive *receiv
 			if (this->request.getAttribute("Content-Length") == "")
 			{
 				response.setStatus("411 Length Required");
+				throw LENGTH_REQUIRED_CODE;
 				return ;
+			}
+			if (body.size() > (size_t)this->server->getMaxClientBodySize())
+			{
+				response.setStatus("413 Request Entity Too Large");
+				throw REQUEST_ENTITY_TOO_LARGE_CODE;
+				return;
 			}
 			std::vector<std::string> lines = splitString(postheader, '\n');
 			for (size_t i = 0; i < lines.size(); i++)
@@ -333,14 +361,23 @@ LocationParser::LocationParser(Header request_, Server *server_, Receive *receiv
 			response.setStatus("200 OK");
 		else
 			response.setStatus("404 Not Found");
-		response.setServer(server->getServerName());
+		// response.setServer(server->getServerName());
 	}
 	else
 	{
 		response.setStatus("405 Method Not Allowed");
-		response.setServer(server->getServerName());
+		// response.setServer(server->getServerName());
+		throw METHOD_NOT_ALLOWED_CODE;
 	}
-	// /zzz
+}
+
+LocationParser::LocationParser(Header request_, Server *server_, Receive *receiver_)
+{
+	this->request = request_;
+	this->receiver = receiver_;
+	this->server = server_;
+	this->isCGI = false;
+	this->isAutoIndex = server->getAutoIndex();
 }
 
 LocationParser::~LocationParser()

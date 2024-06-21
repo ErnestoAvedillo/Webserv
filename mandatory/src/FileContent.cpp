@@ -43,8 +43,10 @@ int FileContent::openFile()
 	return 0;
 }
 
-std::string FileContent::getContent(size_t startRange) 
+std::string FileContent::getContent() 
 {
+	std::cout << "StartRange: " << startRange << std::endl;
+	std::cout << "EndRange: " << endRange << std::endl;
 	std::string content;
 	if (this->getIsFileOpen())
 	{
@@ -74,9 +76,9 @@ std::string FileContent::getContent(size_t startRange)
 		{
 			content = "";
 			char buffer[MAX_SENT_BYTES];
-			(void)startRange;
-			if (startRange)
-			 	file.seekg(startRange, std::ios::beg);
+			// (void)startRange;
+			// if (startRange)
+			//  	file.seekg(startRange, std::ios::beg);
 			std::cout << "enviando paquete:" << file.tellg() << std::endl;
 			if (file.read(buffer, MAX_SENT_BYTES))
 			{
@@ -269,4 +271,19 @@ bool FileContent::getIsAutoIndex()
 void FileContent::setIsCGI(bool isCgi)
 {
 	this->cgiModule->setIsCGI(isCgi);
+}
+
+
+void FileContent::setStartRange(size_t range)
+{
+	this->startRange = range;
+}
+size_t FileContent::getStartRange()
+{
+	return startRange;
+}
+
+void FileContent::setEndRange(size_t range)
+{
+	this->endRange = range;
 }

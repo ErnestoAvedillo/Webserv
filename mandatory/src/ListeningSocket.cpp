@@ -127,9 +127,7 @@ std::string ListeningSocket::getAnswerToSend()
 {
 	std::string answer;
 	std::string filePath = this->getFileName();
-
-	std::string file_content = this->getContent(0);
-	//std::string file_content = this->getContent(this->getStartRange());
+	std::string file_content = this->getContent();
 	if (this->getFirstFragment())
 	{
 		if (response.getContentType().find("video/") != std::string::npos && this->request.getAttribute("Sec-Fetch-Dest").find("document") != std::string::npos)
@@ -162,20 +160,20 @@ void ListeningSocket::loadRequest(std::vector<Server *> servers)
 {
 	this->request = Header(this->receiver->getRequest());
 	matchServerName(servers);
+	LocationParser Parser(this->request, this->server, this->receiver);
 	try 
 	{
-		LocationParser LocationParser(this->request, this->server, this->receiver);
-		this->request = LocationParser.getRequest();
-		this->response = LocationParser.getResponse();
-		this->setIsAutoIndex(LocationParser.getIsAutoIndex());
-		this->setIsCGI(LocationParser.getIsCGI());
+		 Parser.checks();
 	}
 	catch (int e)
 	{
 		this->getFileContentForStatusCode(e);
 	}
-	if (this->setFileName(this->request.getPath()))
-	{
-		std::cout << "File name set" << std::endl;
-	}
+	this->request = Parser.getRequest();
+	this->response = Parser.getResponse();
+	this->setIsAutoIndex(Parser.getIsAutoIndex());
+	this->setIsCGI(Parser.getIsCGI());
+	this->setStartRange(Parser.getStartRange());
+	this->setEndRange(Parser.getEndRange());
+	this->setFileName(this->request.getPath());
 }

@@ -38,6 +38,7 @@ private:
 	std::string splitFileFromArgs(const std::string &);
 	bool FileOrFolerExtists(const std::string &);
 	size_t startRange;
+	size_t endRange;
 //	bool isCgi;
 public:
 	// FileContent(Server *);
@@ -47,8 +48,11 @@ public:
 	int openFile();
 	bool setFileName(const std::string &);
 	void setIsCGI(bool isCgi);
+	void setStartRange(size_t);
+	void setEndRange(size_t);
+	size_t getStartRange();
 	std::string getFileName();
-	std::string getContent(size_t);
+	std::string getContent();
 	void setIsFileOpen(bool);
 	void setIsSendComplete(bool);
 	bool getIsSendComplete();

@@ -35,6 +35,8 @@ class LocationParser
 		std::string path;
 		bool isAutoIndex;
 		bool isCGI;
+		size_t startRange;
+		size_t endRange;
 		// std::string
 	public:
 		LocationParser(Header request, Server *server, Receive *receiver);
@@ -45,5 +47,7 @@ class LocationParser
 		Header getResponse();
 		bool getIsAutoIndex();
 		bool getIsCGI();
-
+		void checks();
+		size_t getStartRange();
+		size_t getEndRange();
 };
