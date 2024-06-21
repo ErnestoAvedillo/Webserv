@@ -194,6 +194,11 @@ bool isMethodNotStandard(std::string method)
 void LocationParser::checks()
 {
 	std::string path;
+	if (this->request.getPath().find("?") != std::string::npos)
+	{
+		this->query = this->request.getPath().substr(this->request.getPath().find("?"));
+		this->request.setPath(this->request.getPath().substr(0, this->request.getPath().find("?")));
+	}
 	switch (this->matchingLocation())
 	{
 		case NO_LOCATION:
@@ -210,8 +215,6 @@ void LocationParser::checks()
 			return ;
 	}
 
-	// if (this->request.getPath().find("?") != std::string::npos)
-	// 	this->request.setPath(this->request.getPath().substr(0, this->request.getPath().find("?")));
 	this->request.setPath(decodeURL(this->request.getPath()));
 	std::cout << request.getPath() << std::endl;
 	if (isBadRequest(receiver->getRequest()))//|| isURIMalformed(this->request.getPath())
@@ -399,4 +402,9 @@ Header LocationParser::getResponse()
 Header LocationParser::getRequest()
 {
 	return this->request;
+}
+
+std::string LocationParser::getQuery()
+{
+	return this->query;
 }

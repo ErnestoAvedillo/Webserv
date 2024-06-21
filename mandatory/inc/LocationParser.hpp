@@ -32,7 +32,8 @@ class LocationParser
 		Server *server;
 		// FileContent *fileContent;
 		Receive *receiver;
-		std::string path;
+		//std::string path;
+		std::string query;
 		bool isAutoIndex;
 		bool isCGI;
 		size_t startRange;
@@ -50,4 +51,5 @@ class LocationParser
 		void checks();
 		size_t getStartRange();
 		size_t getEndRange();
+		std::string getQuery();
 };
