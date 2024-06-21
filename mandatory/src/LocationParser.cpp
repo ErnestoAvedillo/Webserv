@@ -378,6 +378,8 @@ LocationParser::LocationParser(Header request_, Server *server_, Receive *receiv
 	this->server = server_;
 	this->isCGI = false;
 	this->isAutoIndex = server->getAutoIndex();
+	this->startRange = 0;
+	this->endRange = 0;
 }
 
 LocationParser::~LocationParser()

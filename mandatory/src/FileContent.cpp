@@ -76,10 +76,9 @@ std::string FileContent::getContent()
 		{
 			content = "";
 			char buffer[MAX_SENT_BYTES];
-			// (void)startRange;
-			// if (startRange)
-			//  	file.seekg(startRange, std::ios::beg);
-			std::cout << "enviando paquete:" << file.tellg() << std::endl;
+			if (startRange)
+			  	file.seekg(startRange, std::ios::beg);
+			//std::cout << "enviando paquete:" << file.tellg() << std::endl;
 			if (file.read(buffer, MAX_SENT_BYTES))
 			{
 				if (file.eof())
