@@ -243,6 +243,9 @@ void LocationParser::checks()
 		std::cout << "GET" << std::endl;
 		if (getMimeType(this->request.getPath()).find("video") != std::string::npos)
 		{
+			std::string attr = request.getAttribute("Range");
+			int tt = isFilePermissions(this->request.getPath(), F_OK | R_OK);
+			(void)tt;
 			if (isFilePermissions(this->request.getPath(), F_OK | R_OK) == 1 && request.getAttribute("Range") != "")
 			{
 			
@@ -252,8 +255,9 @@ void LocationParser::checks()
 				if (this->request.getAttribute("Range") != "")
 				{
 					this->startRange = stringToSizeT(this->request.getAttribute("Range").substr(6, this->request.getAttribute("Range").find("-")));
+					std::cout << "STARTRANGE " << this->startRange << std::endl;
 					std::string endRangeStr = this->request.getAttribute("Range").substr(this->request.getAttribute("Range").find("-") + 1, this->request.getAttribute("Range").size());
-					// std::cout << "ENDRANGE " << endRangeStr << std::endl;
+					std::cout << "ENDRANGE " << endRangeStr << std::endl;
 					if (endRangeStr.empty())
 					{
 						this->endRange = getFileSize(this->request.getPath());
@@ -377,6 +381,8 @@ LocationParser::LocationParser(Header request_, Server *server_, Receive *receiv
 	this->receiver = receiver_;
 	this->server = server_;
 	this->isCGI = false;
+	this->startRange = 0;
+	this->endRange = 0;
 	this->isAutoIndex = server->getAutoIndex();
 }
 
