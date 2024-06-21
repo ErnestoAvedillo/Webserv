@@ -65,9 +65,7 @@ bool Receive::receiveHeader(int fd)
         std::string tmp = request + this->buffer;
         if (tmp.find("\r\n\r\n") != std::string::npos || tmp.find("\n\n") != std::string::npos)
         {
-            // std::cout << "TMP $" << tmp << "$" << std::endl;
             request = tmp.substr(0, tmp.find("\r\n\r\n"));
-            // std::cout << "REQUEST $" << request << "$" << std::endl;
             Header header(request);
             std::string log = CHR_BLUE + header.getMethod() + RESET + "\t" + header.getAttribute("Host") + CHR_CYAN + header.getPath() + RESET;
             printLog("NOTICE", log);
@@ -85,7 +83,15 @@ bool Receive::receiveHeader(int fd)
             this->sizeSent += this->body.size();
             if (this->sizeSent >= this->maxSize)
             {
-                this->isform = true;
+                if (this->boundary.empty())
+                    this->isform = true;
+                else
+                {
+                     this->body += this->buffer.substr(0, this->buffer.rfind(this->boundary) - 4);
+                    this->body = this->body.substr(0, this->body.find(this->boundary) - 4);
+                    this->postHeader = this->body.substr(this->body.find(this->boundary) + this->boundary.size() + 4, this->body.find("\r\n\r\n"));
+                    this->body = this->body.substr(this->body.find("\r\n\r\n") + 4);
+                }
                 this->isbody = false;
                 return true;
             }
