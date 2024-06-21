@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/25 17:42:25 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/20 19:38:40 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/21 08:53:50 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,12 +40,13 @@ public:
 	//setters
 	void setCGIFolder(const std::string &);
 	void setFileName(const std::string& str);
-	bool setIsCGI(const std::string& str);
+	void setIsCGI(bool);
+	bool getIsCGI();
+	//bool setIsCGI(const std::string &str);
 	void setArgs(const std::string &);
 	void setCGIMapExtensions(std::string const &cgi_extension);
 	//getters
 	std::string getFileName();
-	bool getIsCGI();
 	std::string getCGIFolder();
 	std::vector <std::string> getArgs();
 	std::string getCGIExtension(const std::string &);

@@ -120,8 +120,9 @@ bool FileContent::setFileName(const std::string &file_name)
 			listDir->setContentToList();
 			return this->getIsFileOpen();
 		}
-		//else if (cgiModule->setIsCGI(file_name))
-		else if (this->isCgi)
+		// else if (cgiModule->setIsCGI(file_name))
+		// else if (this->isCgi)
+		else if (cgiModule->getIsCGI())
 		{
 			cgiModule->setFileName(file_name);
 			this->setIsFileOpen(true);
@@ -147,10 +148,6 @@ bool FileContent::setFileName(const std::string &file_name)
 		}
 	}
 	return this->getIsFileOpen();
-}
-void FileContent::setIsAutoIndex(bool autoIndex)
-{
-	this->isAutoIndex = autoIndex;
 }
 
 std::string FileContent::getFileName()
@@ -270,4 +267,9 @@ void FileContent::setIsAutoIndex(bool autoIndex)
 bool FileContent::getIsAutoIndex()
 {
 	return isAutoIndex;
+}
+
+void FileContent::setIsCGI(bool isCgi)
+{
+	this->cgiModule->setIsCGI(isCgi);
 }

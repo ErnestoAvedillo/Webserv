@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/25 17:42:08 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/20 20:24:30 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/21 08:54:41 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,18 +71,23 @@ void CGI::setFileName(const std::string& str)
 	}
 }
 
-bool CGI::setIsCGI(const std::string& str)
+void CGI::setIsCGI(bool valCGI)
 {
-	if (str.find(CGIFolder) != std::string::npos)
-	{
-		isCGI = true;
-	}
-	else
-	{
-		isCGI = false;
-	}
-	return isCGI;
+	this->isCGI = valCGI;
 }
+
+// bool CGI::setIsCGI(const std::string &str)
+// {
+// 	if (str.find(CGIFolder) != std::string::npos)
+// 	{
+// 		isCGI = true;
+// 	}
+// 	else
+// 	{
+// 		isCGI = false;
+// 	}
+// 	return isCGI;
+// }
 
 std::string CGI::getFileName()
 {

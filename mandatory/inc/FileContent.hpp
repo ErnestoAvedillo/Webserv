@@ -38,8 +38,7 @@ private:
 	std::string splitFileFromArgs(const std::string &);
 	bool FileOrFolerExtists(const std::string &);
 	size_t startRange;
-	bool isAutoIndex;
-	bool isCgi;
+//	bool isCgi;
 public:
 	// FileContent(Server *);
 	FileContent();

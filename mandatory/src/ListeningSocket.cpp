@@ -1,12 +1,12 @@
 #include "../inc/ListeningSocket.hpp"
 
-ListeningSocket::ListeningSocket(int myPort, Server *srv)
+ListeningSocket::ListeningSocket(int myPort, Server *srv): FileContent()
 {
 	this->port = myPort;
 	this->server = srv;
 	// this->client = new Client(srv);
 	this->receiver = new Receive();
-	this->fileContent = new FileContent(srv);
+	// this->fileContent = new FileContent();
 	
 	this->socketFd = -1;
 	if (this->startListening())
@@ -14,21 +14,31 @@ ListeningSocket::ListeningSocket(int myPort, Server *srv)
 		std::string msg = "Listening on " + std::string(CHR_YELLOW) + srv->getHost() + RESET + "\t\t" + std::string(CHR_GREEN) + toString(myPort) + RESET + "\t" + CHR_GREEN + toString(this->socketFd);
 		printLog("NOTICE", msg);
 	}
+	this->loadErrorPageFromDir(srv->getErrorPage());
+	this->setIsAutoIndex(srv->getAutoIndex());
+	this->setIndexName(srv->getIndex());
+	this->setHomeFolder(srv->getRoot());
+	this->setCGIModule(srv->cgiModuleClone());
 }
 
-ListeningSocket::ListeningSocket(Server *srv)
+ListeningSocket::ListeningSocket(Server *srv): FileContent()
 {
 	// this->client = new Client(srv);
 	this->receiver = new Receive();
-	this->fileContent = new FileContent(srv);
+	// this->fileContent = new FileContent();
 	this->server = srv;
+	this->loadErrorPageFromDir(srv->getErrorPage());
+	this->setIsAutoIndex(srv->getAutoIndex());
+	this->setIndexName(srv->getIndex());
+	this->setHomeFolder(srv->getRoot());
+	this->setCGIModule(srv->cgiModuleClone());
 }
 
 ListeningSocket::~ListeningSocket()
 {
 	stopListening();
 	delete this->receiver;
-	delete this->fileContent;
+	// delete this->fileContent;
 }
 
 bool ListeningSocket::startListening()
@@ -92,12 +102,12 @@ int ListeningSocket::getFd()
 
 bool ListeningSocket::sendData(int clientSocketFd)
 {
-	ExtendedString answer = this->client->getAnswerToSend();
+	ExtendedString answer = this->getAnswerToSend();
 	// std::cout << "answer: " << answer.size() << std::endl;
 	// std::cout << "My answer: " << answer << std::endl;
 	if ((send(clientSocketFd, answer.c_str(), answer.size(), 0)) < 0)
 		std::cerr << "Failed to write to client" << std::endl;
-	return this->fileContent->isSendComplete();
+	return this->getIsSendComplete();
 }
 
 bool ListeningSocket::receive()
@@ -116,15 +126,15 @@ ListeningSocket *ListeningSocket::clone(int fd)
 std::string ListeningSocket::getAnswerToSend()
 {
 	std::string answer;
-	std::string filePath = this->fileContent->getFileName();
+	std::string filePath = this->getFileName();
 
-	std::string file_content = this->fileContent->getContent();
-	if (this->fileContent->getFirstFragment())
+	std::string file_content = this->getContent(0);
+	if (this->getFirstFragment())
 	{
 		if (response.getContentType().find("video/") != std::string::npos && this->request.getAttribute("Sec-Fetch-Dest").find("document") != std::string::npos)
 			response.setAttribute("Accept-Ranges", "bytes");
 		answer = response.generateHeader() + file_content;
-		this->fileContent->setFirstFragment(false);
+		this->setFirstFragment(false);
 	}
 	else
 		answer = file_content;
@@ -154,9 +164,9 @@ void ListeningSocket::loadRequest(std::vector<Server *> servers)
 	LocationParser LocationParser(this->request, this->server, this->receiver);
 	this->request = LocationParser.getRequest();
 	this->response = LocationParser.getResponse();
-	this->fileContent->setIsAutoIndex(LocationParser.getIsAutoIndex());
-	this->fileContent->setIsCGI(LocationParser.getIsCGI());
-	if (this->fileContent->setFileName(this->request.getPath()))
+	this->setIsAutoIndex(LocationParser.getIsAutoIndex());
+	this->setIsCGI(LocationParser.getIsCGI());
+	if (this->setFileName(this->request.getPath()))
 	{
 		std::cout << "File name set" << std::endl;
 	}
