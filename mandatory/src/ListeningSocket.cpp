@@ -128,7 +128,8 @@ std::string ListeningSocket::getAnswerToSend()
 	std::string answer;
 	std::string filePath = this->getFileName();
 
-	std::string file_content = this->getContent(this->getStartRange());
+	std::string file_content = this->getContent(0);
+	//std::string file_content = this->getContent(this->getStartRange());
 	if (this->getFirstFragment())
 	{
 		if (response.getContentType().find("video/") != std::string::npos && this->request.getAttribute("Sec-Fetch-Dest").find("document") != std::string::npos)
@@ -164,15 +165,15 @@ void ListeningSocket::loadRequest(std::vector<Server *> servers)
 	try 
 	{
 		LocationParser LocationParser(this->request, this->server, this->receiver);
+		this->request = LocationParser.getRequest();
+		this->response = LocationParser.getResponse();
+		this->setIsAutoIndex(LocationParser.getIsAutoIndex());
+		this->setIsCGI(LocationParser.getIsCGI());
 	}
 	catch (int e)
 	{
 		this->getFileContentForStatusCode(e);
 	}
-	this->request = LocationParser.getRequest();
-	this->response = LocationParser.getResponse();
-	this->setIsAutoIndex(LocationParser.getIsAutoIndex());
-	this->setIsCGI(LocationParser.getIsCGI());
 	if (this->setFileName(this->request.getPath()))
 	{
 		std::cout << "File name set" << std::endl;

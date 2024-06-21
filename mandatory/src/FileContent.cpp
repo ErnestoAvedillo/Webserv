@@ -115,7 +115,7 @@ bool FileContent::setFileName(const std::string &file_name)
 
 			fileName = FileAndFolder;
 			this->setIsFileOpen(true);
-			listDir = new ListDir(fileName);
+			listDir = new ListDir(fileName, homeFolder);
 			listDir->setSubdirectory(FileAndFolder);
 			listDir->setContentToList();
 		}
