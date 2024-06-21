@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/25 17:42:08 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/21 10:57:15 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/21 12:54:16 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -175,6 +175,7 @@ std::string CGI::execute()
 	// pid_t result = waitpid(pid, &status, 0);
 	waitpid(pid, &status, 0);
 
+	std::string output;
 	// Check if the child process exited normally
 	// std::cout << "Result: " << static_cast <int> (result) << "errno "<< EINTR << "vs" << errno << std::endl;
 	// if (result == -1 && errno == EINTR) 
@@ -184,7 +185,6 @@ std::string CGI::execute()
 	// }
 	// else 
 	// {
-		std::string output;
 		if (WIFEXITED(status)) 
 		{
 			// Read the output from the file descriptor

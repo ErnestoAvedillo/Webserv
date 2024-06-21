@@ -6,7 +6,7 @@
 #include "Parser.hpp"
 #include "Header.hpp"
 #include "Server.hpp"
-
+#include "StatusCodesDefinition.hpp"
 
 enum LocationStatus
 {

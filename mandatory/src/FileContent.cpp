@@ -10,7 +10,7 @@ FileContent::FileContent() : StatusCode()
 	sendComplete = false;
 	isFileOpen = false;
 	isFistFragment = true;
-	//isAutoIndex = false;
+	isAutoIndex = false;
 	// isAutoIndex = srv->getAutoIndex();
 	// indexInHomeFolder = srv->getRoot() + srv->getIndex();
 	// this->cgiModule = srv->cgiModuleClone();
@@ -75,9 +75,9 @@ std::string FileContent::getContent(size_t startRange)
 			content = "";
 			char buffer[MAX_SENT_BYTES];
 			(void)startRange;
-			// if (startRange)
-			// 	file.seekg(startRange, std::ios::beg);
-			// std::cout << "enviando paquete:" << file.tellg() << std::endl;
+			if (startRange)
+			 	file.seekg(startRange, std::ios::beg);
+			std::cout << "enviando paquete:" << file.tellg() << std::endl;
 			if (file.read(buffer, MAX_SENT_BYTES))
 			{
 				if (file.eof())
@@ -128,14 +128,14 @@ bool FileContent::setFileName(const std::string &file_name)
 		}
 		else
 		{
-			if (this->isInputDirectory())
-			{
-				fileName = homeFolder + indexName;
-			}
-			else
-			{
+			// if (this->isInputDirectory())
+			// {
+			// 	fileName = homeFolder + indexName;
+			// }
+			// else
+			// {
 				fileName = FileAndFolder;
-			}
+			// }
 			stat(fileName.c_str(), &fileStat);
 			completeContentSize = fileStat.st_size;
 			this->setIsFileOpen(this->openFile());
