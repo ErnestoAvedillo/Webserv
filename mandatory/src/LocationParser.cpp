@@ -240,7 +240,6 @@ void LocationParser::checks()
 	}	
 	if (this->request.getMethod() == "GET")
 	{
-		std::cout << "GET" << std::endl;
 		if (getMimeType(this->request.getPath()).find("video") != std::string::npos)
 		{
 			std::string attr = request.getAttribute("Range");
@@ -293,21 +292,26 @@ void LocationParser::checks()
 		}
 		else if (isDirPermissions(this->request.getPath(), F_OK | R_OK) == true && this->isAutoIndex == true)
 		{
-			std::cout << "PATTTH" << this->request.getPath() << std::endl;
 			response.setContentType("text/html");
 			response.setStatus("200 OK");
 		}
 		else
 		{
-			std::cout << "THOROW";
 			response.setStatus("404 Not Found");
 			throw NOT_FOUND_CODE;
 		}
 	}
 	else if (this->request.getMethod() == "POST")
 	{
-		std::cout << this->receiver->getisform() << std::endl;
+		// std::cout << this->receiver->getisform() << std::endl;
 		
+		std::string body = receiver->getBody();
+		if (body.size() > (size_t)this->server->getMaxClientBodySize())
+		{
+			response.setStatus("413 Request Entity Too Large");
+			throw REQUEST_ENTITY_TOO_LARGE_CODE;
+			return;
+		}
 		if (this->request.getMethod() == "POST" && receiver->getisform() == false)
 		{
 			if (receiver->getBody().empty())
@@ -316,19 +320,12 @@ void LocationParser::checks()
 				throw 400;
 				return ;
 			}
-			std::string body = receiver->getBody();
 			std::string postheader = receiver->getPostHeader();
 			if (this->request.getAttribute("Content-Length") == "")
 			{
 				response.setStatus("411 Length Required");
 				throw LENGTH_REQUIRED_CODE;
 				return ;
-			}
-			if (body.size() > (size_t)this->server->getMaxClientBodySize())
-			{
-				response.setStatus("413 Request Entity Too Large");
-				throw REQUEST_ENTITY_TOO_LARGE_CODE;
-				return;
 			}
 			std::vector<std::string> lines = splitString(postheader, '\n');
 			for (size_t i = 0; i < lines.size(); i++)
@@ -354,7 +351,7 @@ void LocationParser::checks()
 		}
 		else if (receiver->getisform())
 		{
-			std::cout << "form: " << receiver->getBody() << std::endl;
+			std::cout << "form: " << body << std::endl;
 			response.setStatus("200 Created");
 		}
 		response.setServer(server->getServerName());
