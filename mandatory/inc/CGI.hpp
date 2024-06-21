@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/25 17:42:25 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/21 08:53:50 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/21 10:57:13 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ public:
 	void setCGIFolder(const std::string &);
 	void setFileName(const std::string& str);
 	void setIsCGI(bool);
+	bool setIdentifyCGIFromFileName(const std::string &str); 
 	bool getIsCGI();
 	//bool setIsCGI(const std::string &str);
 	void setArgs(const std::string &);

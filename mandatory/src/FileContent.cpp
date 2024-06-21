@@ -75,8 +75,8 @@ std::string FileContent::getContent(size_t startRange)
 			content = "";
 			char buffer[MAX_SENT_BYTES];
 			(void)startRange;
-			if (startRange)
-				file.seekg(startRange, std::ios::beg);
+			// if (startRange)
+			// 	file.seekg(startRange, std::ios::beg);
 			// std::cout << "enviando paquete:" << file.tellg() << std::endl;
 			if (file.read(buffer, MAX_SENT_BYTES))
 			{
@@ -118,15 +118,13 @@ bool FileContent::setFileName(const std::string &file_name)
 			listDir = new ListDir(fileName);
 			listDir->setSubdirectory(FileAndFolder);
 			listDir->setContentToList();
-			return this->getIsFileOpen();
 		}
-		// else if (cgiModule->setIsCGI(file_name))
+		// else if (cgiModule->setIdentifyCGIFromFileName(file_name))
 		// else if (this->isCgi)
-		else if (cgiModule->getIsCGI())
+		else if (cgiModule->setIdentifyCGIFromFileName(file_name) || cgiModule->getIsCGI())
 		{
 			cgiModule->setFileName(file_name);
 			this->setIsFileOpen(true);
-			return this->getIsFileOpen();
 		}
 		else
 		{
@@ -144,7 +142,6 @@ bool FileContent::setFileName(const std::string &file_name)
 			// isFileOpen = true;
 			// if (this->getIsFileOpen())
 			// 		file.seekg(startRange, std::ios::beg);
-			return this->getIsFileOpen();
 		}
 	}
 	return this->getIsFileOpen();
