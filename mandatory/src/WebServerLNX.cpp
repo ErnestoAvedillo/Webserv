@@ -18,6 +18,7 @@ void	WebServer::addEventSet()
 		for (size_t j = 0; j < serverFds.size(); j++)
 		{
 			struct epoll_event event;
+			memset(&event, 0, sizeof(event));
 			event.events = EPOLLIN | EPOLLET; // Edge-triggered mode
 			event.data.fd = serverFds[j];
 			if (epoll_ctl(this->kq, EPOLL_CTL_ADD, serverFds[j], &event) == -1)
@@ -50,6 +51,7 @@ void WebServer::modifEvent(struct epoll_event eventList, int type)
 void WebServer::addEvent(int fd, int type)
 {
 	struct epoll_event ev;
+	memset(&ev, 0, sizeof(ev));
 	ev.events = type;
 	ev.data.fd = fd;
 	if(epoll_ctl(this->kq, EPOLL_CTL_ADD, fd, &ev) == -1)
