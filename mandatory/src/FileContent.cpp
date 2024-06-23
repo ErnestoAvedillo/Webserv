@@ -50,7 +50,15 @@ std::string FileContent::getContent()
 	std::string content;
 	if (this->getIsFileOpen())
 	{
-		if (cgiModule->getIsCGI())
+		 if (isAutoIndex && this->isInputDirectory())
+		{
+			isFileOpen = true;
+			content = listDir->getContentToSend();
+			this->setCompleteContentSize(content.size());
+			this->setIsSendComplete(listDir->getIsSendComlete());
+			return content;
+		}
+		else if (this->cgiModule->getIsCGI())
 		{
 			this->setIsSendComplete(true);
 			try
@@ -62,14 +70,6 @@ std::string FileContent::getContent()
 			{
 				content = this->getFileContentForStatusCode(e);
 			}
-			return content;
-		}
-		else if (isAutoIndex && this->isInputDirectory())
-		{
-			isFileOpen = true;
-			content = listDir->getContentToSend();
-			this->setCompleteContentSize(content.size());
-			this->setIsSendComplete(listDir->getIsSendComlete());
 			return content;
 		}
 		else
@@ -111,6 +111,7 @@ bool FileContent::setFileName(const std::string &file_name)
 	bool fileOrFolderExists = this->FileOrFolerExtists(FileAndFolder);
 	if (fileOrFolderExists)
 	{
+		std::cout << "isCGI: " << cgiModule->getIsCGI() << std::endl;
 		if (this->isInputDirectory() && isAutoIndex)
 		{
 
@@ -122,7 +123,7 @@ bool FileContent::setFileName(const std::string &file_name)
 		}
 		// else if (cgiModule->setIdentifyCGIFromFileName(file_name))
 		// else if (this->isCgi)
-		else if (cgiModule->setIdentifyCGIFromFileName(file_name) || cgiModule->getIsCGI())
+		else if (cgiModule->getIsCGI() )
 		{
 			cgiModule->setFileName(file_name);
 			this->setIsFileOpen(true);
@@ -286,3 +287,13 @@ void FileContent::setEndRange(size_t range)
 {
 	this->endRange = range;
 }
+
+void FileContent::setIsCgi(bool cgi)
+{
+	this->cgiModule->setIsCGI(cgi);
+}
+
+// void FileContent::setCgiPath(std::string path)
+// {
+// 	// this->cgiModule->setFileName(path);
+// }

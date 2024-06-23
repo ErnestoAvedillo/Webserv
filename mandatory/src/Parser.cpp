@@ -317,7 +317,10 @@ int Parser::checkLocationName(std::string name)
 	// 	printLog("ERROR", "location name\t\t\t\tcannot be root." );
 	// 	return 0;
 	// }
-	if (name == "cgi-bin")
+	std::string tmp;
+	tmp = name;
+	tmp.erase(std::remove(tmp.begin(), tmp.end(), '/'), tmp.end());
+	if (tmp == "cgi-bin")
 		return 2;
 	return 1;
 }

@@ -64,19 +64,35 @@ int LocationParser::isAllowedMethod(Location *location)
 }
 
 
+// std::string getCgiPath(std::string extension)
+// {
+	
+// }
+
 int LocationParser::matchingLocation()
 {
 	std::vector<Location *> locations = this->server->getLocations();
 	for (size_t i = 0; i < locations.size(); i++)
 	{
-		// std::cout << "PATH: " << this->request.getPath() << std::endl;
 		if (this->request.getPath().find(locations[i]->getName()) != std::string::npos)
 		{
-			// std::cout << "LOCATION: " << locations[i]->getName() << std::endl;
 			if (isAllowedMethod(locations[i]) == NOT_ALLOWED)
 				return NOT_ALLOWED;
+			std::string rawPath = this->request.getPath();
 			this->isAutoIndex = locations[i]->getAutoIndex();
-			this->isCGI = locations[i]->getIsCgi();
+			std::cout << "LOCATION CGI " << locations[i]->getIsCgi() << std::endl;
+			if (locations[i]->getIsCgi() == true)
+			{
+				std::string extension;
+				if (rawPath.rfind(".") != std::string::npos)
+					extension = rawPath.substr(rawPath.rfind(".") + 1, rawPath.size());
+
+				for (size_t y = 0; y < locations[i]->getCgiExtension().size(); i++)
+				{
+					if (locations[i]->getCgiExtension()[y] == extension)
+						this->isCGI = true;
+				}		
+			}
 			ExtendedString tmp;
 			switch (locations[i]->getLocationType())
 			{

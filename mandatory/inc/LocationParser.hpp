@@ -38,6 +38,7 @@ class LocationParser
 		bool isCGI;
 		size_t startRange;
 		size_t endRange;
+		std::string cgiPath;
 		// std::string
 	public:
 		LocationParser(Header request, Server *server, Receive *receiver);
