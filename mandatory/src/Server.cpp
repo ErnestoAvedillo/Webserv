@@ -163,6 +163,9 @@ void Server::checkVariables()
 	Parser::checkIndex(this->getIndex(), this->getRoot());
 	this->setMaxClientBodySize(Parser::checkClientBodySize(this->getMaxClientBodySizeStr()));
 	this->autoIndex = Parser::checkAutoIndex(this->autoIndexStr);
+	if (this->autoIndex == true && !this->index.empty())
+		printLog("WARNING", "autoindex\t\twon't be used because index file is set");
+	
 	if (this->locations.size())
 		std::cout << std::endl;
 	for (size_t i = 0; i < this->locations.size(); i++)
