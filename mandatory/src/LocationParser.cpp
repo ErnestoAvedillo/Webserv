@@ -74,7 +74,7 @@ int LocationParser::matchingLocation()
 	std::vector<Location *> locations = this->server->getLocations();
 	for (size_t i = 0; i < locations.size(); i++)
 	{
-		if (this->request.getPath().find(locations[i]->getName()) != std::string::npos)
+		if ((this->request.getPath().find(locations[i]->getName()) != std::string::npos && locations[i]->getLocationType() != RETURN )|| (locations[i]->getLocationType() == RETURN && this->request.getPath() == locations[i]->getName()))
 		{
 			if (isAllowedMethod(locations[i]) == NOT_ALLOWED)
 				return NOT_ALLOWED;
@@ -97,20 +97,19 @@ int LocationParser::matchingLocation()
 			switch (locations[i]->getLocationType())
 			{
 				case RETURN:
-					response.setStatus("301 Moved Permanently");
-					response.setAttribute("Location", locations[i]->getReturn());
-					return REDIRECT;
+						response.setStatus("301 Moved Permanently");
+						response.setAttribute("Location", locations[i]->getReturn());
+						return REDIRECT;
 				case ALIAS:
 					tmp = this->request.getPath();
-					tmp.replaceString(locations[i]->getName(), locations[i]->getAlias() + "/");
+					tmp.replaceFirstString(locations[i]->getName(), locations[i]->getAlias() + "/");
 					if (!locations[i]->getIndex().empty() && isDirPermissions(tmp, F_OK | R_OK) == true && this->request.getMethod() != "POST")
 						tmp += "/" + locations[i]->getIndex();
 					request.setPath(tmp);
-					// findCgiExtension(this->request.getPath(), this->locations[i]->getCgiExtension());
 					break ;
 				case ROOT:
 					tmp = this->request.getPath();
-					tmp.replaceString(locations[i]->getName(), locations[i]->getRoot()  + locations[i]->getName());
+					tmp.replaceFirstString(locations[i]->getName(), locations[i]->getRoot()  + locations[i]->getName());
 					if (!locations[i]->getIndex().empty() && isDirPermissions(tmp, F_OK | R_OK) == true && this->request.getMethod() != "POST")
 						tmp += "/" + locations[i]->getIndex();
 					request.setPath(tmp);
