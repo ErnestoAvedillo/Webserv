@@ -81,10 +81,10 @@ void	WebServer::eventLoop()
 	#endif
 	int num_events = 0;
 	signal(SIGINT, &WebServer::exit_handler);
+	printLog("NOTICE", "Waiting for events...");
 	while (!WebServer::ExitFlag)
 	{
 		// std::cout << "Waiting for events..." << std::endl;
-		printLog("NOTICE", "Waiting for events...");
 		num_events = waitEvent(evList);
 		if (num_events == -1)
 			continue ;
