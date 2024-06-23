@@ -6,7 +6,7 @@
 /*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/29 17:38:18 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/21 21:59:52 by jcheel-n         ###   ########.fr       */
+/*   Updated: 2024/06/23 16:48:26 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -255,6 +255,8 @@ void Location::checkVariables(bool serverAutoIndex)
 	{
 		case true:
 			this->autoindex = true;
+			if (this->autoindex == true && !this->index.empty())
+				printLog("WARNING", "autoindex\t\twon't be used because index file is set");
 			break;
 		case false:
 			if (this->getAutoIndexStr().empty())
@@ -266,7 +268,7 @@ void Location::checkVariables(bool serverAutoIndex)
 				this->autoindex = false;
 			break;
 	}
-
+	
 	this->setAllowMethods(this->allowMethodsStr);
 	if (!Parser::checkAllowedMethods(this->allowMethodsStr))
 		this->isGetAllowed = true;
