@@ -116,7 +116,7 @@ bool Parser::checkErrorPage(std::string errorPage)
 
 	// std::cout << "Found files:" << std::endl;
 	std::sort(foundFiles.begin(), foundFiles.end());
-	std::cout << CHR_GREEN << getLocalTime() << " [" << "NOTICE" << "]" << "\t\t" << RESET ;//message << RESET << std::endl;
+	std::cout << CHR_GREEN << getLocalTime() << " [" << "NOTICE" << "]" << "\t\terror_pages found\t\t" << RESET ;//message << RESET << std::endl;
 
 	if (foundFiles.size() == 0)
 	{
@@ -312,11 +312,11 @@ int Parser::checkLocationName(std::string name)
 		printLog("ERROR", "location name\t\t\t\tnot defined." );
 		exit(1);
 	}
-	// if (name == "/")
-	// {
-	// 	printLog("ERROR", "location name\t\t\t\tcannot be root." );
-	// 	return 0;
-	// }
+	if (name[0] != '/')
+	{
+		printLog("ERROR", "location name\t\t\t\tmust start with /" );
+		exit(1);
+	}
 	std::string tmp;
 	tmp = name;
 	tmp.erase(std::remove(tmp.begin(), tmp.end(), '/'), tmp.end());
