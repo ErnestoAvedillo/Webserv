@@ -116,7 +116,7 @@ bool Parser::checkErrorPage(std::string errorPage)
 
 	// std::cout << "Found files:" << std::endl;
 	std::sort(foundFiles.begin(), foundFiles.end());
-	std::cout << CHR_GREEN << getLocalTime() << " [" << "NOTICE" << "]" RESET << "\t\terror_pages found\t\t" << RESET ;//message << RESET << std::endl;
+	std::cout << CHR_GREEN << getLocalTime() << " [" << "NOTICE" << "]" RESET << "\t\terror_pages found\t" << RESET ;//message << RESET << std::endl;
 
 	if (foundFiles.size() == 0)
 	{
@@ -170,16 +170,16 @@ bool Parser::checkIndex(std::string index, std::string root)
 	switch (isFilePermissions(root + "/" + index, R_OK))
 	{
 		case -1:
-			printLog("WARNING", "index\t\t<" + index + ">\terror getting file metadata" );
+			printLog("WARNING", "index\t\t\t<" + index + ">\terror getting file metadata" );
 			return false;
 		case -3:
-			printLog("WARNING", "index\t\t<" + index + ">\tnot a regular file" );
+			printLog("WARNING", "index\t\t\t<" + index + ">\tnot a regular file" );
 			return false;
 		case -4:
-			printLog("WARNING", "index\t\t<" + index + ">\tpermission denied" );
+			printLog("WARNING", "index\t\t\t<" + index + ">\tpermission denied" );
 			return false;
 		case -5:
-			printLog("WARNING", "index\t\t<" + index + ">\tfile not found." );
+			printLog("WARNING", "index\t\t\t<" + index + ">\tfile not found." );
 			return false;
 		default:
 			break ;

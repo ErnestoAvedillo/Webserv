@@ -100,19 +100,18 @@ int LocationParser::matchingLocation()
 						response.setAttribute("Location", locations[i]->getReturn());
 						return REDIRECT;
 				case ALIAS:
-					std::cout << "ALIAS" << std::endl;
 					tmp = this->request.getPath();
-					std::cout << "ALIAS " << tmp << std::endl;
-					std::cout << "ALIAS " << locations[i]->getName() << std::endl;
-					std::cout << "ALIAS " << locations[i]->getAlias() << std::endl;
 					tmp.replaceFirstString(locations[i]->getName(), locations[i]->getAlias() + "/");
-					std::cout << "ALIAS " << tmp << std::endl;
 					if (!locations[i]->getIndex().empty() && isDirPermissions(tmp, F_OK | R_OK) == true && this->request.getMethod() != "POST")
 						tmp += "/" + locations[i]->getIndex();
 					request.setPath(tmp);
 					break ;
 				case ROOT:
+					// std::cout << "ROOT" << std::endl;
 					tmp = this->request.getPath();
+					// std::cout << "ROOT " << tmp << std::endl;
+					// std::cout << "ROOT " << locations[i]->getName() << std::endl;
+					// std::cout << "ROOT " << locations[i]->getAlias() << std::endl;
 					tmp.replaceFirstString(locations[i]->getName(), locations[i]->getRoot()  + locations[i]->getName());
 					if (!locations[i]->getIndex().empty() && isDirPermissions(tmp, F_OK | R_OK) == true && this->request.getMethod() != "POST")
 						tmp += "/" + locations[i]->getIndex();

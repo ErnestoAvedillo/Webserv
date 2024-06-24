@@ -6,7 +6,7 @@
 /*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/29 17:38:18 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/23 16:48:26 by jcheel-n         ###   ########.fr       */
+/*   Updated: 2024/06/24 23:41:29 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -223,7 +223,7 @@ void Location::checkVariables(bool serverAutoIndex)
 			this->setCgiPath(this->cgiPathStr);
 			this->setCgiExtension(this->cgiExtensionStr);
 			Parser::checkCgi(this->cgiPath, this->cgiExtension);
-			std::cout << "Is cgi true: " << std::endl;
+			// std::cout << "Is cgi true: " << std::endl;
 			this->isCgi = true;
 			break ;
 		case 1:
