@@ -80,14 +80,13 @@ int LocationParser::matchingLocation()
 				return NOT_ALLOWED;
 			std::string rawPath = this->request.getPath();
 			this->isAutoIndex = locations[i]->getAutoIndex();
-			std::cout << "LOCATION CGI " << locations[i]->getIsCgi() << std::endl;
 			if (locations[i]->getIsCgi() == true)
 			{
 				std::string extension;
 				if (rawPath.rfind(".") != std::string::npos)
 					extension = rawPath.substr(rawPath.rfind(".") + 1, rawPath.size());
 
-				for (size_t y = 0; y < locations[i]->getCgiExtension().size(); i++)
+				for (size_t y = 0; y < locations[i]->getCgiExtension().size(); y++)
 				{
 					if (locations[i]->getCgiExtension()[y] == extension)
 						this->isCGI = true;
@@ -101,8 +100,13 @@ int LocationParser::matchingLocation()
 						response.setAttribute("Location", locations[i]->getReturn());
 						return REDIRECT;
 				case ALIAS:
+					std::cout << "ALIAS" << std::endl;
 					tmp = this->request.getPath();
+					std::cout << "ALIAS " << tmp << std::endl;
+					std::cout << "ALIAS " << locations[i]->getName() << std::endl;
+					std::cout << "ALIAS " << locations[i]->getAlias() << std::endl;
 					tmp.replaceFirstString(locations[i]->getName(), locations[i]->getAlias() + "/");
+					std::cout << "ALIAS " << tmp << std::endl;
 					if (!locations[i]->getIndex().empty() && isDirPermissions(tmp, F_OK | R_OK) == true && this->request.getMethod() != "POST")
 						tmp += "/" + locations[i]->getIndex();
 					request.setPath(tmp);
@@ -113,9 +117,6 @@ int LocationParser::matchingLocation()
 					if (!locations[i]->getIndex().empty() && isDirPermissions(tmp, F_OK | R_OK) == true && this->request.getMethod() != "POST")
 						tmp += "/" + locations[i]->getIndex();
 					request.setPath(tmp);
-					break ;
-				default:
-					std::cerr << "This is incorrect. Should not arrive here" << std::endl;
 					break ;
 			}
 			return true;
