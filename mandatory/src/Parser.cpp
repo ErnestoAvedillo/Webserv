@@ -116,7 +116,7 @@ bool Parser::checkErrorPage(std::string errorPage)
 
 	// std::cout << "Found files:" << std::endl;
 	std::sort(foundFiles.begin(), foundFiles.end());
-	std::cout << CHR_GREEN << getLocalTime() << " [" << "NOTICE" << "]" << "\t\terror_pages found\t\t" << RESET ;//message << RESET << std::endl;
+	std::cout << CHR_GREEN << getLocalTime() << " [" << "NOTICE" << "]" RESET << "\t\terror_pages found\t\t" << RESET ;//message << RESET << std::endl;
 
 	if (foundFiles.size() == 0)
 	{

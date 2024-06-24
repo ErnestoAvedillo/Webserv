@@ -155,8 +155,8 @@ void	WebServer::eventLoop()
 				std::cerr << "Unknown event " << type_event << std::endl;
 			}
 		}
-		std::cout << "SERVERSOCKET " << serverSocket.size() << std::endl;
-			std::cout << "ACCEPTESSOCKER " << acceptedSocket.size() << std::endl;
+		// std::cout << "SERVERSOCKET " << serverSocket.size() << std::endl;
+		// 	std::cout << "ACCEPTESSOCKER " << acceptedSocket.size() << std::endl;
 	}
 }
 
