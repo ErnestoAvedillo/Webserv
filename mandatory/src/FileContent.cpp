@@ -45,8 +45,6 @@ int FileContent::openFile()
 
 std::string FileContent::getContent() 
 {
-	std::cout << "StartRange: " << startRange << std::endl;
-	std::cout << "EndRange: " << endRange << std::endl;
 	std::string content;
 	if (this->getIsFileOpen())
 	{
@@ -76,8 +74,8 @@ std::string FileContent::getContent()
 		{
 			content = "";
 			char buffer[MAX_SENT_BYTES];
-			if (startRange)
-			  	file.seekg(startRange, std::ios::beg);
+			// if (startRange)
+			//   	file.seekg(startRange, std::ios::beg);
 			//std::cout << "enviando paquete:" << file.tellg() << std::endl;
 			if (file.read(buffer, MAX_SENT_BYTES))
 			{
@@ -99,7 +97,7 @@ std::string FileContent::getContent()
 	}
 	else
 	{
-		content = this->getCodeContent(NOT_FOUND_CODE);
+		content += this->getFileContentForStatusCode(this->getCode());
 	}
 	this->setIsSendComplete(true);
 	return (content);

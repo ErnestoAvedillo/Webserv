@@ -225,6 +225,8 @@ void LocationParser::checks()
 			// this->fileContent->setAutoIndex(server->getAutoIndex());
 			break ;
 		case NOT_ALLOWED :
+			response.setStatus("405 Method Not Allowed");
+			throw METHOD_NOT_ALLOWED_CODE;
 			return ;
 		case REDIRECT:
 			return ;
@@ -246,7 +248,7 @@ void LocationParser::checks()
 	}
 	if (isMethodNotStandard(this->request.getMethod()))
 	{
-		response.setStatus("405 Method Not Allowed"); 	
+		response.setStatus("405 Method Not Allowed");
 		throw METHOD_NOT_ALLOWED_CODE;
 		return;
 	}

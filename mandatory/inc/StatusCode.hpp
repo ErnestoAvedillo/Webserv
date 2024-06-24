@@ -17,7 +17,7 @@ private:
 public:
 	StatusCode();
 	~StatusCode();
-
+	int getCode();
 	void createDefaultErrorCodes();
 	void setFileContentForStatusCode(int, const std::string &);
 	std::string getCodeContent(int);
