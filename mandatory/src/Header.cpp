@@ -91,8 +91,8 @@ std::string Header::generateHeader() const
 	header += "Date: " + date + "\r\n";
 	if (lastModified != "")
 		header += "Last-modified: " + lastModified + "\r\n";
-	if(contentLength != 0)
-		header += "Content-length: " + toString(contentLength) + "\r\n";
+	// if(contentLength != 0)
+	// 	header += "Content-Length: " + toString(contentLength) + "\r\n";
 	header += "Content-Type: " + contentType + "\r\n";
 	for (std::map<std::string, std::string>::const_iterator it = attributes.begin(); it != attributes.end(); ++it)
 		header += it->first + ": " + it->second + "\r\n";

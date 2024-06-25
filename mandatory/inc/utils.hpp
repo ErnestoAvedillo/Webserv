@@ -54,7 +54,17 @@ void printLog(std::string type ,std::string message);
 std::string decodeURL(const std::string& url);
 
 template <typename T>
-T min(T a, T b);
+T minimum(T a, T b)
+{
+	if(a < b)
+		return a;
+	return b;
+};
 
 template <typename T>
-T max(T a, T b);
+T maximum(T a, T b)
+{
+	if (a > b)
+		return a;
+	return b;
+};
