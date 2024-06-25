@@ -196,8 +196,12 @@ void ListeningSocket::loadRequest(std::vector<Server *> servers)
 	this->request = Parser.getRequest();
 	this->response = Parser.getResponse();
 	this->setIsAutoIndex(Parser.getIsAutoIndex());
+	// std::cout << "LocationParser isCGI: " << Parser.getIsCGI() << std::endl;
+	// this->setCgiPath(Parser.getCGIPath());
 	this->setIsCGI(Parser.getIsCGI());
+
 	this->setStartRange(Parser.getStartRange());
 	this->setEndRange(Parser.getEndRange());
-	this->setFileName(this->request.getPath());
+
+	this->setFileName(this->request.getPath(), Parser.getQuery());
 }

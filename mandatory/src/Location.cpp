@@ -6,7 +6,7 @@
 /*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/29 17:38:18 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/17 03:13:46 by jcheel-n         ###   ########.fr       */
+/*   Updated: 2024/06/24 23:41:29 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,9 +153,12 @@ void Location ::setCgiExtension(const std::string &extensions)
 	{
 		if (line.length() == 0)
 			continue;
+		if (line[0] == '.')
+			line = line.substr(1, line.size());
 		this->cgiExtension.push_back(line);
 	}
 }
+
 // Load data from a string configuration
 int Location::loadData(const std::string &content)
 {
@@ -214,15 +217,14 @@ void Location::checkVariables(bool serverAutoIndex)
 	switch (Parser::checkLocationName(this->name))
 	{
 		case 2:
+			// std::cout << "CGI PATH: " << this->cgiPathStr << std::endl;
 			if (!Parser::checkCgiString(this->cgiPathStr, this->cgiExtensionStr))
 				exit(1);
-			else
-			{
-				this->setCgiPath(this->cgiPathStr);
-				this->setCgiExtension(this->cgiExtensionStr);
-				Parser::checkCgi(this->cgiPath, this->cgiExtension);
-				this->isCgi = true;
-			}
+			this->setCgiPath(this->cgiPathStr);
+			this->setCgiExtension(this->cgiExtensionStr);
+			Parser::checkCgi(this->cgiPath, this->cgiExtension);
+			// std::cout << "Is cgi true: " << std::endl;
+			this->isCgi = true;
 			break ;
 		case 1:
 			break;
@@ -253,6 +255,8 @@ void Location::checkVariables(bool serverAutoIndex)
 	{
 		case true:
 			this->autoindex = true;
+			if (this->autoindex == true && !this->index.empty())
+				printLog("WARNING", "autoindex\t\twon't be used because index file is set");
 			break;
 		case false:
 			if (this->getAutoIndexStr().empty())
@@ -264,7 +268,7 @@ void Location::checkVariables(bool serverAutoIndex)
 				this->autoindex = false;
 			break;
 	}
-
+	
 	this->setAllowMethods(this->allowMethodsStr);
 	if (!Parser::checkAllowedMethods(this->allowMethodsStr))
 		this->isGetAllowed = true;
@@ -272,3 +276,13 @@ void Location::checkVariables(bool serverAutoIndex)
 		Parser::checkIndex(this->getIndex(), this->getRoot());
 	
 }
+
+	std::vector<std::string> Location::getCgiExtension()
+	{
+		return this->cgiExtension;
+	}
+	
+	std::vector<std::string> Location::getCgiPath()
+	{
+		return this->cgiPath;
+	}

@@ -91,6 +91,8 @@ class Location
 		// Load data from a string configuration
 		void print();
 		void checkVariables(bool serverAutoIndex);
+		std::vector<std::string> getCgiExtension();
+		std::vector<std::string> getCgiPath();
 };
 
 //typedef void (Location::*location)(std::string);

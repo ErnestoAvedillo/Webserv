@@ -148,19 +148,6 @@ std::string getTime()
 	return(buffer);
 };
 
-// std::string getLocalTime()
-// {
-// 	std::time_t currentTime = std::time(NULL);
-
-//     // Convert the current time to a string in the desired format using local time
-//     std::tm* timeInfo = std::localtime(&currentTime);
-//     char buffer[80];
-//     std::strftime(buffer, sizeof(buffer), "%A, %d-%b-%y %H:%M:%S %Z", timeInfo);
-
-//     // Return the formatted date string
-//     return std::string(buffer);
-// }
-
 std::string getLocalTime()
 {
     std::time_t currentTime = std::time(NULL);
@@ -242,3 +229,11 @@ std::string decodeURL(const std::string& url)
 //         }
 //     }
 // }
+
+void replaceFirstString(std::string& mainString, const std::string& searchString, const std::string& replaceString) {
+	size_t pos = 0;
+	if ((pos = mainString.find(searchString, pos)) != std::string::npos) {
+		mainString.replace(pos, searchString.length(), replaceString);
+		pos += replaceString.length();
+	}
+}

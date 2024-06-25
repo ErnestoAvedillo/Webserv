@@ -59,6 +59,9 @@ public:
 	void setIsFileOpen(bool);
 	void setIsSendComplete(bool);
 	bool getIsSendComplete();
+	void setIsCgi(bool );
+	bool getIsCgi();
+
 	bool getIsFileOpen();
 	void setFirstFragment(bool);
 	bool getFirstFragment();

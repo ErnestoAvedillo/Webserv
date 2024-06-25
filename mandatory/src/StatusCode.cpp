@@ -10,6 +10,11 @@ StatusCode::~StatusCode()
 {
 }
 
+int StatusCode::getCode()
+{
+	return this->currentCode;
+}
+
 void StatusCode::createDefaultErrorCodes(){
 	// Add HTTP error types to the map
 	this->mapCodes[0] = "000 Template";
@@ -115,6 +120,7 @@ void StatusCode::loadErrorPageFromDir(const ExtendedString &dir)
 	}
 	while ((dirp = readdir(dp)) != NULL)
 	{
+		// std::cout << "dir " << dir << std::endl;
 		if (dirp->d_type == DT_REG)
 		{
 			std::string fileName = dir + "/" + dirp->d_name;
