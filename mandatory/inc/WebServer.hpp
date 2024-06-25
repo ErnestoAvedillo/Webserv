@@ -1,28 +1,19 @@
 #pragma once
-#pragma once
-# include <string>
-# include <vector>
-# include <sstream>
-# include <fstream>
-# include <iostream>
 #ifdef __APPLE__
-	# include "Server.hpp"
-	# include "Location.hpp"
-	# include "ListeningSocket.hpp"
-
 	# include <sys/socket.h>
 	# include <netinet/in.h>
 	# include <sys/event.h>
 #endif
 #ifdef __linux__
-	# include "Server.hpp"
-	# include "Location.hpp"
-	# include "ListeningSocket.hpp"
-
 	# include <sys/socket.h>
 	# include <netinet/in.h>
 	# include <sys/epoll.h>
 #endif
+# include <string>
+# include <vector>
+# include <sstream>
+# include <fstream>
+# include <iostream>
 # include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
@@ -31,14 +22,12 @@
 # include <netdb.h>
 # include <arpa/inet.h>
 # include "colors.h"
-# include "Parser.hpp"
+# include "Server.hpp"
+# include "ListeningSocket.hpp"
 
 #define BACKLOG 10
 #define MAX_CLIENTS 100
 #define MAX_EVENTS 200
-//  The backlog parameter defines the maximum length for the queue of pending
-//      connections.  If a connection request arrives with the queue full, the
-//      client may receive an error with an indication of ECONNREFUSED
 
 class WebServer {
 	private:
@@ -77,7 +66,7 @@ class WebServer {
 		static bool ExitFlag;
 		static void exit_handler(int signum);
 		bool checkVariables(Server *server);
-#ifdef __APPLE__
+		#ifdef __APPLE__
 			int waitEvent(struct kevent *evList);
 			void modifEvent(struct kevent eventList, int typeRem, int typeAdd);
 		#elif __linux__

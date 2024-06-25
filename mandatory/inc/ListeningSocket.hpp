@@ -23,7 +23,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "Client.hpp"
 #include "Server.hpp"
 #include "Receive.hpp"
 #include "FileContent.hpp"

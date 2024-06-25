@@ -24,19 +24,19 @@
 
 class Attributes 
 {
-private:
-	std::string name;
-	struct stat attributes;
-public:
-	Attributes();
-	Attributes(const std::string& filename);
-	~Attributes();
-	void setAttributesFromFile(const std::string& filename);
-		
-	std::string getName() ;
-	bool getIsDir() ;
-	std::string getSize() ;
-	std::string getDevice() ;
-	std::string getCreated() ;
-	std::string getModified() ;
+	private:
+		std::string name;
+		struct stat attributes;
+	public:
+		Attributes();
+		Attributes(const std::string& filename);
+		~Attributes();
+		void setAttributesFromFile(const std::string& filename);
+			
+		std::string getName() ;
+		bool getIsDir() ;
+		std::string getSize() ;
+		std::string getDevice() ;
+		std::string getCreated() ;
+		std::string getModified() ;
 };
