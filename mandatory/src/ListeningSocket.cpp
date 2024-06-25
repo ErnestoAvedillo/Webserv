@@ -125,7 +125,7 @@ ListeningSocket *ListeningSocket::clone(int fd)
 
 std::string ListeningSocket::getAnswerToSend()
 {
-	long long sendingValue;
+	// long long sendingValue;
 	std::string answer;
 	std::string filePath = this->getFileName();
 	std::string file_content = this->getContent();
@@ -133,11 +133,11 @@ std::string ListeningSocket::getAnswerToSend()
 	if (this->getFirstFragment())
 	{
 		// if (response.getContentType().find("video/") != std::string::npos && this->request.getAttribute("Sec-Fetch-Dest").find("document") != std::string::npos)
-		response.setAttribute("Accept-Ranges", "bytes");
-		sendingValue = minimum(this->getFileSize(), static_cast <long long> (MAX_SENT_BYTES));
-		answer = "bytes 0 -" + toString(sendingValue);
-		response.setAttribute("Content-Range", answer);
-		response.setAttribute("Content-Length", toString(this->getFileSize()));
+		// 	response.setAttribute("Accept-Ranges", "bytes");
+		// sendingValue = minimum(this->getFileSize(), static_cast <long long> (MAX_SENT_BYTES));
+		// answer = "bytes 0 -" + toString(sendingValue);
+		// response.setAttribute("Content-Range", answer);
+		// response.setAttribute("Content-Length", toString(this->getFileSize()));
 		answer = response.generateHeader() + file_content;
 		this->setFirstFragment(false);
 		std::cout << "Answer: " << answer.substr(0, 200) << std::endl;
@@ -148,19 +148,19 @@ std::string ListeningSocket::getAnswerToSend()
 		//  | Accept - Ranges : bytes 									|
 		//	| Content - Range : bytes 828604416 - 828908176 / 828908177 |
 		// 	| Content - Length : 303761 answer = "bytes=" + toString	|
-		response.setStatus(this->getCodeContent(PARTIAL_CONTENT_CODE));
-		response.setAttribute("Accept-Ranges", "bytes");
-		answer = "bytes " + toString(this->getLastSendingPosition()) + " - " + toString(this->getCurrentSendingPosition()) + " / 83510215";
-		 //+toString(this->getFileSize());
-		response.setAttribute("Content-Range", answer);
-		sendingValue = this->getCurrentSendingPosition() - this->getLastSendingPosition();
-		response.setAttribute("Content-Length", toString(sendingValue));
-		answer = response.generateHeader() + file_content;
-		// answer = file_content;
-		std::cout << "Answer: " << answer.substr(0, 200) << std::endl;
-		std::cout << "------------------------------------------------" << std::endl;
-		std::cout << "filesize: " << this->getFileSize() << std::endl;
-		std::cout << "------------------------------------------------" << std::endl;
+		// response.setStatus(this->getCodeContent(PARTIAL_CONTENT_CODE));
+		// response.setAttribute("Accept-Ranges", "bytes");
+		// answer = "bytes " + toString(this->getLastSendingPosition()) + " - " + toString(this->getCurrentSendingPosition()) + " / 83510215";
+		//  //+toString(this->getFileSize());
+		// response.setAttribute("Content-Range", answer);
+		// sendingValue = this->getCurrentSendingPosition() - this->getLastSendingPosition();
+		// response.setAttribute("Content-Length", toString(sendingValue));
+		// answer = response.generateHeader() + file_content;
+		answer = file_content;
+		// std::cout << "Answer: " << answer.substr(0, 200) << std::endl;
+		// std::cout << "------------------------------------------------" << std::endl;
+		// std::cout << "filesize: " << this->getFileSize() << std::endl;
+		// std::cout << "------------------------------------------------" << std::endl;
 	}
 	return (answer);
 }
