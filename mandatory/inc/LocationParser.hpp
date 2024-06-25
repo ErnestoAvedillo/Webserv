@@ -24,6 +24,8 @@ enum LocationStatus
 
 };
 
+class Server;
+
 class LocationParser
 {
 	private:
