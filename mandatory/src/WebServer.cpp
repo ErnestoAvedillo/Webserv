@@ -84,11 +84,9 @@ void	WebServer::eventLoop()
 	printLog("NOTICE", "Waiting for events...");
 	while (!WebServer::ExitFlag)
 	{
-		// std::cout << "Waiting for events..." << std::endl;
 		num_events = waitEvent(evList);
 		if (num_events == -1)
 			continue ;
-		// std::cerr << "Event " << num_events << std::endl;
 		for (int i = 0; i < num_events; i++)
 		{
 			#ifdef __APPLE__
@@ -107,13 +105,6 @@ void	WebServer::eventLoop()
 			}
 			else if (flag & END_EVENT || flag & ERR_EVENT)
 			{
-				// std::cout << "END_EVENT" << std::endl;
-				// for (size_t i = 0; i < this->acceptedSocket.size(); i++)
-				// {
-				// 	int currfd = this->acceptedSocket[i]->getFd();
-				// 	delete acceptedSocket[i];
-				// 	acceptedSocket.erase(currfd);
-				// }
 				delete acceptedSocket[currfd];
 				acceptedSocket.erase(currfd);
 				break ;
@@ -130,22 +121,12 @@ void	WebServer::eventLoop()
 					#endif
 				}
 				else
-				{
-					if (i == num_events - 1)
-					{
-						// std::cerr << "DELETE 2" << std::endl;
-						// delete acceptedSocket[currfd];
-						// acceptedSocket.erase(currfd);
-					}
 					continue;
-				}
 			}
 			else if (type_event == (WRITE_EVENT))
 			{
 				if (acceptedSocket[currfd]->sendData(currfd))
 				{
-				// 	std::cerr << "DELETE " << currfd << std::endl;
-				// 	std::cout << "Curffd " << currfd << std::endl; 
 					delete acceptedSocket[currfd];
 					acceptedSocket.erase(currfd);
 				}
@@ -155,8 +136,6 @@ void	WebServer::eventLoop()
 				std::cerr << "Unknown event " << type_event << std::endl;
 			}
 		}
-		// std::cout << "SERVERSOCKET " << serverSocket.size() << std::endl;
-		// 	std::cout << "ACCEPTESSOCKER " << acceptedSocket.size() << std::endl;
 	}
 }
 

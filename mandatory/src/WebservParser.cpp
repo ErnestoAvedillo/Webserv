@@ -111,7 +111,7 @@ bool WebServer::checkSyntax()
 	return true;
 }
 
-void WebServer::loadConfigFile(std::string filename) // WebServer loadConfigFile
+void WebServer::loadConfigFile(std::string filename)
 {
 	switch (isFilePermissions(filename, R_OK))
 	{
@@ -144,7 +144,7 @@ void WebServer::loadConfigFile(std::string filename) // WebServer loadConfigFile
 }
 
 
-void WebServer::processConfigFile() // WebServer processConfigFile
+void WebServer::processConfigFile()
 {
 	std::string 		aux;
 	size_t				pos;

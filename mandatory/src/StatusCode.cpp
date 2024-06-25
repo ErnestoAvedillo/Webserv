@@ -15,8 +15,8 @@ int StatusCode::getCode()
 	return this->currentCode;
 }
 
-void StatusCode::createDefaultErrorCodes(){
-	// Add HTTP error types to the map
+void StatusCode::createDefaultErrorCodes()
+{
 	this->mapCodes[0] = "000 Template";
 	this->mapCodes[100] = "100 Continue";
 	this->mapCodes[101] = "101 Switching Protocols";

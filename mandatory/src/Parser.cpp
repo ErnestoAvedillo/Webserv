@@ -51,8 +51,8 @@ in_addr_t Parser::isValidHost(std::string hostname)
 
 	std::memset(&hints, 0, sizeof(hints));
     std::memset(&in_addr, 0, sizeof(in_addr));
-	hints.ai_family = AF_INET; // IPv4
-	hints.ai_socktype = SOCK_STREAM; // Or SOCK_DGRAM for UDP	
+	hints.ai_family = AF_INET;
+	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_flags = AI_PASSIVE;
 	
 	int status = getaddrinfo(hostname.c_str(), NULL, &hints, &res);
@@ -114,9 +114,8 @@ bool Parser::checkErrorPage(std::string errorPage)
 	}
 	closedir(errorDirectory);
 
-	// std::cout << "Found files:" << std::endl;
 	std::sort(foundFiles.begin(), foundFiles.end());
-	std::cout << CHR_GREEN << getLocalTime() << " [" << "NOTICE" << "]" RESET << "\t\terror_pages found\t" << RESET ;//message << RESET << std::endl;
+	std::cout << CHR_GREEN << getLocalTime() << " [" << "NOTICE" << "]" RESET << "\t\terror_pages found\t" << RESET ;
 
 	if (foundFiles.size() == 0)
 	{
@@ -187,11 +186,10 @@ bool Parser::checkIndex(std::string index, std::string root)
 	return true;
 }
 
-// Define the maximum number of bytes allowed
 const long long MAX_BYTES = 1099511627776; // 1 Terabyte for example
 
-long long convertToBytes(const std::string& sizeStr) {
-    // Find the position where the numeric part ends and the unit starts
+long long convertToBytes(const std::string& sizeStr)
+{
     size_t pos = 0;
     while (pos < sizeStr.size() && (std::isdigit(sizeStr[pos]) || sizeStr[pos] == '.')) {
         pos++;
@@ -201,23 +199,19 @@ long long convertToBytes(const std::string& sizeStr) {
         throw std::invalid_argument("Invalid size format");
     }
 
-    // Extract the numeric part and the unit part
     double sizeValue = std::atoll(sizeStr.substr(0, pos).c_str());
     std::string unit = sizeStr.substr(pos);
 
-    // Convert the unit to lowercase for easier comparison
     for (size_t i = 0; i < unit.size(); ++i) {
         unit[i] = std::tolower(unit[i]);
     }
 
-    // Conversion factors
     const long long BYTES_IN_KB = 1024;
     const long long BYTES_IN_MB = BYTES_IN_KB * 1024;
     const long long BYTES_IN_GB = BYTES_IN_MB * 1024;
     const long long BYTES_IN_TB = BYTES_IN_GB * 1024;
     const long long BITS_IN_BYTE = 8;
 
-    // Calculate the byte value
     long long bytes;
     if (unit.empty() || unit == "b") {
         bytes = static_cast<long long>(sizeValue);
@@ -243,7 +237,6 @@ long long convertToBytes(const std::string& sizeStr) {
         throw std::invalid_argument("Unknown size unit");
     }
 
-    // Check if the byte value exceeds the maximum allowed
     if (bytes > MAX_BYTES) {
         throw std::overflow_error("Size exceeds the maximum allowed bytes");
     }
@@ -255,12 +248,6 @@ long long	Parser::checkClientBodySize(std::string maxClientBodySize)
 {
 	if (maxClientBodySize.empty())
 		return (DEFAULT_MAX_BOD_SIZE);
-	
-	// if (!isNumber(maxClientBodySize))
-	// {
-	// 	printLog("ERROR", "max_client_body_size\t<" + maxClientBodySize + ">\tis not a number." );
-	// 	exit(1);
-	// }
 	
 	try {
 		long long nbr = convertToBytes(maxClientBodySize);
@@ -356,14 +343,7 @@ int Parser::checkRootAliasReturn(std::string root, std::string alias, std::strin
 		return (ALIAS);
 	}
 	else if (!return_.empty())
-	{
-		// if (!isDirPermissions(return_, F_OK ) && (return_.find("http://") == std::string::npos && return_.find("https://") == std::string::npos))
-		// {
-		// 	printLog("ERROR", "return\t\t<" + return_ + ">\tnot a valid directory." );
-		// 	exit(1);
-		// }
 		return (RETURN);
-	}
 	return (0);
 }
 
@@ -430,14 +410,6 @@ bool Parser::checkCgi(std::vector<std::string> paths, std::vector<std::string> e
 				break ;
 		}
 	}
-	// for (size_t size = 0; size < extensions.size(); size++)
-	// {
-	// 	if (extensions[size].find('.') == std::string::npos)
-	// 	{
-	// 		printLog("ERROR", "cgi_extension\t\t<" + extensions[size] + ">\tis not a valid extension" );
-	// 		return false;
-	// 	}
-	// }
 	return true;
 }
 

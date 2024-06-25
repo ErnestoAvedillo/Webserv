@@ -135,35 +135,19 @@ int count_chars(const std::string& str, char c) {
 	return count;
 }
 
-std::string getTime()
-{
-	std::time_t currentTime = std::time(NULL);
-
-	// Convert the current time to a string in the desired format
-	std::tm* timeInfo = std::gmtime(&currentTime);
-	char buffer[80];
-	std::strftime(buffer, sizeof(buffer), "%A, %d-%b-%y %H:%M:%S GMT", timeInfo);
-
-	// Set the date in the header
-	return(buffer);
-};
-
 std::string getLocalTime()
 {
     std::time_t currentTime = std::time(NULL);
 
-    // Convert the current time to a string in the desired format using local time
     std::tm* timeInfo = std::localtime(&currentTime);
     char buffer[20];
     std::strftime(buffer, sizeof(buffer), "%Y/%m/%d %H:%M:%S", timeInfo);
 
-    // Return the formatted date string
     return std::string(buffer);
 }
 
 void printLog(std::string type ,std::string message)
 {
-	// std::cout << message << std::endl;
 	if (type == "ERROR")
 		std::cout << CHR_RED << getLocalTime() << " [" << type << "]" << "\t\t" RESET << message << RESET << std::endl;
 	else if (type == "WARNING")
@@ -206,29 +190,6 @@ std::string decodeURL(const std::string& url)
 	}
 	return decoded;
 }
-
-// void print_visible(const std::string& str) {
-//     for (char ch : str) {
-//         switch (ch) {
-//             case '\n':
-//                 std::cout << "\\n";
-//                 break;
-//             case '\r':
-//                 std::cout << "\\r";
-//                 break;
-//             case '\t':
-//                 std::cout << "\\t";
-//                 break;
-//             default:
-//                 if (std::isprint(static_cast<unsigned char>(ch))) {
-//                     std::cout << ch;
-//                 } else {
-//                     std::cout << "\\x" << std::hex << std::uppercase << static_cast<int>(static_cast<unsigned char>(ch));
-//                     std::cout << std::dec;  // Reset to decimal for future use
-//                 }
-//         }
-//     }
-// }
 
 void replaceFirstString(std::string& mainString, const std::string& searchString, const std::string& replaceString) {
 	size_t pos = 0;

@@ -9,8 +9,6 @@ std::map<std::string, int> var_names_server()
 	varnames[VAR_ERROR_PAGE] = 0;
 	varnames[VAR_ROOT] = 0;
 	varnames[VAR_INDEX] = 0;
-	// varnames[VAR_CGI_EXTENSION] = 0;
-	// varnames[VAR_CGI_FOLDER] = 0;
 	varnames[VAR_CLIENT_MAX_BODY_SIZE] = 0;
 	varnames[VAR_AUTOINDEX] = 0;
 	return varnames;
@@ -26,8 +24,6 @@ std::map<std::string, void (Server::*)(const std::string &)> ServerSetters()
 	serverMethods[VAR_ERROR_PAGE] = &Server::setErrorPage;
 	serverMethods[VAR_ROOT] = &Server::setRoot;
 	serverMethods[VAR_INDEX] = &Server::setIndex;
-	// serverMethods[VAR_CGI_EXTENSION] = &Server::setCGIExtension;
-	// serverMethods[VAR_CGI_FOLDER] = &Server::setCGIFolder;
 	serverMethods[VAR_CLIENT_MAX_BODY_SIZE] = &Server::setMaxClientBodySizeStr;
 	serverMethods[VAR_AUTOINDEX] = &Server::setAutoindex;
 	return serverMethods;

@@ -98,11 +98,9 @@ std::string FileContent::getContent()
 
 bool FileContent::setFileName(const std::string &file_name, const std::string &fileArgs)
 {
-	// std::string FileAndFolder = this->splitFileFromArgs(file_name);
 	bool fileOrFolderExists = this->FileOrFolerExtists(file_name);
 	if (fileOrFolderExists)
 	{
-		std::cout << "isCGI: " << cgiModule->getIsCGI() << std::endl;
 		if (this->isInputDirectory() && isAutoIndex)
 		{
 

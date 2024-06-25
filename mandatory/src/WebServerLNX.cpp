@@ -40,7 +40,7 @@ void WebServer::modifEvent(struct epoll_event eventList, int type)
 {
 	// struct epoll_event evSet;
 
-	eventList.events = type; // Edge-triggered mode
+	eventList.events = type;
 	if (epoll_ctl(this->kq, EPOLL_CTL_MOD, eventList.data.fd, &eventList) == -1)
 	{
 		std::cerr << "Error: could not modify event" << std::endl;
@@ -67,7 +67,7 @@ void WebServer::removeEventFd(int fd, int type)
 	struct epoll_event ev;
 	(void) type;
 	ev.data.fd = fd;
-	ev.events = EPOLLONESHOT; // Edge-triggered mode
+	ev.events = EPOLLONESHOT;
 	if (epoll_ctl(this->kq, EPOLL_CTL_DEL, fd, &ev) == -1)
 	{
 		std::cerr << "Error: could not delete event" << std::endl;
@@ -96,7 +96,7 @@ int WebServer::acceptNewEvent(int curfd)
 			else
 			{
 				std::cerr << "Error accepting connection" << std::endl;
-				return fd; // Continue to the next event
+				return fd;
 			}
 		}
 		fcntl(fd, F_SETFL, O_NONBLOCK, O_CLOEXEC);

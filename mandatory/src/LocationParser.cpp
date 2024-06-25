@@ -63,12 +63,6 @@ int LocationParser::isAllowedMethod(Location *location)
 	return OK;
 }
 
-
-// std::string getCgiPath(std::string extension)
-// {
-	
-// }
-
 int LocationParser::matchingLocation()
 {
 	std::vector<Location *> locations = this->server->getLocations();
@@ -141,7 +135,6 @@ std::string escapeNonPrintableChars(const std::string& str) {
             case '\t':
                 escapedStr += "\\t";
                 break;
-            // Add more cases for other non-printable characters if needed
             default:
                 escapedStr += str[i];
                 break;
@@ -152,7 +145,6 @@ std::string escapeNonPrintableChars(const std::string& str) {
 
 bool isBadRequest(std::string request)
 {
-	// std::cout << "REQUEST: " << escapeNonPrintableChars(request) << std::endl;
 	if (request.empty())
         return true;
 	std::istringstream iss(request);
@@ -166,11 +158,9 @@ bool isBadRequest(std::string request)
 			if (std::count(line.begin(), line.end(), ' ') != 2 && splitString(line, ' ').size() != 3)
 				return true;
 			firstLine = false;
-			// std::cout << "FIRST LINE " << line << std::endl;
 		}
 		else 
 		{
-			// std::cout << "line " << line << std::endl; 
 			if (line.empty() || line == "\r")
 					break ;
 			
@@ -218,7 +208,6 @@ void LocationParser::checks()
 			if (isDirPermissions(path, F_OK | R_OK) == true)
 				path += this->server->getIndex();
 			this->request.setPath(path);
-			// this->fileContent->setAutoIndex(server->getAutoIndex());
 			break ;
 		case NOT_ALLOWED :
 			response.setStatus("405 Method Not Allowed");
@@ -229,7 +218,7 @@ void LocationParser::checks()
 	}
 
 	this->request.setPath(decodeURL(this->request.getPath()));
-	std::cout << request.getPath() << std::endl;
+	// std::cout << request.getPath() << std::endl;
 	if (isBadRequest(receiver->getRequest()))//|| isURIMalformed(this->request.getPath())
 	{
 		response.setStatus("400 Bad Request");
@@ -258,37 +247,36 @@ void LocationParser::checks()
 	{
 		if (getMimeType(this->request.getPath()).find("video") != std::string::npos)
 		{
-			std::string attr = request.getAttribute("Range");
-			int tt = isFilePermissions(this->request.getPath(), F_OK | R_OK);
-			(void)tt;
-			if (isFilePermissions(this->request.getPath(), F_OK | R_OK) == 1 && request.getAttribute("Range") != "")
-			{
+			// std::string attr = request.getAttribute("Range");
+			// int tt = isFilePermissions(this->request.getPath(), F_OK | R_OK);
+			// (void)tt;
+			// if (isFilePermissions(this->request.getPath(), F_OK | R_OK) == 1 && request.getAttribute("Range") != "")
+			// {
 			
-				response.setStatus("206 Partial Content");
-				response.setContentType(this->request.getPath());
+			// 	response.setStatus("206 Partial Content");
+			// 	response.setContentType(this->request.getPath());
 				
-				if (this->request.getAttribute("Range") != "")
-				{
-					this->startRange = stringToSizeT(this->request.getAttribute("Range").substr(6, this->request.getAttribute("Range").find("-")));
-					std::cout << "STARTRANGE " << this->startRange << std::endl;
-					std::string endRangeStr = this->request.getAttribute("Range").substr(this->request.getAttribute("Range").find("-") + 1, this->request.getAttribute("Range").size());
-					std::cout << "ENDRANGE " << endRangeStr << std::endl;
-					if (endRangeStr.empty())
-					{
-						this->endRange = getFileSize(this->request.getPath());
-					}
-					else
-					{
-						this->endRange = stringToSizeT(endRangeStr);
-					}
-				}
-			}
-			else if (isFilePermissions(this->request.getPath(), F_OK | R_OK) == 1)
+			// 	if (this->request.getAttribute("Range") != "")
+			// 	{
+			// 		this->startRange = stringToSizeT(this->request.getAttribute("Range").substr(6, this->request.getAttribute("Range").find("-")));
+			// 		std::cout << "STARTRANGE " << this->startRange << std::endl;
+			// 		std::string endRangeStr = this->request.getAttribute("Range").substr(this->request.getAttribute("Range").find("-") + 1, this->request.getAttribute("Range").size());
+			// 		std::cout << "ENDRANGE " << endRangeStr << std::endl;
+			// 		if (endRangeStr.empty())
+			// 		{
+			// 			this->endRange = getFileSize(this->request.getPath());
+			// 		}
+			// 		else
+			// 		{
+			// 			this->endRange = stringToSizeT(endRangeStr);
+			// 		}
+			// 	}
+			// }
+			if (isFilePermissions(this->request.getPath(), F_OK | R_OK) == 1)
 			{
 				response.setContentType(this->request.getPath());
 				response.setContentLength(getFileSize(this->request.getPath()));
 				response.setStatus("200 OK");
-				// response.setAttribute("Accept-Ranges", "bytes");
 			}
 			else
 			{
@@ -298,13 +286,8 @@ void LocationParser::checks()
 		}
 		else if (isFilePermissions(this->request.getPath(), F_OK | R_OK) == 1)
 		{
-			// std::cout << "FILEPERMISIOn" << this->request.getPath() << std::endl;
-
 			response.setContentType(this->request.getPath());
-			// response.setLastModified(this->fileContent->getLastModified());
-			// response.setContentLength(this->fileContent->getContentSize());
 			response.setStatus("200 OK");
-			// response.setServer(server->getServerName());
 		}
 		else if (isDirPermissions(this->request.getPath(), F_OK | R_OK) == true && this->isAutoIndex == true)
 		{
@@ -319,7 +302,6 @@ void LocationParser::checks()
 	}
 	else if (this->request.getMethod() == "POST")
 	{
-		// std::cout << this->receiver->getisform() << std::endl;
 		
 		std::string body = receiver->getBody();
 		if (body.size() > (size_t)this->server->getMaxClientBodySize())
@@ -367,7 +349,6 @@ void LocationParser::checks()
 		}
 		else if (receiver->getisform())
 		{
-			// std::cout << "form: " << body << std::endl;
 			this->query = body;
 			response.setStatus("200 Created");
 		}
@@ -379,12 +360,10 @@ void LocationParser::checks()
 			response.setStatus("200 OK");
 		else
 			response.setStatus("404 Not Found");
-		// response.setServer(server->getServerName());
 	}
 	else
 	{
 		response.setStatus("405 Method Not Allowed");
-		// response.setServer(server->getServerName());
 		throw METHOD_NOT_ALLOWED_CODE;
 	}
 }

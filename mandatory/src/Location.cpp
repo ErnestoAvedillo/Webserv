@@ -26,7 +26,7 @@ std::map<std::string, int> var_names_location()
 	varnames[VAR_LOC_CGI_EXTENSION] = 0;
 	return varnames;
 }
-// Method to get the methods of the location
+
 std::map<std::string, void (Location::*)(const std::string&)> getLocationMethods()
 {
 	std::map<std::string, void (Location::*)(const std::string&)> locationMethods;
@@ -43,7 +43,7 @@ std::map<std::string, void (Location::*)(const std::string&)> getLocationMethods
 	return locationMethods;
 }
 
-// Default constructor
+
 Location::Location() 
 {
 	name = "";
@@ -60,10 +60,9 @@ Location::Location()
 Location::Location(std::string const &content)
 {
 	this->isCgi = false;
-	// std::cout << "Location constructor" << std::endl;
 	this->loadData(content);
 }
-// Copy constructor
+
 Location::Location(const Location& other)
 {
 	setName(other.name);
@@ -75,7 +74,7 @@ Location::Location(const Location& other)
 	setAlias(other.alias);
 }
 
-// Destructor
+
 Location::~Location() {}
 
 // Getter methods
@@ -217,13 +216,11 @@ void Location::checkVariables(bool serverAutoIndex)
 	switch (Parser::checkLocationName(this->name))
 	{
 		case 2:
-			// std::cout << "CGI PATH: " << this->cgiPathStr << std::endl;
 			if (!Parser::checkCgiString(this->cgiPathStr, this->cgiExtensionStr))
 				exit(1);
 			this->setCgiPath(this->cgiPathStr);
 			this->setCgiExtension(this->cgiExtensionStr);
 			Parser::checkCgi(this->cgiPath, this->cgiExtension);
-			// std::cout << "Is cgi true: " << std::endl;
 			this->isCgi = true;
 			break ;
 		case 1:

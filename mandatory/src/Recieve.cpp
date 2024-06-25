@@ -75,7 +75,6 @@ bool Receive::receiveHeader(int fd)
             {
                 if (header.getAttribute("Content-Type").find("boundary") != std::string::npos)
                     this->boundary = header.getAttribute("Content-Type").substr(header.getAttribute("Content-Type").find("boundary=") + 9);
-                // std::cout << "BOUNDARY $" << this->boundary << "$" << std::endl;
             }
             else
                 return true;
@@ -141,7 +140,7 @@ bool Receive::receiveBody(int fd)
             this->body += this->buffer;
         std::memset(buf, 0, MAX_MSG_SIZE); 
     }
-    if (ret < 0) // This is not handle as an error 
+    if (ret < 0)
         return false;
     else if (ret == 0)
     {
