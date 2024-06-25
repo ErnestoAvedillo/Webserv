@@ -3,6 +3,7 @@
 CGI::CGI()
 {
 	this->fileName = "";
+	this->fileArgs = "";
 	this->isCGI = false;
 	this->CGIFolder = "/cgi/";
 	this->setCGIMapExtensions("cgi");
@@ -33,21 +34,12 @@ void CGI::setCGIFolder(const std::string &folder)
 	this->CGIFolder = folder;
 }
 
-void CGI::setFileName(const std::string& str)
+void CGI::setFileName(const std::string &Name, const std::string &Args)
 {
 	std::vector<std::string> tmp;
 
-	if (str.find("?") != std::string::npos)
-	{
-		tmp = splitString(str, '?');
-		fileName = tmp[0];
-		if (args.size() != 0)
-			args = splitString(tmp[1], '&');
-	}
-	else
-	{
-		fileName = str;
-	}
+	fileName = Name;
+	tmp = splitString(Args, '?');
 	std::map<std::string, std::string>::iterator it = this->findCGIExtension(this->getFileExtension());
 	if (it != this->CGIExtensions.end())
 	{

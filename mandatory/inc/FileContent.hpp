@@ -49,7 +49,7 @@ public:
 	// FileContent(const std::string &, Server *);
 	~FileContent();
 	int openFile();
-	bool setFileName(const std::string &);
+	bool setFileName(const std::string &, const std::string &);
 	void setIsCGI(bool isCgi);
 	void setStartRange(long long);
 	void setEndRange(long long);

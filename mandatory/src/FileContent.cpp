@@ -3,8 +3,6 @@
 // FileContent::FileContent(Server *srv) : StatusCode()
 FileContent::FileContent() : StatusCode()
 {
-	//server = srv;
-	// this->loadErrorPageFromDir(srv->getErrorPage());
 	fileName = "";
 	startRange = 0;
 	sendComplete = false;
@@ -13,18 +11,7 @@ FileContent::FileContent() : StatusCode()
 	isAutoIndex = false;
 	currentSendingPosition = 0;
 	lastSendingPosition = 0;
-	// isAutoIndex = srv->getAutoIndex();
-	// indexInHomeFolder = srv->getRoot() + srv->getIndex();
-	// this->cgiModule = srv->cgiModuleClone();
-	// if (srv->getAutoIndex())
-	// {
-	// listDir = new ListDir("./");
-	// 	isFileOpen = true;
-	// }
-	// else
-	// {
-	 	listDir = NULL;
-	// }
+ 	listDir = NULL;
 }
 
 FileContent::~FileContent() 
@@ -110,26 +97,26 @@ std::string FileContent::getContent()
 	return (content);
 }
 
-bool FileContent::setFileName(const std::string &file_name)
+bool FileContent::setFileName(const std::string &file_name, const std::string &fileArgs)
 {
-	std::string FileAndFolder = this->splitFileFromArgs(file_name);
-	bool fileOrFolderExists = this->FileOrFolerExtists(FileAndFolder);
+	// std::string FileAndFolder = this->splitFileFromArgs(file_name);
+	bool fileOrFolderExists = this->FileOrFolerExtists(file_name);
 	if (fileOrFolderExists)
 	{
 		if (this->isInputDirectory() && isAutoIndex)
 		{
 
-			fileName = FileAndFolder;
+			fileName = file_name;
 			this->setIsFileOpen(true);
 			listDir = new ListDir(fileName, homeFolder);
-			listDir->setSubdirectory(FileAndFolder);
+			listDir->setSubdirectory(file_name);
 			listDir->setContentToList();
 		}
 		// else if (cgiModule->setIdentifyCGIFromFileName(file_name))
 		// else if (this->isCgi)
 		else if (cgiModule->setIdentifyCGIFromFileName(file_name) || cgiModule->getIsCGI())
 		{
-			cgiModule->setFileName(file_name);
+			cgiModule->setFileName(file_name, fileArgs);
 			this->setIsFileOpen(true);
 		}
 		else
@@ -140,7 +127,7 @@ bool FileContent::setFileName(const std::string &file_name)
 			// }
 			// else
 			// {
-				fileName = FileAndFolder;
+				fileName = file_name;
 			// }
 			stat(fileName.c_str(), &fileStat);
 			completeContentSize = fileStat.st_size;

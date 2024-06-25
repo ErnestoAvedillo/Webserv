@@ -16,6 +16,7 @@ class CGI {
 private:
 	std::string CGIFolder;
 	std::string fileName;
+	std::string fileArgs;
 	bool isCGI;
 	std::vector <std::string> args;
 	std::map<std::string, std::string> CGIExtensions;
@@ -28,7 +29,7 @@ public:
 	//------ Setters and Getters ------//
 	//setters
 	void setCGIFolder(const std::string &);
-	void setFileName(const std::string& str);
+	void setFileName(const std::string&, const std::string&);
 	void setIsCGI(bool);
 	bool setIdentifyCGIFromFileName(const std::string &str); 
 	bool getIsCGI();
