@@ -81,8 +81,10 @@ void	WebServer::eventLoop()
 	#endif
 	int num_events = 0;
 	signal(SIGINT, &WebServer::exit_handler);
+	printLog("NOTICE", "Waiting for events...");
 	while (!WebServer::ExitFlag)
 	{
+		// std::cout << "Waiting for events..." << std::endl;
 		num_events = waitEvent(evList);
 		if (num_events == -1)
 			continue ;
@@ -105,6 +107,13 @@ void	WebServer::eventLoop()
 			}
 			else if (flag & END_EVENT || flag & ERR_EVENT)
 			{
+				// std::cout << "END_EVENT" << std::endl;
+				// for (size_t i = 0; i < this->acceptedSocket.size(); i++)
+				// {
+				// 	int currfd = this->acceptedSocket[i]->getFd();
+				// 	delete acceptedSocket[i];
+				// 	acceptedSocket.erase(currfd);
+				// }
 				delete acceptedSocket[currfd];
 				acceptedSocket.erase(currfd);
 				break ;
@@ -146,6 +155,8 @@ void	WebServer::eventLoop()
 				std::cerr << "Unknown event " << type_event << std::endl;
 			}
 		}
+		// std::cout << "SERVERSOCKET " << serverSocket.size() << std::endl;
+		// 	std::cout << "ACCEPTESSOCKER " << acceptedSocket.size() << std::endl;
 	}
 }
 
@@ -153,6 +164,7 @@ void WebServer::exit_handler(int signum)
 {
 	if (signum == SIGINT)
 	{
+		exit (1);
 		std::cerr << "\rExiting..." << std::endl;
 		WebServer::ExitFlag = true;
 	}

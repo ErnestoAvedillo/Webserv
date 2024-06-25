@@ -37,6 +37,16 @@ void ExtendedString::replaceString(const std::string& oldStr, const std::string&
     }
 }
 
+void ExtendedString::replaceFirstString(const std::string& searchString, const std::string& replaceString)
+{
+	size_t pos = 0;
+	if ((pos = this->find(searchString, pos)) != std::string::npos)
+	{
+		this->replace(pos, searchString.length(), replaceString);
+		pos += replaceString.length();
+	}
+}
+
 bool ExtendedString::validIPAddress()
 {
 	size_t pos = 0;

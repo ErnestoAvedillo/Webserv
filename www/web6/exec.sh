@@ -1,3 +1,3 @@
 #!/bin/bash
 
-python ./www/web6/cgi/example.py 
+python3 ./www/web6/cgi/example.py 

@@ -26,5 +26,6 @@ public:
 	// ExtendedString removeBlanksAndTabs() ;
 	void removeBlanksAndTabs() ;
 	int count_chars(char c);
+	void replaceFirstString(const std::string& searchString, const std::string& replaceString);
 
 };

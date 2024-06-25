@@ -46,12 +46,18 @@ int FileContent::openFile()
 
 std::string FileContent::getContent() 
 {
-	// std::cout << "StartRange: " << startRange << std::endl;
-	// std::cout << "EndRange: " << endRange << std::endl;
 	std::string content;
 	if (this->getIsFileOpen())
 	{
-		if (cgiModule->getIsCGI())
+		 if (isAutoIndex && this->isInputDirectory())
+		{
+			isFileOpen = true;
+			content = listDir->getContentToSend();
+			this->setCompleteContentSize(content.size());
+			this->setIsSendComplete(listDir->getIsSendComlete());
+			return content;
+		}
+		else if (this->cgiModule->getIsCGI())
 		{
 			this->setIsSendComplete(true);
 			try
@@ -66,18 +72,11 @@ std::string FileContent::getContent()
 			this->setIsSendComplete(true);
 			return content;
 		}
-		else if (isAutoIndex && this->isInputDirectory())
-		{
-			isFileOpen = true;
-			content = listDir->getContentToSend();
-			this->setCompleteContentSize(content.size());
-			this->setIsSendComplete(listDir->getIsSendComlete());
-			return content;
-		}
 		else
 		{
 			content = "";
 			char buffer[MAX_SENT_BYTES];
+
 			if (this->startRange != 0 && this->getFirstFragment())
 			{
 				//file.seekg(0, std::ios::beg);
@@ -104,7 +103,7 @@ std::string FileContent::getContent()
 	}
 	else
 	{
-		content = this->getCodeContent(NOT_FOUND_CODE);
+		content += this->getFileContentForStatusCode(this->getCode());
 		this->setIsSendComplete(true);
 	}
 	return (content);
@@ -116,6 +115,7 @@ bool FileContent::setFileName(const std::string &file_name)
 	bool fileOrFolderExists = this->FileOrFolerExtists(FileAndFolder);
 	if (fileOrFolderExists)
 	{
+		std::cout << "isCGI: " << cgiModule->getIsCGI() << std::endl;
 		if (this->isInputDirectory() && isAutoIndex)
 		{
 
@@ -127,7 +127,7 @@ bool FileContent::setFileName(const std::string &file_name)
 		}
 		// else if (cgiModule->setIdentifyCGIFromFileName(file_name))
 		// else if (this->isCgi)
-		else if (cgiModule->setIdentifyCGIFromFileName(file_name) || cgiModule->getIsCGI())
+		else if (cgiModule->getIsCGI() )
 		{
 			cgiModule->setFileName(file_name);
 			this->setIsFileOpen(true);
@@ -293,6 +293,12 @@ void FileContent::setEndRange(long long range)
 	this->endRange = range;
 }
 
+
+void FileContent::setIsCgi(bool cgi)
+{
+	this->cgiModule->setIsCGI(cgi);
+}
+
 long long FileContent::getFileSize()
 {
 	return static_cast<long long>(fileStat.st_size);
@@ -309,3 +315,4 @@ long long FileContent::getLastSendingPosition()
 {
 	return lastSendingPosition;
 }
+
