@@ -207,7 +207,7 @@ void LocationParser::checks()
 	std::string path;
 	if (this->request.getPath().find("?") != std::string::npos)
 	{
-		this->query = this->request.getPath().substr(this->request.getPath().find("?"));
+		this->query = this->request.getPath().substr(this->request.getPath().find("?") + 1);
 		this->request.setPath(this->request.getPath().substr(0, this->request.getPath().find("?")));
 	}
 	switch (this->matchingLocation())

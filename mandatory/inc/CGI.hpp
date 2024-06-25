@@ -11,6 +11,7 @@
 #include "colors.h"
 #include "StatusCodesDefinition.hpp"
 #include <signal.h>
+#include "ExtendedString.hpp"
 
 class CGI {
 private:
@@ -18,7 +19,7 @@ private:
 	std::string fileName;
 	std::string fileArgs;
 	bool isCGI;
-	std::vector <std::string> args;
+	std::vector <ExtendedString> args;
 	std::map<std::string, std::string> CGIExtensions;
 
 public:
@@ -39,7 +40,7 @@ public:
 	//getters
 	std::string getFileName();
 	std::string getCGIFolder();
-	std::vector <std::string> getArgs();
+	std::vector <ExtendedString> getArgs();
 	std::string getCGIExtension(const std::string &);
 	std::string getFileExtension();
 	std::map<std::string, std::string>::iterator findCGIExtension(const std::string &);

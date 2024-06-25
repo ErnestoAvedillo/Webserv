@@ -39,16 +39,17 @@ void CGI::setFileName(const std::string &Name, const std::string &Args)
 	std::vector<std::string> tmp;
 
 	fileName = Name;
-	tmp = splitString(Args, '?');
-	std::map<std::string, std::string>::iterator it = this->findCGIExtension(this->getFileExtension());
-	if (it != this->CGIExtensions.end())
-	{
-		if (it->second.size() != 0)
-		{
-			fileName =it->second;
-			this->setArgs(tmp[1]);
-		}
-	}
+	this->setArgs(Args);
+	tmp = splitString(Args, '&');
+	// std::map<std::string, std::string>::iterator it = this->findCGIExtension(this->getFileExtension());
+	// if (it != this->CGIExtensions.end())
+	// {
+	// 	if (it->second.size() != 0)
+	// 	{
+	// 		fileName =it->second;
+	// 		this->setArgs(tmp[1]);
+	// 	}
+	// }
 }
 
 void CGI::setIsCGI(bool valCGI)
@@ -86,14 +87,17 @@ std::string CGI::getCGIFolder()
 
 void CGI::setArgs(const std::string &str)
 {
+	std::cout << "Args: " << str << std::endl;
 	std::vector<std::string> vec = splitString(str, '&');
 	for (size_t i = 0; i < vec.size(); i++)
 	{
+		std::cout << "Args: " << vec[i] << std::endl;
 		args.push_back(vec[i]);
 	}
+
 }
 
-std::vector <std::string> CGI::getArgs()
+std::vector <ExtendedString> CGI::getArgs()
 {
 	return args;
 }
@@ -111,19 +115,21 @@ std::string CGI::getFileExtension()
 std::string CGI::execute()
 {
 	int timeout = 5;
-
+	ExtendedString Executable = this->getFileName();
+	Executable.replaceString("//", "/");
 	signal(SIGALRM, &CGI::alarm_handler);
 	int fd[2], tmp_fd;
 	tmp_fd = dup(STDOUT_FILENO);
-	std::vector<char*> argsArray;
-	argsArray.push_back(const_cast<char *>(fileName.c_str()));
-	std::vector<std::string>::iterator itb = args.begin();
-	std::vector<std::string>::iterator ite = args.end();
+	std::cout << "Executable: " << Executable << std::endl;
+	std::vector<char*> ExecArray;
+	ExecArray.push_back(const_cast<char *>(Executable.c_str()));
+	std::vector<ExtendedString>::iterator itb = args.begin();
+	std::vector<ExtendedString>::iterator ite = args.end();
 	while (itb != ite) {
-		argsArray.push_back(const_cast<char *>(itb->c_str()));
+		ExecArray.push_back(const_cast<char *>(itb->c_str()));
 		++itb;
 	}
-	argsArray.push_back(NULL);
+	ExecArray.push_back(NULL);
 	if (pipe(fd) == -1) {
 		throw INTERNAL_SERVER_ERROR_CODE;
 	}
@@ -139,10 +145,10 @@ std::string CGI::execute()
 		close(fd[0]);
 		// Convert the arguments vector to a null-terminated array
 		// Execute the file with its parameters
-		if (execve(fileName.c_str(), argsArray.data(), NULL) == -1)
+		if (execve(Executable.c_str(), ExecArray.data(), NULL) == -1)
 		{
 			// Handle error executing file
-			std::cerr << "Error executing file " << fileName << "  with errno " << errno << std::endl;
+			std::cerr << "Error executing file " << Executable << "  with errno " << errno << std::endl;
 			exit(EXIT_FAILURE);
 		}
 	} 

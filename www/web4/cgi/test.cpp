@@ -27,23 +27,7 @@ int main(int av, char **ac)
 
 	for (int i = 1; i < av; i++)
 	{
-		cout << "<tr><td>" << "Argumento de entrada Nº" << i << "= " << ac[i] << "</td></tr>\n";
-	}
-	for (int i = 0; i < 24; i++)
-	{
-		cout << "<tr><td>" << ENV[i] << "</td><td>";
-
-		// attempt to retrieve value of environment variable
-		char *value = getenv(ENV[i].c_str());
-		if (value != 0)
-		{
-			cout << value;
-		}
-		else
-		{
-			cout << "Environment variable does not exist.";
-		}
-		cout << "</td></tr>\n";
+		cout << "<tr><td>" << "Argumento de entrada N." << i << "= " << ac[i] << "</td></tr>\n";
 	}
 
 	cout << "</table><\n";
