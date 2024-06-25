@@ -78,17 +78,18 @@ std::string FileContent::getContent()
 		{
 			content = "";
 			char buffer[MAX_SENT_BYTES];
-			lastSendingPosition = currentSendingPosition;
 			if (this->startRange != 0 && this->getFirstFragment())
 			{
 				//file.seekg(0, std::ios::beg);
 				file.seekg(startRange, std::ios::beg);
+				lastSendingPosition = currentSendingPosition;
 				file.read(buffer, MAX_SENT_BYTES);
 				content.append(buffer, file.gcount());
-				this->setIsSendComplete(true);
+				//this->setIsSendComplete(true);
 			}
 			else
 			{
+				lastSendingPosition = currentSendingPosition;
 				file.read(buffer, MAX_SENT_BYTES);
 				content.append(buffer, file.gcount());
 			}
@@ -299,6 +300,8 @@ long long FileContent::getFileSize()
 
 long long FileContent::getCurrentSendingPosition()
 {
+	if (currentSendingPosition < 0)
+		return this->getFileSize()-1;
 	return currentSendingPosition;
 }
 
