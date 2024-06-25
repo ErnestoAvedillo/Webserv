@@ -107,11 +107,7 @@ int LocationParser::matchingLocation()
 					request.setPath(tmp);
 					break ;
 				case ROOT:
-					// std::cout << "ROOT" << std::endl;
 					tmp = this->request.getPath();
-					// std::cout << "ROOT " << tmp << std::endl;
-					// std::cout << "ROOT " << locations[i]->getName() << std::endl;
-					// std::cout << "ROOT " << locations[i]->getAlias() << std::endl;
 					tmp.replaceFirstString(locations[i]->getName(), locations[i]->getRoot()  + locations[i]->getName());
 					if (!locations[i]->getIndex().empty() && isDirPermissions(tmp, F_OK | R_OK) == true && this->request.getMethod() != "POST")
 						tmp += "/" + locations[i]->getIndex();
@@ -371,7 +367,8 @@ void LocationParser::checks()
 		}
 		else if (receiver->getisform())
 		{
-			std::cout << "form: " << body << std::endl;
+			// std::cout << "form: " << body << std::endl;
+			this->query = body;
 			response.setStatus("200 Created");
 		}
 		response.setServer(server->getServerName());

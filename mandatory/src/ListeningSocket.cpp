@@ -202,5 +202,6 @@ void ListeningSocket::loadRequest(std::vector<Server *> servers)
 
 	this->setStartRange(Parser.getStartRange());
 	this->setEndRange(Parser.getEndRange());
-	this->setFileName(this->request.getPath());
+
+	this->setFileName(this->request.getPath(), Parser.getQuery());
 }
