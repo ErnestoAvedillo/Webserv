@@ -10,6 +10,7 @@
 #include <vector>
 #include <map>
 #include "colors.h"
+#include "utils.hpp"
 #include "CGI.hpp"
 // #include "Server.hpp"
 #include "ListDir.hpp"
@@ -31,13 +32,15 @@ private:
 	bool isAutoIndex;
 	std::string homeFolder;
 	struct stat fileStat;
+	long long startRange;
+	long long currentSendingPosition;
+	long long lastSendingPosition;
 	CGI *cgiModule;
 	ListDir *listDir;
 	//Server *server;
 	size_t completeContentSize;
 	std::string splitFileFromArgs(const std::string &);
 	bool FileOrFolerExtists(const std::string &);
-	size_t startRange;
 	size_t endRange;
 //	bool isCgi;
 public:
@@ -48,9 +51,9 @@ public:
 	int openFile();
 	bool setFileName(const std::string &);
 	void setIsCGI(bool isCgi);
-	void setStartRange(size_t);
-	void setEndRange(size_t);
-	size_t getStartRange();
+	void setStartRange(long long);
+	void setEndRange(long long);
+	long long getStartRange();
 	std::string getFileName();
 	std::string getContent();
 	void setIsFileOpen(bool);
@@ -74,4 +77,7 @@ public:
 	void setHomeFolder(const std::string &);
 	std::string getHomeFolder();
 	void setCGIModule(CGI *);
+	long long getFileSize();
+	long long getCurrentSendingPosition();
+	long long getLastSendingPosition();
 };

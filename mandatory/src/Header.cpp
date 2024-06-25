@@ -92,7 +92,7 @@ std::string Header::generateHeader() const
 	if (lastModified != "")
 		header += "Last-modified: " + lastModified + "\r\n";
 	if(contentLength != 0)
-		header += "Content-length: " + toString(contentLength) + "\r\n";
+		header += "Content-Length: " + toString(contentLength) + "\r\n";
 	header += "Content-Type: " + contentType + "\r\n";
 	for (std::map<std::string, std::string>::const_iterator it = attributes.begin(); it != attributes.end(); ++it)
 		header += it->first + ": " + it->second + "\r\n";
@@ -175,7 +175,7 @@ void Header::printReceivedHeader()
 	std::cout << "Server: " << server << std::endl;
 	std::cout << "Date: " << date << std::endl;
 	std::cout << "Last-modified: " << lastModified << std::endl;
-	std::cout << "Content-length: " << contentLength << std::endl;
+	std::cout << "Content-Length: " << contentLength << std::endl;
 	std::cout << "Content-Type: " << contentType << std::endl;
 	for (std::map<std::string, std::string>::const_iterator it = attributes.begin(); it != attributes.end(); ++it)
 		std::cout << it->first << ": " << it->second << std::endl;

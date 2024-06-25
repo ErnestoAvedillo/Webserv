@@ -11,6 +11,8 @@ FileContent::FileContent() : StatusCode()
 	isFileOpen = false;
 	isFistFragment = true;
 	isAutoIndex = false;
+	currentSendingPosition = 0;
+	lastSendingPosition = 0;
 	// isAutoIndex = srv->getAutoIndex();
 	// indexInHomeFolder = srv->getRoot() + srv->getIndex();
 	// this->cgiModule = srv->cgiModuleClone();
@@ -35,7 +37,6 @@ FileContent::~FileContent()
 int FileContent::openFile()
 {
 	file.open(fileName.c_str(), std::ios::out | std::ios::binary); //| std::ios::app | std::ios::ate
-
 	if (file.is_open())
 	{
 		return 1;
@@ -68,38 +69,43 @@ std::string FileContent::getContent()
 			{
 				content = this->getFileContentForStatusCode(e);
 			}
+			this->setIsSendComplete(true);
 			return content;
 		}
 		else
 		{
 			content = "";
 			char buffer[MAX_SENT_BYTES];
-			// if (startRange)
-			//   	file.seekg(startRange, std::ios::beg);
-			//std::cout << "enviando paquete:" << file.tellg() << std::endl;
-			if (file.read(buffer, MAX_SENT_BYTES))
+
+			if (this->startRange != 0 && this->getFirstFragment())
 			{
-				if (file.eof())
-				{
-					file.close();
-					this->setIsSendComplete(true);
-				}
+				//file.seekg(0, std::ios::beg);
+				file.seekg(startRange, std::ios::beg);
+				lastSendingPosition = currentSendingPosition;
+				file.read(buffer, MAX_SENT_BYTES);
 				content.append(buffer, file.gcount());
-				return content;
+				//this->setIsSendComplete(true);
 			}
 			else
 			{
-				std::cout << "Cierro fichero " <<fileName<< std::endl;
-				file.close();
+				lastSendingPosition = currentSendingPosition;
+				file.read(buffer, MAX_SENT_BYTES);
 				content.append(buffer, file.gcount());
+			}
+			currentSendingPosition = file.tellg();
+			if (file.eof())
+			{
+//				std::cout << "Cierro fichero " << fileName << std::endl;
+				file.close();
+				this->setIsSendComplete(true);
 			}
 		}
 	}
 	else
 	{
 		content += this->getFileContentForStatusCode(this->getCode());
+		this->setIsSendComplete(true);
 	}
-	this->setIsSendComplete(true);
 	return (content);
 }
 
@@ -272,26 +278,41 @@ void FileContent::setIsCGI(bool isCgi)
 }
 
 
-void FileContent::setStartRange(size_t range)
+void FileContent::setStartRange(long long range)
 {
+	lastSendingPosition = range;
 	this->startRange = range;
 }
-size_t FileContent::getStartRange()
+long long FileContent::getStartRange()
 {
 	return startRange;
 }
 
-void FileContent::setEndRange(size_t range)
+void FileContent::setEndRange(long long range)
 {
 	this->endRange = range;
 }
+
 
 void FileContent::setIsCgi(bool cgi)
 {
 	this->cgiModule->setIsCGI(cgi);
 }
 
-// void FileContent::setCgiPath(std::string path)
-// {
-// 	// this->cgiModule->setFileName(path);
-// }
+long long FileContent::getFileSize()
+{
+	return static_cast<long long>(fileStat.st_size);
+}
+
+long long FileContent::getCurrentSendingPosition()
+{
+	if (currentSendingPosition < 0)
+		return this->getFileSize()-1;
+	return currentSendingPosition;
+}
+
+long long FileContent::getLastSendingPosition()
+{
+	return lastSendingPosition;
+}
+
