@@ -143,7 +143,6 @@ void WebServer::exit_handler(int signum)
 {
 	if (signum == SIGINT)
 	{
-		exit (1);
 		std::cerr << "\rExiting..." << std::endl;
 		WebServer::ExitFlag = true;
 	}
