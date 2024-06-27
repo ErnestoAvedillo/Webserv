@@ -237,6 +237,9 @@ void LocationParser::checks()
 	}
 
 	this->request.setPath(decodeURL(this->request.getPath()));
+	ExtendedString tmp = this->request.getPath();
+	tmp.replaceFirstString("//", "/");
+	this->request.setPath(tmp);
 	if (isBadRequest(receiver->getRequest()))//|| isURIMalformed(this->request.getPath())
 	{
 		response.setStatus("400 Bad Request");
@@ -348,7 +351,6 @@ void LocationParser::checks()
 			{
 				if (lines[i].find("filename=") != std::string::npos)
 				{
-					std::cout << "filename: " << lines[i] << std::endl;
 					std::string filename = lines[i].substr(lines[i].find("filename=") + 10, lines[i].size());
 					std::string path = this->request.getPath();
 					filename = filename.substr(0, filename.find("\""));
