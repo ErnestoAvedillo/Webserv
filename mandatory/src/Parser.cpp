@@ -304,11 +304,6 @@ int Parser::checkLocationName(std::string name)
 		printLog("ERROR", "location name\t\t\t\tmust start with /" );
 		exit(1);
 	}
-	std::string tmp;
-	tmp = name;
-	tmp.erase(std::remove(tmp.begin(), tmp.end(), '/'), tmp.end());
-	if (tmp == "cgi-bin")
-		return 2;
 	return 1;
 }
 
@@ -358,58 +353,14 @@ bool Parser::checkReturnIgnore(std::string allowMethods, std::string autoindex, 
 	return true;
 }
 
-bool Parser::checkCgiString(std::string cgiPath, std::string cgiExtension)
+bool Parser::checkCgi(std::string cgiExtension)
 {
-	if (cgiPath.empty() && cgiExtension.empty())
-	{
-		printLog("ERROR", "cgi_path\t\t\tis not defined.");
-		printLog("ERROR", "cgi_extension\t\t\tis not defined.");
-		return false;
-	}
-	else if (cgiPath.empty())
-	{
-		printLog("ERROR", "cgi_path\t\t\tis not defined.");
-		return false;
-	}
-	else if (cgiExtension.empty())
+	if (cgiExtension.empty())
 	{
 		printLog("ERROR", "cgi_extension\t\t\tis not defined.");
 		return false;
 	}
 	
-	return true;
-}
-
-bool Parser::checkCgi(std::vector<std::string> paths, std::vector<std::string> extensions)
-{
-	if (paths.size() != extensions.size())
-	{
-		printLog("ERROR", "cgi_path and cgi_extension must have the same number of elements.");
-		return false;
-	}
-	for (size_t size = 0; size < paths.size(); size++)
-	{
-		switch (isFilePermissions(paths[size], X_OK))
-		{
-			case -2:
-				printLog("ERROR", "cgi_path\t\t<" + paths[size]  + ">\tempty path");
-				return false;
-			case -1:
-				printLog("ERROR", "cgi_path\t\t<" + paths[size] + ">\terror getting file metadata");
-				return false;
-			case -3:
-				printLog("ERROR", "cgi_path\t\t<" + paths[size] + ">\tnot a regular file");
-				return false;
-			case -4:
-				printLog("ERROR", "cgi_path\t\t<" + paths[size] + ">\tpermission denied");
-				return false;
-			case -5:
-				printLog("ERROR", "cgi_path\t\t<" + paths[size] + ">\tfile not found");
-				return false;
-			default:
-				break ;
-		}
-	}
 	return true;
 }
 

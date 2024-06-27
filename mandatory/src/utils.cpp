@@ -86,7 +86,7 @@ size_t stringToSizeT(const std::string& str) {
 std::vector<std::string> splitString(const std::string& str, char delimiter) {
 	std::vector<std::string> result;
 	std::string token;
-	std::cout << "str: " << str << std::endl;
+	// std::cout << "str: " << str << std::endl;
 	std::istringstream tokenStream(str);
 
 	while (std::getline(tokenStream, token, delimiter)) {

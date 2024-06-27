@@ -171,6 +171,7 @@ void ListeningSocket::loadRequest(std::vector<Server *> servers)
 	{
 		this->getFileContentForStatusCode(e);
 	}
+	Parser.setCookies();
 	this->request = Parser.getRequest();
 	this->response = Parser.getResponse();
 	this->setIsAutoIndex(Parser.getIsAutoIndex());
@@ -178,6 +179,6 @@ void ListeningSocket::loadRequest(std::vector<Server *> servers)
 
 	this->setStartRange(Parser.getStartRange());
 	this->setEndRange(Parser.getEndRange());
-
+	
 	this->setFileName(this->request.getPath(), Parser.getQuery());
 }

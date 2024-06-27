@@ -22,6 +22,7 @@ class Header
 		size_t contentLength;
 		std::string contentType;
 		std::map<std::string, std::string> attributes;
+		std::multimap<std::string, std::string> cookies;
 
 	public:
 		Header();
@@ -46,4 +47,5 @@ class Header
 		std::string getContentType();
 		std::string getAttribute(std::string key);
 		void printReceivedHeader();
+		void setCookie(std::string value);
 };

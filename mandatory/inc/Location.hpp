@@ -15,8 +15,9 @@
 #define VAR_LOC_ALLOW_METHODS "allow_methods"
 #define VAR_LOC_AUTOINDEX "autoindex"
 #define VAR_LOC_ALIAS "alias"
-#define VAR_LOC_CGI_PATH "cgi_path"
+#define VAR_LOC_CGI_ENABLED "cgi_enabled"
 #define VAR_LOC_CGI_EXTENSION "cgi_extension"
+#define VAR_LOC_COOKIE "set-cookie"
 #define STR_START "location:{"
 
 
@@ -38,15 +39,17 @@ class Location
 		std::string autoindexStr;
 		bool autoindex;
 		std::string alias;
-		std::string cgiPathStr;
-		std::vector<std::string> cgiPath;
 		std::string cgiExtensionStr;
 		std::vector<std::string> cgiExtension;
+		std::string cookiesStr;
+		std::vector<std::string> cookies;
 		enum LocationType LocationType;
+		std::string cgiEnabledStr;
 		bool isGetAllowed;
 		bool isPostAllowed;
 		bool isDeleteAllowed;
 		bool isCgi;
+		bool isCookie;
 		int loadData(const std::string &data);
 
 	public:
@@ -75,7 +78,10 @@ class Location
 		const std::string& getAlias() const ;
 		enum LocationType getLocationType();
 		bool getIsCgi() const;
+		bool getIsCookie() const;
+		std::vector<std::string>  getCookies() const;
 		// Setter methods
+
 		void setName(const std::string&);
 		void setRoot(const std::string&);
 		void setReturn(const std::string&);
@@ -84,15 +90,16 @@ class Location
 		void setAllowMethods(const std::string& );
 		void setAutoindex(const std::string&);
 		void setAlias(const std::string&);
-		void setCgiPathStr(const std::string &paths);
-		void setCgiPath(const std::string &paths);
+		void setCgiEnabledStr(const std::string &option);
+		bool setCgiEnabled();
 		void setCgiExtensionStr(const std::string &extensions);
 		void setCgiExtension(const std::string &extensions);
+		void setCookieStr(const std::string &cookie);
+		void setCookies(const std::string &cookie);
 		// Load data from a string configuration
 		void print();
 		void checkVariables(bool serverAutoIndex);
 		std::vector<std::string> getCgiExtension();
-		std::vector<std::string> getCgiPath();
 };
 
 //typedef void (Location::*location)(std::string);

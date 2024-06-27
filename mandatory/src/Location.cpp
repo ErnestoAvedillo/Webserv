@@ -6,7 +6,7 @@
 /*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/29 17:38:18 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/24 23:41:29 by jcheel-n         ###   ########.fr       */
+/*   Updated: 2024/06/27 01:38:11 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,8 @@ std::map<std::string, int> var_names_location()
 	varnames[VAR_LOC_ALLOW_METHODS] = 0;
 	varnames[VAR_LOC_AUTOINDEX] = 0;
 	varnames[VAR_LOC_ALIAS] = 0;
-	varnames[VAR_LOC_CGI_PATH] = 0;
+	varnames[VAR_LOC_CGI_ENABLED] = 0;
+	varnames[VAR_LOC_COOKIE] = 0;
 	varnames[VAR_LOC_CGI_EXTENSION] = 0;
 	return varnames;
 }
@@ -38,7 +39,8 @@ std::map<std::string, void (Location::*)(const std::string&)> getLocationMethods
 	locationMethods[VAR_LOC_ALLOW_METHODS] = &Location::setAllowMethodsStr;
 	locationMethods[VAR_LOC_AUTOINDEX] = &Location::setAutoindex;
 	locationMethods[VAR_LOC_ALIAS] = &Location::setAlias;
-	locationMethods[VAR_LOC_CGI_PATH] = &Location::setCgiPathStr;
+	locationMethods[VAR_LOC_CGI_ENABLED] = &Location::setCgiEnabledStr;
+	locationMethods[VAR_LOC_COOKIE] = &Location::setCookieStr;
 	locationMethods[VAR_LOC_CGI_EXTENSION] = &Location::setCgiExtensionStr;
 	return locationMethods;
 }
@@ -53,13 +55,14 @@ Location::Location()
 	allowMethodsStr = "";
 	autoindex = "";
 	alias = "";
-	cgiPathStr = "";
+	// cgiPathStr = "";
 	cgiExtensionStr = "";
 	isCgi = false;
 }
 Location::Location(std::string const &content)
 {
 	this->isCgi = false;
+	this->cgiEnabledStr = "";
 	this->loadData(content);
 }
 
@@ -91,6 +94,8 @@ bool Location::getPostAllowed() const { return isPostAllowed; }
 bool Location::getDeleteAllowed() const { return isDeleteAllowed; }
 enum LocationType Location::getLocationType() { return this->LocationType; }
 bool Location::getIsCgi() const { return isCgi; }
+bool Location::getIsCookie() const { return isCookie; }
+std::vector<std::string>  Location::getCookies() const { return cookies; }
 // Setter methods
 void Location::setName(const std::string &n) { name = n; }
 void Location::setRoot(const std::string &r) { root = r; }
@@ -99,7 +104,26 @@ void Location::setIndex(const std::string &idx) { index = idx; }
 void Location::setAllowMethodsStr(const std::string &allow) { allowMethodsStr = allow; }
 void Location::setAutoindex(const std::string &autoidx) { autoindexStr = autoidx; }
 void Location::setAlias(const std::string &als) { alias = als; }
-void Location::setCgiPathStr(const std::string &paths) { this->cgiPathStr = paths; }
+void Location::setCgiEnabledStr(const std::string &cgiEnabled)
+{
+	this->cgiEnabledStr = cgiEnabled;
+}
+void Location::setCookieStr(const std::string &cookie) {this->isCookie = true ; this->cookiesStr = cookie; }
+bool Location::setCgiEnabled()
+{
+	if (this->cgiEnabledStr == "true")
+		isCgi = true;
+	else if (cgiEnabledStr == "false")
+		isCgi = false;
+	else if (!this->cgiEnabledStr.empty() && (this->cgiEnabledStr != "true" || this->cgiEnabledStr != "false"))
+	{
+		printLog("WARNING", "cgi_enabled\t\tis not defined correctly. Set to default " CHR_GREEN "false" RESET);
+		isCgi = false;
+	}
+	else if (this->cgiEnabledStr.empty())
+		isCgi = false;
+	return isCgi;
+}
 void Location::setCgiExtensionStr(const std::string &extensions) { this->cgiExtensionStr = extensions; }
 
 void Location::setAllowMethods(const std::string& methods)
@@ -132,17 +156,17 @@ void Location::setAllowMethods(const std::string& methods)
 		}
 	}
 }
-void Location ::setCgiPath(const std::string &paths)
-{
-	std::string line;
-	std::istringstream cgiPathStream(paths);
-	while (std::getline(cgiPathStream, line, ','))
-	{
-		if (line.length() == 0)
-			continue;
-		this->cgiPath.push_back(line);
-	}
-}
+// void Location ::setCgiPath(const std::string &paths)
+// {
+// 	std::string line;
+// 	std::istringstream cgiPathStream(paths);
+// 	while (std::getline(cgiPathStream, line, ','))
+// 	{
+// 		if (line.length() == 0)
+// 			continue;
+// 		this->cgiPath.push_back(line);
+// 	}
+// }
 
 void Location ::setCgiExtension(const std::string &extensions)
 {
@@ -207,24 +231,31 @@ void Location::print()
 	std::cout << "Allow Methods: " << allowMethodsStr << std::endl;
 	std::cout << "Autoindex: " << autoindex << std::endl;
 	std::cout << "Alias: " << alias << std::endl;
-	std::cout << "Cgi Path: " << cgiPathStr << std::endl;
+	// std::cout << "Cgi Path: " << cgiPathStr << std::endl;
 	std::cout << "Cgi Extension: " << cgiExtensionStr << std::endl;
 }
 
+void Location::setCookies(const std::string &cookie)
+{
+	std::string line;
+	std::istringstream cookieStream(cookie);
+	while (std::getline(cookieStream, line, ','))
+	{
+		if (line.length() == 0)
+			continue;
+		this->cookies.push_back(line);
+	}
+}
+
+
 void Location::checkVariables(bool serverAutoIndex)
 {
-	switch (Parser::checkLocationName(this->name))
+	Parser::checkLocationName(this->name);
+	if (this->setCgiEnabled())
 	{
-		case 2:
-			if (!Parser::checkCgiString(this->cgiPathStr, this->cgiExtensionStr))
-				exit(1);
-			this->setCgiPath(this->cgiPathStr);
-			this->setCgiExtension(this->cgiExtensionStr);
-			Parser::checkCgi(this->cgiPath, this->cgiExtension);
-			this->isCgi = true;
-			break ;
-		case 1:
-			break;
+		this->setCgiExtension(this->cgiExtensionStr);
+		if (!Parser::checkCgi(this->cgiExtensionStr))
+			exit(1);
 	}
 	
 	switch (Parser::checkRootAliasReturn(this->root, this->alias,this->return_))
@@ -271,6 +302,13 @@ void Location::checkVariables(bool serverAutoIndex)
 		this->isGetAllowed = true;
 	if (LocationType != RETURN)
 		Parser::checkIndex(this->getIndex(), this->getRoot());
+	if (this->isCookie && this->cookiesStr.empty())
+	{
+		printLog("WARNING", "cookie\t\t\tnot defined.");
+		this->isCookie = false;
+	}
+	else if (this->isCookie && !this->cookiesStr.empty())
+		this->setCookies(this->cookiesStr);
 	
 }
 
@@ -279,7 +317,3 @@ void Location::checkVariables(bool serverAutoIndex)
 		return this->cgiExtension;
 	}
 	
-	std::vector<std::string> Location::getCgiPath()
-	{
-		return this->cgiPath;
-	}

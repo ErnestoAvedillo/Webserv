@@ -114,6 +114,7 @@ bool FileContent::setFileName(const std::string &file_name, const std::string &f
 		// else if (this->isCgi)
 		else if (cgiModule->getIsCGI() )
 		{
+			std::cout << "CGI" << std::endl;
 			cgiModule->setFileName(file_name, fileArgs);
 			this->setIsFileOpen(true);
 		}

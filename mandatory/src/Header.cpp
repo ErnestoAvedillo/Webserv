@@ -96,7 +96,9 @@ std::string Header::generateHeader() const
 	header += "Content-Type: " + contentType + "\r\n";
 	for (std::map<std::string, std::string>::const_iterator it = attributes.begin(); it != attributes.end(); ++it)
 		header += it->first + ": " + it->second + "\r\n";
-	
+	for (std::multimap<std::string, std::string>::const_iterator it = cookies.begin(); it != cookies.end(); ++it)
+		header += it->first + ": " + it->second + "\r\n";
+	// response.setAttribute("Set-Cookie", "id=123; name=Joseph; lastname=Cheel; theme=light;");
 	header += "\r\n";
 	
 	return header;
@@ -140,6 +142,12 @@ void Header::setDate()
 	// Set the date in the header
 	this->date = buffer;
 }
+
+void Header::setCookie(std::string value)
+{
+	this->cookies.insert(std::pair<std::string, std::string>("Set-Cookie", value));
+}
+
 
 void Header::setLastModified(std::string lastModified)
 {
