@@ -198,3 +198,17 @@ void replaceFirstString(std::string& mainString, const std::string& searchString
 		pos += replaceString.length();
 	}
 }
+
+std::string getRandomHash(int lenght)
+{
+	std::string characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+	std::string hash;
+	int x;
+    std::srand(static_cast<unsigned>(std::time(0)) ^ reinterpret_cast<unsigned long>(&x));
+
+	// std::srand(static_cast<unsigned>(std::time(0)) ^ static_cast<unsigned>(getpid()));
+	for (int i = 0 ; i < lenght; i++)
+		hash += characters[rand() % characters.size()];
+	return hash;
+}
