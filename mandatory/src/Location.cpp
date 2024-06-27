@@ -6,7 +6,7 @@
 /*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/29 17:38:18 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/27 01:38:11 by jcheel-n         ###   ########.fr       */
+/*   Updated: 2024/06/27 13:39:19 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -300,8 +300,11 @@ void Location::checkVariables(bool serverAutoIndex)
 	this->setAllowMethods(this->allowMethodsStr);
 	if (!Parser::checkAllowedMethods(this->allowMethodsStr))
 		this->isGetAllowed = true;
-	if (LocationType != RETURN)
-		Parser::checkIndex(this->getIndex(), this->getRoot());
+	if (LocationType == ROOT)
+		Parser::checkIndex(this->getIndex(), this->getRoot() + "/" + this->getName());
+	else if (LocationType == ALIAS)
+		Parser::checkIndex(this->getIndex(), this->getAlias());
+
 	if (this->isCookie && this->cookiesStr.empty())
 	{
 		printLog("WARNING", "cookie\t\t\tnot defined.");
