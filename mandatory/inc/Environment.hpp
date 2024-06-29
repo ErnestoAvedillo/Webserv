@@ -27,7 +27,6 @@
 #define HTTP_COOKIE_KEY						"HTTP_COOKIE"
 #define HTTP_CONNECTION_KEY					"HTTP_CONNECTION"
 #define HTTP_UPGRADE_INSECURE_REQUESTS_KEY	"HTTP_UPGRADE_INSECURE_REQUESTS"
-#define PATH_INFO_KEY						"PATH_INFO"
 
 class Environment
 {
@@ -37,6 +36,6 @@ class Environment
 		Environment();
 		~Environment();
 		void setEnv(const std::string $key, const std::string $value);
-		char **getEnv();
+		std::vector<char*>getEnv();
 		std::string getEnv(std::string key);
 };
