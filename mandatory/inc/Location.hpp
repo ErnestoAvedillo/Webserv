@@ -18,6 +18,7 @@
 #define VAR_LOC_CGI_ENABLED "cgi_enabled"
 #define VAR_LOC_CGI_EXTENSION "cgi_extension"
 #define VAR_LOC_COOKIE "set-cookie"
+#define VAR_LOC_SESSION_ID "set-session-id"
 #define STR_START "location:{"
 
 
@@ -34,22 +35,31 @@ class Location
 		std::string root;
 		std::string return_;
 		std::string index;
+		std::string alias;
+		enum LocationType LocationType;
+		
 		std::string allowMethodsStr;
 		std::vector<std::string> allowMethods; 
-		std::string autoindexStr;
-		bool autoindex;
-		std::string alias;
+
 		std::string cgiExtensionStr;
 		std::vector<std::string> cgiExtension;
+		
+		bool isCookie;
 		std::string cookiesStr;
 		std::vector<std::string> cookies;
-		enum LocationType LocationType;
-		std::string cgiEnabledStr;
+		
 		bool isGetAllowed;
 		bool isPostAllowed;
 		bool isDeleteAllowed;
+		
+		bool autoindex;
+		std::string autoindexStr;
+		
 		bool isCgi;
-		bool isCookie;
+		std::string cgiEnabledStr;
+		
+		bool isSessionId;
+		std::string sessionIdStr;
 		int loadData(const std::string &data);
 
 	public:
@@ -79,6 +89,7 @@ class Location
 		enum LocationType getLocationType();
 		bool getIsCgi() const;
 		bool getIsCookie() const;
+		bool getIsSessionId() const;
 		std::vector<std::string>  getCookies() const;
 		// Setter methods
 
@@ -96,6 +107,7 @@ class Location
 		void setCgiExtension(const std::string &extensions);
 		void setCookieStr(const std::string &cookie);
 		void setCookies(const std::string &cookie);
+		void setSessionIdStr(const std::string &name);
 		// Load data from a string configuration
 		void print();
 		void checkVariables(bool serverAutoIndex);
