@@ -29,6 +29,41 @@
 #include "Header.hpp"
 #include "LocationParser.hpp"
 
+// SCRIPT_FILENAME
+// QUERY_STRING
+// REQUEST_METHOD
+// CONTENT_TYPE
+
+// CONTENT_LENGTH
+
+// GATEWAY_INTERFACE CGI/1.1
+// SERVER_SOFTWARE	webservcheelave
+
+// REMOTE_ADDR 127.0.0.1
+// REMOTE_PORT 8080
+
+// SERVER_ADDR localhost
+// SERVER_PORT 8080	
+// The name of the authentication scheme used to protect the servlet. For example, BASIC, SSL, or null if the servlet was not protected.
+
+// CONTENT_LENGTH
+
+// The length of the request body in bytes made available by the input stream or -1 if the length is not known. For HTTP servlets, the value returned is the same as the value of the CGI variable CONTENT_LENGTH.
+
+// CONTENT_TYPE
+
+// The MIME type of the body of the request, or null if the type is not known. For HTTP servlets, the value returned is the same as the value of the CGI variable CONTENT_TYPE.
+
+// SERVER_NAME webserver
+// HTTP_HOST
+// HTTP_USER_AGENT
+// HTTP_ACCEPT
+// HTTP_ACCEPT_LANGUAGE
+// HTTP_ACCEPT_ENCODING
+// HTTP_COOKIE
+// HTTP_CONNECTION
+// HTTP_UPGRADE_INSECURE_REQUESTS
+
 
 #define MAX_CONNECTIONS 10
 
