@@ -2,17 +2,10 @@
 
 Environment::Environment()
 {
-    this->DefineKeys();
 }
 
 Environment::~Environment()
 {
-}
-
-void Environment::DefineKeys()
-{
-    ExtendedString keys(KEYS_DEFINED);
-    std::vector<ExtendedString> _envKeys = keys.splitString(',');
 }
 
 void Environment::setEnv(const std::string key, const std::string value)
