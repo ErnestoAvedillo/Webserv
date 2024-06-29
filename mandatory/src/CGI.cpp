@@ -120,7 +120,6 @@ std::string CGI::execute()
 	signal(SIGALRM, &CGI::alarm_handler);
 	int fd[2], tmp_fd;
 	tmp_fd = dup(STDOUT_FILENO);
-	std::cout << "Executable: " << Executable << std::endl;
 	std::vector<char*> ExecArray;
 	ExecArray.push_back(const_cast<char *>(Executable.c_str()));
 	std::vector<ExtendedString>::iterator itb = args.begin();
@@ -149,7 +148,7 @@ std::string CGI::execute()
 		{
 			// Handle error executing file
 			std::cerr << "Error executing file " << Executable << "  with errno " << errno << std::endl;
-			exit(EXIT_FAILURE);
+			exit(errno);
 		}
 	} 
 	// Parent process
@@ -171,9 +170,10 @@ std::string CGI::execute()
 	// }
 	// else 
 	// {
-		if (WIFEXITED(status)) 
+		if (WIFEXITED(status) && WEXITSTATUS(status) == 0) 
 		{
 			// Read the output from the file descriptor
+			std::cerr << "Error executing file 3 " << Executable << "  with errno " << WIFEXITED(status) << std::endl;
 			char buffer[1024];
 			ssize_t bytesRead;
 			while ((bytesRead = read(fd[0], buffer, sizeof(buffer))) > 0) {
@@ -183,7 +183,10 @@ std::string CGI::execute()
 			fd[1] = tmp_fd;
 		}
 		else
+		{
+			std::cerr << "Error executing file 2 " << Executable << "  with errno " << WIFEXITED(status) << std::endl;
 			throw INTERNAL_SERVER_ERROR_CODE;
+		}
 	// }
 		return output;
 }
