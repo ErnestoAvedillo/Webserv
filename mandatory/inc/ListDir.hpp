@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ListDir.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 19:03:57 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/21 14:35:44 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/29 12:32:21 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 #include "Attributes.hpp"
 #include "utils.hpp"
 #include "colors.h"
+#define TEMPLATE_LIST_DIR "./Template/dir_list.html"
 class ListDir
 {
     private:

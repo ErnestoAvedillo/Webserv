@@ -116,7 +116,7 @@ bool ListDir::getIsSendComlete()
 
 void ListDir::openMasterListFile() 
 {
-	std::string filename = "./Master/dir_list.html";
+	std::string filename = TEMPLATE_LIST_DIR;
 	file.open(filename.c_str(), std::ios::out | std::ios::binary);
 }
 
