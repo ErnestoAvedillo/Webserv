@@ -28,7 +28,7 @@
 #include "FileContent.hpp"
 #include "Header.hpp"
 #include "LocationParser.hpp"
-
+#include "Environment.hpp"
 // SCRIPT_FILENAME
 // QUERY_STRING
 // REQUEST_METHOD
@@ -99,4 +99,5 @@ public:
 	std::string getAnswerToSend();
 	bool receive();
 	void matchServerName(std::vector<Server *> servers);
+	void setCgiEnviroment();
 };

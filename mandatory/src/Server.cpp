@@ -32,6 +32,7 @@ std::map<std::string, void (Server::*)(const std::string &)> ServerSetters()
 Server::Server(std::string &str)
 {
 	this->cgiModule = new CGI();
+	this->cgiModule->setEnv("SERVER_HOST", this->getHost());
 	while (str.find("location") != std::string::npos)
 	{
 		std::string aux = str.substr(str.find("location:{"));

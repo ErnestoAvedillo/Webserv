@@ -1,6 +1,6 @@
 #include "../inc/CGI.hpp"
 
-CGI::CGI()
+CGI::CGI() : Environment()
 {
 	this->fileName = "";
 	this->fileArgs = "";
@@ -9,7 +9,7 @@ CGI::CGI()
 	this->setCGIMapExtensions("cgi");
 }
 
-CGI::CGI(const std::string &folder, const std::string &extensions)
+CGI::CGI(const std::string &folder, const std::string &extensions) : Environment()
 {
 	this->fileName = "";
 	this->isCGI = false;
@@ -17,7 +17,7 @@ CGI::CGI(const std::string &folder, const std::string &extensions)
 	this->setCGIMapExtensions(extensions);
 }
 
-CGI::CGI(const CGI &src)
+CGI::CGI(const CGI &src) : Environment()
 {
 	this->fileName = "";
 	this->isCGI = false;
