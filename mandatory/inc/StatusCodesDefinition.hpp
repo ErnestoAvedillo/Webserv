@@ -1,4 +1,4 @@
-#define DEFAULT_ERROR_FILE "./Template/ErrorTemplate.html"
+#define DEFAULT_ERROR_FILE "./Templates/ErrorTemplate.html"
 #define CONTINUE_CODE 100
 #define SWITCHING_PROTOCOLS_CODE 101
 #define OK_CODE 200
