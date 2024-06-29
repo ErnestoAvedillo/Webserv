@@ -20,6 +20,8 @@
 //#define MAX_SENT_BYTES 8192
 class FileContent : public StatusCode
 {
+	protected:
+		CGI *cgiModule;
 	private:
 		std::string fileName;
 		std::string indexName;
@@ -35,7 +37,6 @@ class FileContent : public StatusCode
 		long long startRange;
 		long long currentSendingPosition;
 		long long lastSendingPosition;
-		CGI *cgiModule;
 		ListDir *listDir;
 		//Server *server;
 		size_t completeContentSize;
