@@ -20,7 +20,7 @@
 #include "Attributes.hpp"
 #include "utils.hpp"
 #include "colors.h"
-#define TEMPLATE_LIST_DIR "./Template/dir_list.html"
+#define TEMPLATE_LIST_DIR "./Templates/dir_list.html"
 class ListDir
 {
     private:
