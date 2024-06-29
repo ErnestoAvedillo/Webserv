@@ -19,6 +19,7 @@ class CGI
 		std::string CGIFolder;
 		std::string fileName;
 		std::string fileArgs;
+		char **env;
 		bool isCGI;
 		std::vector <ExtendedString> args;
 		std::map<std::string, std::string> CGIExtensions;
@@ -38,6 +39,7 @@ class CGI
 		//bool setIsCGI(const std::string &str);
 		void setArgs(const std::string &);
 		void setCGIMapExtensions(std::string const &cgi_extension);
+		void setEnv(char **);
 		//getters
 		std::string getFileName();
 		std::string getCGIFolder();
@@ -45,6 +47,7 @@ class CGI
 		std::string getCGIExtension(const std::string &);
 		std::string getFileExtension();
 		std::map<std::string, std::string>::iterator findCGIExtension(const std::string &);
+		char **getEnv();
 		//------ OTHER Methods ------//
 		std::string execute();
 		CGI *clone();
