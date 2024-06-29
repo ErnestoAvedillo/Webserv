@@ -144,7 +144,7 @@ std::string CGI::execute()
 		close(fd[0]);
 		// Convert the arguments vector to a null-terminated array
 		// Execute the file with its parameters
-		if (execve(Executable.c_str(), ExecArray.data(), NULL) == -1)
+		if (execve(Executable.c_str(), ExecArray.data(), this->getEnv()) == -1)
 		{
 			// Handle error executing file
 			exit(errno);

@@ -12,8 +12,9 @@
 #include "StatusCodesDefinition.hpp"
 #include <signal.h>
 #include "ExtendedString.hpp"
+#include "Environment.hpp"
 
-class CGI
+class CGI : public Environment
 {
 	private:
 		std::string CGIFolder;
@@ -39,7 +40,6 @@ class CGI
 		//bool setIsCGI(const std::string &str);
 		void setArgs(const std::string &);
 		void setCGIMapExtensions(std::string const &cgi_extension);
-		void setEnv(char **);
 		//getters
 		std::string getFileName();
 		std::string getCGIFolder();
@@ -47,7 +47,6 @@ class CGI
 		std::string getCGIExtension(const std::string &);
 		std::string getFileExtension();
 		std::map<std::string, std::string>::iterator findCGIExtension(const std::string &);
-		char **getEnv();
 		//------ OTHER Methods ------//
 		std::string execute();
 		CGI *clone();
