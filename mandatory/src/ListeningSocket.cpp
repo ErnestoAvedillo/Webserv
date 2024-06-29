@@ -175,6 +175,8 @@ void ListeningSocket::loadRequest(std::vector<Server *> servers)
 	Parser.setCookies();
 	this->request = Parser.getRequest();
 	this->response = Parser.getResponse();
+	if (this->getCode() >= 400)
+		return ;
 	this->setIsAutoIndex(Parser.getIsAutoIndex());
 	this->setIsCGI(Parser.getIsCGI());
 
