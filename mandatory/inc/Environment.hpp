@@ -5,7 +5,9 @@
 #include <vector>
 #include "ExtendedString.hpp"
 
-#define KEYS_DEFINED "COMSPEC,DOCUMENT_ROOT,GATEWAY_INTERFACE,\\
+#define HOST_KEY "HOST"
+#define POR_ADDRESS_KEY "HOST"
+ #define OT "GATEWAY_INTERFACE,\\
                     HTTP_ACCEPT,HTTP_ACCEPT_ENCODING,\\
                     HTTP_ACCEPT_LANGUAGE,HTTP_CONNECTION,HTTP_HOST,\\
                     HTTP_USER_AGENT,PATH,QUERY_STRING,REMOTE_ADDR,\\
@@ -19,7 +21,6 @@ class Environment
     private:
         std::map<std::string, std::string> _env;
         std::vector<std::string> _envKeys;
-        void DefineKeys();
     public:
         Environment();
         ~Environment();
