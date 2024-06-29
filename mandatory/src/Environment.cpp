@@ -16,7 +16,7 @@ void Environment::setEnv(const std::string key, const std::string value)
 char **Environment::getEnv()
 {
     std::vector<char*> RetornoEnv;
-    int i = 0;
+    char **env;
     std::map<std::string, std::string>::iterator itb = this->_env.begin();
     std::map<std::string, std::string>::iterator ite = this->_env.end();
     while (itb != ite)
@@ -26,15 +26,11 @@ char **Environment::getEnv()
         ++itb;
     }
     RetornoEnv.push_back(NULL);
-    return RetornoEnv.data();
+    env = RetornoEnv.data();
+    return env;
 }
 
 std::string Environment::getEnv(std::string key)
 {
     return this->_env[key];
-}
-
-std::vector<std::string> Environment::getEnvKeys()
-{
-    return this->_envKeys;
 }
