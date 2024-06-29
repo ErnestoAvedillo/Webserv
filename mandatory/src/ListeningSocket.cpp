@@ -170,6 +170,7 @@ void ListeningSocket::loadRequest(std::vector<Server *> servers)
 	catch (int e)
 	{
 		this->getFileContentForStatusCode(e);
+		return ;
 	}
 	Parser.setCookies();
 	this->request = Parser.getRequest();
