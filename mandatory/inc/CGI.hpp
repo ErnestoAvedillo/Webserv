@@ -20,7 +20,7 @@ class CGI : public Environment
 		std::string CGIFolder;
 		std::string fileName;
 		std::string fileArgs;
-		char **env;
+		// char **env;
 		bool isCGI;
 		std::vector <ExtendedString> args;
 		std::map<std::string, std::string> CGIExtensions;
