@@ -147,48 +147,33 @@ std::string CGI::execute()
 		if (execve(Executable.c_str(), ExecArray.data(), NULL) == -1)
 		{
 			// Handle error executing file
-			std::cerr << "Error executing file " << Executable << "  with errno " << errno << std::endl;
 			exit(errno);
 		}
 	} 
 	// Parent process
 	close(fd[1]);
-	// Wait for the child process to finish
 	CGI::ChildPID = pid;
 	alarm(timeout);
 	int status;
-	// pid_t result = waitpid(pid, &status, 0);
 	waitpid(pid, &status, 0);
 
 	std::string output;
-	// Check if the child process exited normally
-	// std::cout << "Result: " << static_cast <int> (result) << "errno "<< EINTR << "vs" << errno << std::endl;
-	// if (result == -1 && errno == EINTR) 
-	// {
-	// 	kill(pid, SIGKILL);
-	// 	throw GATEWAY_TIME_OUT_CODE;
-	// }
-	// else 
-	// {
-		if (WIFEXITED(status) && WEXITSTATUS(status) == 0) 
-		{
-			// Read the output from the file descriptor
-			std::cerr << "Error executing file 3 " << Executable << "  with errno " << WIFEXITED(status) << std::endl;
-			char buffer[1024];
-			ssize_t bytesRead;
-			while ((bytesRead = read(fd[0], buffer, sizeof(buffer))) > 0) {
-				output += std::string(buffer, bytesRead);
-			}
-			close(fd[0]);
-			fd[1] = tmp_fd;
+	if (WIFEXITED(status) && WEXITSTATUS(status) == 0) 
+	{
+		// Read the output from the file descriptor
+		char buffer[1024];
+		ssize_t bytesRead;
+		while ((bytesRead = read(fd[0], buffer, sizeof(buffer))) > 0) {
+			output += std::string(buffer, bytesRead);
 		}
-		else
-		{
-			std::cerr << "Error executing file 2 " << Executable << "  with errno " << WIFEXITED(status) << std::endl;
-			throw INTERNAL_SERVER_ERROR_CODE;
-		}
-	// }
-		return output;
+		close(fd[0]);
+		fd[1] = tmp_fd;
+	}
+	else
+	{
+		throw INTERNAL_SERVER_ERROR_CODE;
+	}
+	return output;
 }
 
 void CGI::setCGIMapExtensions(std::string const &cgi_extension)
