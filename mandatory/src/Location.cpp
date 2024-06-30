@@ -25,6 +25,7 @@ std::map<std::string, int> var_names_location()
 	varnames[VAR_LOC_CGI_ENABLED] = 0;
 	varnames[VAR_LOC_COOKIE] = 0;
 	varnames[VAR_LOC_CGI_EXTENSION] = 0;
+	varnames[VAR_LOC_SESSION_ID] = 0;
 	return varnames;
 }
 
@@ -42,6 +43,7 @@ std::map<std::string, void (Location::*)(const std::string&)> getLocationMethods
 	locationMethods[VAR_LOC_CGI_ENABLED] = &Location::setCgiEnabledStr;
 	locationMethods[VAR_LOC_COOKIE] = &Location::setCookieStr;
 	locationMethods[VAR_LOC_CGI_EXTENSION] = &Location::setCgiExtensionStr;
+	locationMethods[VAR_LOC_SESSION_ID] = &Location::setSessionIdStr;
 	return locationMethods;
 }
 
@@ -57,9 +59,9 @@ Location::Location()
 	alias = "";
 	cgiExtensionStr = "";
 	isCgi = false;
+	isSessionId = false;
 	isCookie = false;
 	cookiesStr = "";
-	std::cout << "INITITALIZE" << std::endl;
 }
 Location::Location(std::string const &content)
 {
@@ -67,6 +69,7 @@ Location::Location(std::string const &content)
 	this->cgiEnabledStr = "";
 	isCookie = false;
 	cookiesStr = "";
+	isSessionId = false;
 	this->loadData(content);
 }
 
@@ -108,10 +111,10 @@ void Location::setIndex(const std::string &idx) { index = idx; }
 void Location::setAllowMethodsStr(const std::string &allow) { allowMethodsStr = allow; }
 void Location::setAutoindex(const std::string &autoidx) { autoindexStr = autoidx; }
 void Location::setAlias(const std::string &als) { alias = als; }
-void Location::setCgiEnabledStr(const std::string &cgiEnabled)
-{
+void Location::setCgiEnabledStr(const std::string &cgiEnabled) {
 	this->cgiEnabledStr = cgiEnabled;
 }
+void Location::setSessionIdStr(const std::string &name){ this->isSessionId = true ; this->sessionIdStr = name; }
 void Location::setCookieStr(const std::string &cookie) {this->isCookie = true ; this->cookiesStr = cookie; }
 bool Location::setCgiEnabled()
 {
@@ -304,7 +307,16 @@ void Location::checkVariables(bool serverAutoIndex)
 	}
 	else if (this->isCookie && !this->cookiesStr.empty())
 		this->setCookies(this->cookiesStr);
-	
+
+// 	if (this->isSessionId && this->sessionIdStr.empty())
+// 	{
+// 		printLog("WARNING", "set-sesion-id\t\t\tnot defined.");
+// 		this->isSessionId = false;
+// 	}
+// 	else if (this->isSessionId && !this->sessionIdStr.empty())
+// 	{
+
+// 	}
 }
 
 	std::vector<std::string> Location::getCgiExtension()

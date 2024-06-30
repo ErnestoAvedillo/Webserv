@@ -87,11 +87,9 @@ std::string CGI::getCGIFolder()
 
 void CGI::setArgs(const std::string &str)
 {
-	std::cout << "Args: " << str << std::endl;
 	std::vector<std::string> vec = splitString(str, '&');
 	for (size_t i = 0; i < vec.size(); i++)
 	{
-		std::cout << "Args: " << vec[i] << std::endl;
 		args.push_back(vec[i]);
 	}
 
@@ -144,9 +142,13 @@ std::string CGI::execute()
 		close(fd[0]);
 		// Convert the arguments vector to a null-terminated array
 		// Execute the file with its parameters
-		if (execve(Executable.c_str(), ExecArray.data(), this->getEnv()) == -1)
+		std::vector<char*> envp = this->getEnv();
+ 
+ 
+		if (execve(Executable.c_str(), ExecArray.data(), envp.data()) == -1)
 		{
 			// Handle error executing file
+			std::cerr << "Error: " << errno << std::endl;
 			exit(errno);
 		}
 	} 
