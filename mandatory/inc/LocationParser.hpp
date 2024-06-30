@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/30 13:48:49 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/30 14:43:58 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/30 16:27:51 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,3 +68,4 @@ class LocationParser
 		size_t		getStartRange();
 		size_t		getEndRange();
 		std::string	getQuery();
+};
