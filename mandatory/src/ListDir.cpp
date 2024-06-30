@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ListDir.cpp                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/30 13:51:56 by eavedill          #+#    #+#             */
+/*   Updated: 2024/06/30 15:25:36 by eavedill         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 
 #include "../inc/ListDir.hpp"
 
@@ -62,14 +74,12 @@ std::string ListDir::getDirFileList()
 {
 	std::string content = "";
 	std::map <std::string, Attributes *>::iterator itb = files.begin();
-	//do not add ./ and ../
 	itb++;
 	itb++;
 	std::map<std::string, Attributes *>::iterator ite = files.end();
 	while (itb != ite)
 	{
 		content = content + "<script>\n";
-		//addRow(".dockerignore",".dockerignore",0,52,"52 B",521717927779,"2024-06-09 12:09:39");
 		content = content + "addRow(\" " + itb->first + "\",";
 		content = content + "\"" + itb->first + "\",";
 		content = content + (itb->second->getIsDir()? "1" : "0") + ",";
@@ -86,17 +96,14 @@ std::string ListDir::getDirFileList()
 void ListDir::setContentToList() 
 {
 	contentToSend = "";
-
 	char buffer[MAX_SENT_BYTES];
 	while(file.read(buffer, MAX_SENT_BYTES))
 	{
 		contentToSend.append(buffer, file.gcount());
 	}
 	contentToSend.append(buffer, file.gcount());
-	//replaceString(contentToSend, "LOCATION", path);
 	if (homePath != path)
 	{
-		std::cout << "verificando si tiene parent directory "<< homePath << " " << path << std::endl;
 		contentToSend += ("<script>start(\"" + path + "\");</script>\n");
 		contentToSend += "<script>onHasParentDirectory();</script>\n";
 	}
@@ -111,7 +118,7 @@ void ListDir::setIsSendComlete()
 
 bool ListDir::getIsSendComlete()
 {
-		return isSendComplete;
+	return isSendComplete;
 }
 
 void ListDir::openMasterListFile() 

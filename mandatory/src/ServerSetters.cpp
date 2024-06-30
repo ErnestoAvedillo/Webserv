@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ServerSetters.cpp                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/30 13:51:10 by eavedill          #+#    #+#             */
+/*   Updated: 2024/06/30 15:16:21 by eavedill         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../inc/Server.hpp"
 
 void Server::setHost(std::string const &host) { this->Host = host; }
@@ -9,9 +21,7 @@ void Server::setRoot(std::string const &root) { this->root = root; }
 void Server::setIndex(std::string const &index) { this->index = index; }
 void Server::setCGIFolder(std::string const &str) { this->cgiModule->setCGIFolder(str); }
 void Server::addLocation(std::string const &content) { this->locations.push_back(new Location(content)); }
-
 void Server::setHostAddr(in_addr_t Addr) { this->hostAddr = Addr; }
-
 void Server::setCGIExtension(std::string const &str) 
 {
 	this->cgiModule->setCGIMapExtensions(str);
@@ -63,7 +73,6 @@ void Server::setPorts(std::string const &portsLine)
 			{
 				this->ports.push_back(toString(i));
 			}
-			
 		}
 		else
 		{

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   WebServerMAC.cpp                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/30 13:50:44 by eavedill          #+#    #+#             */
+/*   Updated: 2024/06/30 13:50:44 by eavedill         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifdef __APPLE__
 #include "../inc/WebServer.hpp"
 
@@ -18,8 +30,6 @@ void	WebServer::addEventSet()
 		for (size_t j = 0; j < serverFds.size(); j++)
 		{
 			struct kevent evSet;
-			
-			// EV_SET(&evSet, serverFds[j], EVFILT_READ, EV_ADD | EV_CLEAR, NOTE_WRITE, 0, NULL);
 			EV_SET(&evSet, serverFds[j], EVFILT_READ, EV_ADD | EV_CLEAR, 0, 0, NULL);
 			if (kevent(this->kq, &evSet, 1, NULL, 0, NULL) == -1)
 			{
@@ -41,7 +51,6 @@ void WebServer::modifEvent(struct kevent event, int typeRem, int typeAdd)
 	struct kevent evSet;
 	(void) typeRem;
 	EV_SET(&evSet, event.ident, typeAdd, EV_ADD, 0, 0, NULL);
-	//removeEventFd(event.ident, typeRem);
 	if (kevent(this->kq, &evSet, 1, NULL, 0, NULL) == -1)
 	{
 		std::cerr << "Error: could not add event" << std::endl;
@@ -88,7 +97,7 @@ int WebServer::acceptNewEvent(int curfd)
 			else
 			{
 				std::cerr << "Error accepting connection" << std::endl;
-				return fd; // Continue to the next event
+				return fd;
 			}
 		}		
 		fcntl(curfd, F_SETFL, O_NONBLOCK, FD_CLOEXEC);
@@ -99,5 +108,4 @@ int WebServer::acceptNewEvent(int curfd)
 	}
 	return fd;
 }
-
 #endif

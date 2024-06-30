@@ -1,11 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   LocationParser.cpp                                 :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/30 13:51:38 by eavedill          #+#    #+#             */
+/*   Updated: 2024/06/30 15:22:31 by eavedill         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../inc/LocationParser.hpp"
 
 static std::string getMimeType(std::string contentType)
 {
 	size_t point = contentType.find_last_of(".");
 	std::string extension = contentType.substr(point + 1, contentType.size());
-
-	/* Create once only */
 	std::map<std::string, std::string> Mimetype = create_filetypes();
 	if (Mimetype.find(extension) != Mimetype.end())
 		return(Mimetype[extension]);
@@ -36,7 +46,6 @@ int LocationParser::isAllowedMethod(Location *location)
 			response.setStatus("405 Method Not Allowed");
 			return NOT_ALLOWED;
 		}
-
 	}
 	else if (this->request.getMethod() == "DELETE")
 	{
@@ -58,7 +67,6 @@ int LocationParser::matchingLocation()
 		{
 			if (isAllowedMethod(locations[i]) == NOT_ALLOWED)
 				return NOT_ALLOWED;
-			
 			std::string rawPath = this->request.getPath();
 			this->isAutoIndex = locations[i]->getAutoIndex();
 			if ((this->isCookie = locations[i]->getIsCookie()) == true)
@@ -70,7 +78,6 @@ int LocationParser::matchingLocation()
 					extension = rawPath.substr(rawPath.rfind(".") + 1, rawPath.size());
 				for (size_t y = 0; y < locations[i]->getCgiExtension().size(); y++)
 				{
-
 					if (locations[i]->getCgiExtension()[y] == extension)
 						this->isCGI = true;
 				}		
@@ -101,7 +108,6 @@ int LocationParser::matchingLocation()
 		}
 	}
 	return NO_LOCATION;
-
 }
 
 off_t getFileSize(const std::string &filename)
@@ -118,7 +124,6 @@ bool isBadRequest(std::string request)
 	std::istringstream iss(request);
 	std::string line;
 	bool firstLine = true;
-
     while (std::getline(iss, line))
 	{   
 		if (firstLine)
@@ -200,12 +205,11 @@ void LocationParser::checks()
 		case REDIRECT:
 			return ;
 	}
-
 	this->request.setPath(decodeURL(this->request.getPath()));
 	ExtendedString tmp = this->request.getPath();
 	tmp.replaceFirstString("//", "/");
 	this->request.setPath(tmp);
-	if (isBadRequest(receiver->getRequest()))//|| isURIMalformed(this->request.getPath())
+	if (isBadRequest(receiver->getRequest()))
 	{
 		response.setStatus("400 Bad Request");
 		throw BAD_REQUEST_CODE;
@@ -263,7 +267,6 @@ void LocationParser::checks()
 	}
 	else if (this->request.getMethod() == "POST")
 	{
-		
 		std::string body = receiver->getBody();
 		if (body.size() > (size_t)this->server->getMaxClientBodySize())
 		{

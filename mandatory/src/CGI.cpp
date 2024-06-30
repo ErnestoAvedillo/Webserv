@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   CGI.cpp                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/30 13:49:55 by eavedill          #+#    #+#             */
+/*   Updated: 2024/06/30 15:28:58 by eavedill         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../inc/CGI.hpp"
 
 CGI::CGI() : Environment()
@@ -41,15 +53,6 @@ void CGI::setFileName(const std::string &Name, const std::string &Args)
 	fileName = Name;
 	this->setArgs(Args);
 	tmp = splitString(Args, '&');
-	// std::map<std::string, std::string>::iterator it = this->findCGIExtension(this->getFileExtension());
-	// if (it != this->CGIExtensions.end())
-	// {
-	// 	if (it->second.size() != 0)
-	// 	{
-	// 		fileName =it->second;
-	// 		this->setArgs(tmp[1]);
-	// 	}
-	// }
 }
 
 void CGI::setIsCGI(bool valCGI)
@@ -100,9 +103,15 @@ std::vector <ExtendedString> CGI::getArgs()
 	return args;
 }
 
-std::map<std::string, std::string>::iterator CGI::findCGIExtension(const std::string &str) { return this->CGIExtensions.find(str); }
+std::map<std::string, std::string>::iterator CGI::findCGIExtension(const std::string &str) 
+{
+	return this->CGIExtensions.find(str); 
+}
 
-std::string CGI::getCGIExtension(const std::string &str) { return this->CGIExtensions[str]; }
+std::string CGI::getCGIExtension(const std::string &str) 
+{
+	return this->CGIExtensions[str]; 
+}
 
 std::string CGI::getFileExtension()
 {
@@ -132,40 +141,31 @@ std::string CGI::execute()
 	}
 	pid_t pid = fork();
 	if (pid == -1) {
-		// Handle error forking process
 		throw INTERNAL_SERVER_ERROR_CODE;
 		return "";
 	}
 	if (pid == 0) {
-		// Child process
 		dup2(fd[1], STDOUT_FILENO);
 		close(fd[0]);
-		// Convert the arguments vector to a null-terminated array
-		// Execute the file with its parameters
 		std::vector<char*> envp = this->getEnv();
- 
- 
 		if (execve(Executable.c_str(), ExecArray.data(), envp.data()) == -1)
 		{
-			// Handle error executing file
 			std::cerr << "Error: " << errno << std::endl;
 			exit(errno);
 		}
 	} 
-	// Parent process
 	close(fd[1]);
 	CGI::ChildPID = pid;
 	alarm(timeout);
 	int status;
 	waitpid(pid, &status, 0);
-
 	std::string output;
 	if (WIFEXITED(status) && WEXITSTATUS(status) == 0) 
 	{
-		// Read the output from the file descriptor
 		char buffer[1024];
 		ssize_t bytesRead;
-		while ((bytesRead = read(fd[0], buffer, sizeof(buffer))) > 0) {
+		while ((bytesRead = read(fd[0], buffer, sizeof(buffer))) > 0) 
+		{
 			output += std::string(buffer, bytesRead);
 		}
 		close(fd[0]);
@@ -205,7 +205,7 @@ void CGI::setCGIMapExtensions(std::string const &cgi_extension)
 		}
 		else if (n == 0)
 		{
-			this->CGIExtensions[aux[i]] = ""; // Si no hay programa de ejecución, se asume que es un CGI ejecutable.
+			this->CGIExtensions[aux[i]] = "";
 		}
 		else
 		{

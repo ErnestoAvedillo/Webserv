@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 18:22:35 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/15 14:34:07 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/30 14:29:47 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,10 +31,10 @@ class Attributes
 		Attributes();
 		Attributes(const std::string& filename);
 		~Attributes();
-		void setAttributesFromFile(const std::string& filename);
-			
+
+		void		setAttributesFromFile(const std::string& filename);	
 		std::string getName() ;
-		bool getIsDir() ;
+		bool		getIsDir() ;
 		std::string getSize() ;
 		std::string getDevice() ;
 		std::string getCreated() ;

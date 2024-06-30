@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   FileContent.hpp                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/30 13:48:24 by eavedill          #+#    #+#             */
+/*   Updated: 2024/06/30 14:55:08 by eavedill         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #pragma once
 #include <iostream>
 #include <fstream>
@@ -21,60 +33,59 @@
 class FileContent : public StatusCode
 {
 	protected:
-		CGI *cgiModule;
+		CGI 		*cgiModule;
 	private:
-		std::string fileName;
-		std::string indexName;
-		std::vector <std::string> args;
-		ExtendedString content;
-		std::ifstream file;
-		bool isFistFragment;
-		bool isFileOpen;
-		bool sendComplete;
-		bool isAutoIndex;
-		std::string homeFolder;
-		struct stat fileStat;
-		long long startRange;
-		long long currentSendingPosition;
-		long long lastSendingPosition;
-		ListDir *listDir;
-		size_t completeContentSize;
-		std::string splitFileFromArgs(const std::string &);
-		bool FileOrFolerExtists(const std::string &);
-		size_t endRange;
+		std::string					fileName;
+		std::string					indexName;
+		std::vector <std::string>	args;
+		ExtendedString				content;
+		std::ifstream				file;
+		bool						isFistFragment;
+		bool						isFileOpen;
+		bool						sendComplete;
+		bool						isAutoIndex;
+		std::string					homeFolder;
+		struct stat					fileStat;
+		long long					startRange;
+		long long					currentSendingPosition;
+		long long					lastSendingPosition;
+		ListDir						*listDir;
+		size_t						completeContentSize;
+		size_t						endRange;
+
+		std::string					splitFileFromArgs(const std::string &);
+		bool						FileOrFolerExtists(const std::string &);
 	public:
 		FileContent();
 		~FileContent();
-		int openFile();
-		bool setFileName(const std::string &, const std::string &);
-		void setIsCGI(bool isCgi);
-		void setStartRange(long long);
-		void setEndRange(long long);
-		long long getStartRange();
-		std::string getFileName();
-		std::string getContent();
-		void setIsFileOpen(bool);
-		void setIsSendComplete(bool);
-		bool getIsSendComplete();
-		void setIsCgi(bool );
-		bool getIsCgi();
-
-		bool getIsFileOpen();
-		void setFirstFragment(bool);
-		bool getFirstFragment();
-		std::string getLastModified();
-		size_t getCompleteContentSize();
-		void setCompleteContentSize(size_t);
-		bool isInputDirectory();
-		void setRange(size_t );
-		void setIsAutoIndex(bool);
-		bool getIsAutoIndex();
-		void setIndexName(const std::string &);
-		std::string getIndexName();
-		void setHomeFolder(const std::string &);
-		std::string getHomeFolder();
-		void setCGIModule(CGI *);
-		long long getFileSize();
-		long long getCurrentSendingPosition();
-		long long getLastSendingPosition();
+		int			openFile();
+		bool		setFileName(const std::string &, const std::string &);
+		void		setIsCGI(bool isCgi);
+		void		setStartRange(long long);
+		void		setEndRange(long long);
+		long long	getStartRange();
+		std::string	getFileName();
+		std::string	getContent();
+		void		setIsFileOpen(bool);
+		void		setIsSendComplete(bool);
+		bool		getIsSendComplete();
+		void		setIsCgi(bool );
+		bool		getIsFileOpen();
+		void		setFirstFragment(bool);
+		bool		getFirstFragment();
+		std::string	getLastModified();
+		size_t		getCompleteContentSize();
+		void		setCompleteContentSize(size_t);
+		bool		isInputDirectory();
+		void		setRange(size_t );
+		void		setIsAutoIndex(bool);
+		bool		getIsAutoIndex();
+		void		setIndexName(const std::string &);
+		std::string	getIndexName();
+		void		setHomeFolder(const std::string &);
+		std::string	getHomeFolder();
+		void		setCGIModule(CGI *);
+		long long	getFileSize();
+		long long	getCurrentSendingPosition();
+		long long	getLastSendingPosition();
 };

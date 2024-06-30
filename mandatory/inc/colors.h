@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   colors.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/06 11:16:47 by eavedill          #+#    #+#             */
-/*   Updated: 2024/02/09 11:18:46 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/30 14:58:03 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 # define COLORS_H
 // Standard color
 # define RESET	"\033[0m"
-//# define RESET	""
 // Background colors over black
 # define BCK_BLACK	"\033[0;40m"
 # define BCK_RED	"\033[0;41m"
@@ -33,7 +32,6 @@
 # define CHR_MGENTA	"\033[0;35m"
 # define CHR_CYAN	"\033[0;36m"
 # define CHR_WHITE	"\033[0;37m"
-
 # define BLACK	"\033[30m"
 # define RED	"\033[31m"
 # define GREEN	"\033[32m"
