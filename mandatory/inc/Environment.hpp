@@ -32,6 +32,7 @@ class Environment
 {
 	private:
 		std::map<std::string, std::string> _env;
+		std::vector<char*> _envArray;
 	public:
 		Environment();
 		~Environment();

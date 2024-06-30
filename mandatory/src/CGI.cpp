@@ -87,11 +87,9 @@ std::string CGI::getCGIFolder()
 
 void CGI::setArgs(const std::string &str)
 {
-	std::cout << "Args: " << str << std::endl;
 	std::vector<std::string> vec = splitString(str, '&');
 	for (size_t i = 0; i < vec.size(); i++)
 	{
-		std::cout << "Args: " << vec[i] << std::endl;
 		args.push_back(vec[i]);
 	}
 
@@ -145,15 +143,7 @@ std::string CGI::execute()
 		// Convert the arguments vector to a null-terminated array
 		// Execute the file with its parameters
 		std::vector<char*> envp = this->getEnv();
-		// std::vector<char*>::iterator itb2 = envp.begin();
-		// std::vector<char*>::iterator ite2 = envp.end();
-		// while(itb2 != ite2)
-		// {
-		// 	std::cout << *itb2 << std::endl;
-		// 	itb2++;
-		// }
-    	// std::cout<< "-------11------------------" << std::endl;
-	    // std::cout<< "----------222---------------" << std::endl;
+ 
  
 		if (execve(Executable.c_str(), ExecArray.data(), envp.data()) == -1)
 		{
@@ -170,7 +160,6 @@ std::string CGI::execute()
 	waitpid(pid, &status, 0);
 
 	std::string output;
-	std::cout << "Status: " << status << std::endl;
 	if (WIFEXITED(status) && WEXITSTATUS(status) == 0) 
 	{
 		// Read the output from the file descriptor

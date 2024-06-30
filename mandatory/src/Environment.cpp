@@ -7,6 +7,13 @@ Environment::Environment()
 
 Environment::~Environment()
 {
+    std::vector<char*>::iterator itb = this->_envArray.begin();
+    std::vector<char*>::iterator ite = this->_envArray.end();  
+    while(itb != ite)
+    {
+        delete *itb;
+        itb++;
+    }
 }
 
 void Environment::setEnv(const std::string key, const std::string value)
@@ -16,35 +23,18 @@ void Environment::setEnv(const std::string key, const std::string value)
 
 std::vector<char*> Environment::getEnv()
 {
-    std::vector<std::string> aux;
-    std::vector<char*> env;
     std::map<std::string, std::string>::iterator itb = this->_env.begin();
     std::map<std::string, std::string>::iterator ite = this->_env.end();
     while(itb != ite)
     {
-        aux.push_back(itb->first + "=" + itb->second);
+        std::string *tmp = new std::string(itb->first + "=" + itb->second + '\0');
+        _envArray.push_back(const_cast<char*>(tmp->c_str()));
         itb++;
     }
-    // std::cout<< "-------------------------" << std::endl;
-    std::vector<std::string>::iterator itb1 = aux.begin();
-    std::vector<std::string>::iterator ite1 = aux.end();
-    while(itb1 != ite1)
-    {
-        // std::cout << itb1->c_str() << std::endl;
-        env.push_back(const_cast<char*>(itb1->c_str()));
-        itb1++;
-    }
-    env.push_back(NULL);
- 	// 	std::vector<char*>::iterator itb2 = env.begin();
-	// 	std::vector<char*>::iterator ite2 = env.end();
-	// 	while(itb2 != ite2)
-	// 	{
-	// 		std::cout << *itb2 << std::endl;
-	// 		itb2++;
-	// 	}
+    _envArray.push_back(NULL);
 
-    // std::cout<< "-------------------------" << std::endl;
-    return env;
+    return _envArray;
+
 }
 
 std::string Environment::getEnv(std::string key)
