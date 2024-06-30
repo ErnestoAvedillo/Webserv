@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/30 13:51:47 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/30 15:25:07 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/30 15:38:42 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,6 +118,7 @@ bool ListeningSocket::receive()
 ListeningSocket *ListeningSocket::clone(int fd)
 {
 	ListeningSocket *newSocket = new ListeningSocket(this->server);
+	newSocket->port = this->port;
 	newSocket->socketFd = fd;
 	return newSocket;
 }
