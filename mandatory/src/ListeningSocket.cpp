@@ -165,6 +165,7 @@ void ListeningSocket::setCgiEnviroment()
 	this->cgiModule->setEnv(HTTP_USER_AGENT_KEY, this->request.getAttribute("User-Agent"));
 	this->cgiModule->setEnv(SERVER_SOFTWARE_KEY, "ws_cheelave/1.0");
 	this->cgiModule->setEnv(GATEWAY_INTERFACE_KEY, "CGI/1.1");
+
 }
 
 void ListeningSocket::loadRequest(std::vector<Server *> servers)
@@ -184,6 +185,7 @@ void ListeningSocket::loadRequest(std::vector<Server *> servers)
 		this->response = Parser.getResponse();
 		return ;
 	}
+
 	Parser.setCookies();
 	this->request = Parser.getRequest();
 	this->cgiModule->setEnv(PATH_INFO_KEY, this->request.getPath().substr(0, this->request.getPath().rfind("/")));

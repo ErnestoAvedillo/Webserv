@@ -11,6 +11,8 @@
 /* ************************************************************************** */
 
 #include "../inc/LocationParser.hpp"
+#include <chrono>
+#include <ctime>
 
 static std::string getMimeType(std::string contentType)
 {
@@ -67,6 +69,7 @@ int LocationParser::matchingLocation()
 		{
 			if (isAllowedMethod(locations[i]) == NOT_ALLOWED)
 				return NOT_ALLOWED;
+			
 			std::string rawPath = this->request.getPath();
 			this->isAutoIndex = locations[i]->getAutoIndex();
 			if ((this->isCookie = locations[i]->getIsCookie()) == true)
@@ -78,6 +81,7 @@ int LocationParser::matchingLocation()
 					extension = rawPath.substr(rawPath.rfind(".") + 1, rawPath.size());
 				for (size_t y = 0; y < locations[i]->getCgiExtension().size(); y++)
 				{
+
 					if (locations[i]->getCgiExtension()[y] == extension)
 						this->isCGI = true;
 				}		
@@ -319,6 +323,7 @@ void LocationParser::checks()
 			this->query = decodeURL(body);
 			response.setStatus("201 Created");
 			return ;
+
 		}
 		response.setServer(server->getServerName());
 	}

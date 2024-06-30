@@ -103,6 +103,8 @@ class Location
 		bool getIsCookie() const;
 		bool getIsSessionId() const;
 		std::vector<std::string>  getCookies() const;
+		std::string getSessionId() const;
+
 		// Setter methods
 
 		void setName(const std::string&);

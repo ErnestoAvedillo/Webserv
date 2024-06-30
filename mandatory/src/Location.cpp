@@ -108,6 +108,7 @@ void Location::setIndex(const std::string &idx) { index = idx; }
 void Location::setAllowMethodsStr(const std::string &allow) { allowMethodsStr = allow; }
 void Location::setAutoindex(const std::string &autoidx) { autoindexStr = autoidx; }
 void Location::setAlias(const std::string &als) { alias = als; }
+
 void Location::setCgiEnabledStr(const std::string &cgiEnabled) {this->cgiEnabledStr = cgiEnabled;}
 void Location::setSessionIdStr(const std::string &name){ this->isSessionId = true ; this->sessionIdStr = name; }
 void Location::setCookieStr(const std::string &cookie) {this->isCookie = true ; this->cookiesStr = cookie; }
@@ -299,6 +300,7 @@ void Location::checkVariables(bool serverAutoIndex)
 	}
 	else if (this->isCookie && !this->cookiesStr.empty())
 		this->setCookies(this->cookiesStr);
+
 }
 
 std::vector<std::string> Location::getCgiExtension()

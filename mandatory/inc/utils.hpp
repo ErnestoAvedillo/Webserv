@@ -76,3 +76,4 @@ int									count_chars(const std::string &str, char c);
 std::string 						getLocalTime();
 void								printLog(std::string type ,std::string message);
 std::string							decodeURL(const std::string& url);
+

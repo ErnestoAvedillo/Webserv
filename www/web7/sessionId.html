@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Session Check</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        .logged-in {
+            color: green;
+        }
+        .not-logged-in {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 id="status"></h1>
+    </div>
+
+    <script>
+        // Function to get the value of a specific cookie
+        function getCookie(name) {
+            let matches = document.cookie.match(new RegExp(
+                "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+            ));
+            return matches ? decodeURIComponent(matches[1]) : undefined;
+        }
+
+        // Check for the sessionId cookie
+        let sessionId = getCookie('idSession');
+        let statusElement = document.getElementById('status');
+
+        if (sessionId) {
+            statusElement.textContent = 'You are logged in with idSession: ' + sessionId;
+            statusElement.classList.add('logged-in');
+        } else {
+            statusElement.textContent = 'You are not logged in';
+            statusElement.classList.add('not-logged-in');
+        }
+    </script>
+</body>
+</html>

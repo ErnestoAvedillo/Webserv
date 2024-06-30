@@ -68,4 +68,3 @@ class LocationParser
 		size_t		getStartRange();
 		size_t		getEndRange();
 		std::string	getQuery();
-};
