@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   CGI.cpp                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/30 13:49:55 by eavedill          #+#    #+#             */
+/*   Updated: 2024/06/30 15:28:58 by eavedill         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../inc/CGI.hpp"
 
-CGI::CGI()
+CGI::CGI() : Environment()
 {
 	this->fileName = "";
 	this->fileArgs = "";
@@ -9,7 +21,7 @@ CGI::CGI()
 	this->setCGIMapExtensions("cgi");
 }
 
-CGI::CGI(const std::string &folder, const std::string &extensions)
+CGI::CGI(const std::string &folder, const std::string &extensions) : Environment()
 {
 	this->fileName = "";
 	this->isCGI = false;
@@ -17,7 +29,7 @@ CGI::CGI(const std::string &folder, const std::string &extensions)
 	this->setCGIMapExtensions(extensions);
 }
 
-CGI::CGI(const CGI &src)
+CGI::CGI(const CGI &src) : Environment()
 {
 	this->fileName = "";
 	this->isCGI = false;
@@ -41,15 +53,6 @@ void CGI::setFileName(const std::string &Name, const std::string &Args)
 	fileName = Name;
 	this->setArgs(Args);
 	tmp = splitString(Args, '&');
-	// std::map<std::string, std::string>::iterator it = this->findCGIExtension(this->getFileExtension());
-	// if (it != this->CGIExtensions.end())
-	// {
-	// 	if (it->second.size() != 0)
-	// 	{
-	// 		fileName =it->second;
-	// 		this->setArgs(tmp[1]);
-	// 	}
-	// }
 }
 
 void CGI::setIsCGI(bool valCGI)
@@ -87,11 +90,9 @@ std::string CGI::getCGIFolder()
 
 void CGI::setArgs(const std::string &str)
 {
-	std::cout << "Args: " << str << std::endl;
 	std::vector<std::string> vec = splitString(str, '&');
 	for (size_t i = 0; i < vec.size(); i++)
 	{
-		std::cout << "Args: " << vec[i] << std::endl;
 		args.push_back(vec[i]);
 	}
 
@@ -102,9 +103,15 @@ std::vector <ExtendedString> CGI::getArgs()
 	return args;
 }
 
-std::map<std::string, std::string>::iterator CGI::findCGIExtension(const std::string &str) { return this->CGIExtensions.find(str); }
+std::map<std::string, std::string>::iterator CGI::findCGIExtension(const std::string &str) 
+{
+	return this->CGIExtensions.find(str); 
+}
 
-std::string CGI::getCGIExtension(const std::string &str) { return this->CGIExtensions[str]; }
+std::string CGI::getCGIExtension(const std::string &str) 
+{
+	return this->CGIExtensions[str]; 
+}
 
 std::string CGI::getFileExtension()
 {
@@ -120,7 +127,6 @@ std::string CGI::execute()
 	signal(SIGALRM, &CGI::alarm_handler);
 	int fd[2], tmp_fd;
 	tmp_fd = dup(STDOUT_FILENO);
-	std::cout << "Executable: " << Executable << std::endl;
 	std::vector<char*> ExecArray;
 	ExecArray.push_back(const_cast<char *>(Executable.c_str()));
 	std::vector<ExtendedString>::iterator itb = args.begin();
@@ -135,57 +141,41 @@ std::string CGI::execute()
 	}
 	pid_t pid = fork();
 	if (pid == -1) {
-		// Handle error forking process
 		throw INTERNAL_SERVER_ERROR_CODE;
 		return "";
 	}
 	if (pid == 0) {
-		// Child process
 		dup2(fd[1], STDOUT_FILENO);
 		close(fd[0]);
-		// Convert the arguments vector to a null-terminated array
-		// Execute the file with its parameters
-		if (execve(Executable.c_str(), ExecArray.data(), NULL) == -1)
+		std::vector<char*> envp = this->getEnv();
+		if (execve(Executable.c_str(), ExecArray.data(), envp.data()) == -1)
 		{
-			// Handle error executing file
-			std::cerr << "Error executing file " << Executable << "  with errno " << errno << std::endl;
-			exit(EXIT_FAILURE);
+			std::cerr << "Error: " << errno << std::endl;
+			exit(errno);
 		}
 	} 
-	// Parent process
 	close(fd[1]);
-	// Wait for the child process to finish
 	CGI::ChildPID = pid;
 	alarm(timeout);
 	int status;
-	// pid_t result = waitpid(pid, &status, 0);
 	waitpid(pid, &status, 0);
-
 	std::string output;
-	// Check if the child process exited normally
-	// std::cout << "Result: " << static_cast <int> (result) << "errno "<< EINTR << "vs" << errno << std::endl;
-	// if (result == -1 && errno == EINTR) 
-	// {
-	// 	kill(pid, SIGKILL);
-	// 	throw GATEWAY_TIME_OUT_CODE;
-	// }
-	// else 
-	// {
-		if (WIFEXITED(status)) 
+	if (WIFEXITED(status) && WEXITSTATUS(status) == 0) 
+	{
+		char buffer[1024];
+		ssize_t bytesRead;
+		while ((bytesRead = read(fd[0], buffer, sizeof(buffer))) > 0) 
 		{
-			// Read the output from the file descriptor
-			char buffer[1024];
-			ssize_t bytesRead;
-			while ((bytesRead = read(fd[0], buffer, sizeof(buffer))) > 0) {
-				output += std::string(buffer, bytesRead);
-			}
-			close(fd[0]);
-			fd[1] = tmp_fd;
+			output += std::string(buffer, bytesRead);
 		}
-		else
-			throw INTERNAL_SERVER_ERROR_CODE;
-	// }
-		return output;
+		close(fd[0]);
+		fd[1] = tmp_fd;
+	}
+	else
+	{
+		throw INTERNAL_SERVER_ERROR_CODE;
+	}
+	return output;
 }
 
 void CGI::setCGIMapExtensions(std::string const &cgi_extension)
@@ -215,7 +205,7 @@ void CGI::setCGIMapExtensions(std::string const &cgi_extension)
 		}
 		else if (n == 0)
 		{
-			this->CGIExtensions[aux[i]] = ""; // Si no hay programa de ejecución, se asume que es un CGI ejecutable.
+			this->CGIExtensions[aux[i]] = "";
 		}
 		else
 		{

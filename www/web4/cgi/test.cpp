@@ -2,18 +2,7 @@
 #include <stdlib.h>
 using namespace std;
 
-const string ENV[24] = {
-	"COMSPEC", "DOCUMENT_ROOT", "GATEWAY_INTERFACE",
-	"HTTP_ACCEPT", "HTTP_ACCEPT_ENCODING",
-	"HTTP_ACCEPT_LANGUAGE", "HTTP_CONNECTION",
-	"HTTP_HOST", "HTTP_USER_AGENT", "PATH",
-	"QUERY_STRING", "REMOTE_ADDR", "REMOTE_PORT",
-	"REQUEST_METHOD", "REQUEST_URI", "SCRIPT_FILENAME",
-	"SCRIPT_NAME", "SERVER_ADDR", "SERVER_ADMIN",
-	"SERVER_NAME", "SERVER_PORT", "SERVER_PROTOCOL",
-	"SERVER_SIGNATURE", "SERVER_SOFTWARE"};
-
-int main(int av, char **ac)
+int main(int av, char **ac, char **envp)
 {
 	(void)av;
 	cout << "<html>\n";
@@ -29,7 +18,13 @@ int main(int av, char **ac)
 	{
 		cout << "<tr><td>" << "Argumento de entrada N." << i << "= " << ac[i] << "</td></tr>\n";
 	}
-
+	cout << "<tr><td>" << "Variables de entorno" << "</td></tr>\n";
+	int i = 0;
+	while(envp[i] != NULL)
+	{
+		cout << "<tr><td>" << "N." << i << "= " << envp[i] << "</td></tr>\n";
+		i++;
+	}
 	cout << "</table><\n";
 	cout << "</body>\n";
 	cout << "</html>\n";

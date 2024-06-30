@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ExtendedString.cpp                                 :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/30 13:50:11 by eavedill          #+#    #+#             */
+/*   Updated: 2024/06/30 15:27:27 by eavedill         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../inc/ExtendedString.hpp"
 
 ExtendedString::ExtendedString() : std::string() {}
@@ -25,7 +37,8 @@ bool ExtendedString::isNumber() const {
     return true;
 }
 
-bool ExtendedString::firstCharIsSign() const {
+bool ExtendedString::firstCharIsSign() const 
+{
     return this->at(0) == '-' || this->at(0) == '+';
 }
 
@@ -52,7 +65,6 @@ bool ExtendedString::validIPAddress()
 	size_t pos = 0;
 	ExtendedString token;
 	int count = 0;
-	
 	while ((pos = this->find('.')) != std::string::npos)
 	{
 		token = this->substr(0, pos);
@@ -61,10 +73,8 @@ bool ExtendedString::validIPAddress()
 		this->erase(0, pos + 1);
 		count++;
 	}
-	
 	if (count != 4 || !this->isNumber() || !isrange(std::atoi(this->c_str()), 0, 255))
 		return false;
-	
 	return count == 4;
 }
 
@@ -88,34 +98,12 @@ std::vector<ExtendedString> ExtendedString::splitString(char delimiter) {
 	return result;
 }
 
-//***To be used in case do not want to modify the original string
-// ExtendedString ExtendedString::removeCharFromString(char charToRemove) {
-// 	ExtendedString result;
-// 	for (size_t i = 0; i < this->size(); i++) {
-// 		if (this->at(i) != charToRemove) {
-// 			result += this->at(i);
-// 		}
-// 	}
-// 	return result;
-// }
-
 void ExtendedString::removeCharFromString(char charToRemove) {
     size_t pos = 0;
     while ((pos = this->find(charToRemove, pos)) != std::string::npos) {
         this->erase(pos, 1);
     }
 }
-
-//***To be used in case do not want to modify the original string
-// ExtendedString ExtendedString::removeBlanksAndTabs() {
-// 	ExtendedString result;
-// 	for (size_t i = 0; i < this->size(); i++) {
-// 		if (this->at(i) != ' ' && this->at(i) != '\t') {
-// 			result += this->at(i);
-// 		}
-// 	}
-// 	return result;
-// }
 
 void ExtendedString::removeBlanksAndTabs() {
     size_t pos = 0;

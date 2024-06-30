@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/29 17:38:18 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/29 21:31:29 by jcheel-n         ###   ########.fr       */
+/*   Updated: 2024/06/30 15:24:13 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,6 @@ std::map<std::string, void (Location::*)(const std::string&)> getLocationMethods
 	return locationMethods;
 }
 
-
 Location::Location() 
 {
 	name = "";
@@ -57,16 +56,20 @@ Location::Location()
 	allowMethodsStr = "";
 	autoindex = "";
 	alias = "";
-	// cgiPathStr = "";
 	cgiExtensionStr = "";
 	isCgi = false;
 	isSessionId = false;
 	isCookie = false;
+	cookiesStr = "";
 }
+
 Location::Location(std::string const &content)
 {
 	this->isCgi = false;
 	this->cgiEnabledStr = "";
+	isCookie = false;
+	cookiesStr = "";
+	isSessionId = false;
 	this->loadData(content);
 }
 
@@ -81,10 +84,8 @@ Location::Location(const Location& other)
 	setAlias(other.alias);
 }
 
-
 Location::~Location() {}
 
-// Getter methods
 const std::string &Location::getName() const { return name; }
 const std::string &Location::getRoot() const { return root; }
 const std::string &Location::getReturn() const { return return_; }
@@ -100,9 +101,6 @@ enum LocationType Location::getLocationType() { return this->LocationType; }
 bool Location::getIsCgi() const { return isCgi; }
 bool Location::getIsCookie() const { return isCookie; }
 std::vector<std::string>  Location::getCookies() const { return cookies; }
-bool Location::getIsSessionId() const { return isSessionId; }
-std::string Location::getSessionId() const { return sessionIdStr; }
-// Setter methods
 void Location::setName(const std::string &n) { name = n; }
 void Location::setRoot(const std::string &r) { root = r; }
 void Location::setReturn(const std::string &ret) { return_ = ret; }
@@ -110,11 +108,11 @@ void Location::setIndex(const std::string &idx) { index = idx; }
 void Location::setAllowMethodsStr(const std::string &allow) { allowMethodsStr = allow; }
 void Location::setAutoindex(const std::string &autoidx) { autoindexStr = autoidx; }
 void Location::setAlias(const std::string &als) { alias = als; }
-void Location::setCgiEnabledStr(const std::string &cgiEnabled) {
-	this->cgiEnabledStr = cgiEnabled;
-}
+
+void Location::setCgiEnabledStr(const std::string &cgiEnabled) {this->cgiEnabledStr = cgiEnabled;}
 void Location::setSessionIdStr(const std::string &name){ this->isSessionId = true ; this->sessionIdStr = name; }
 void Location::setCookieStr(const std::string &cookie) {this->isCookie = true ; this->cookiesStr = cookie; }
+
 bool Location::setCgiEnabled()
 {
 	if (this->cgiEnabledStr == "true")
@@ -130,6 +128,7 @@ bool Location::setCgiEnabled()
 		isCgi = false;
 	return isCgi;
 }
+
 void Location::setCgiExtensionStr(const std::string &extensions) { this->cgiExtensionStr = extensions; }
 
 void Location::setAllowMethods(const std::string& methods)
@@ -140,7 +139,7 @@ void Location::setAllowMethods(const std::string& methods)
 	{
 		if (line.length() == 0)
 			continue;
-		if (line == "GET")// || line == "POST" || line == "DELETE")
+		if (line == "GET")
 		{
 			this->allowMethods.push_back(line);
 			this->isGetAllowed = true;
@@ -162,17 +161,6 @@ void Location::setAllowMethods(const std::string& methods)
 		}
 	}
 }
-// void Location ::setCgiPath(const std::string &paths)
-// {
-// 	std::string line;
-// 	std::istringstream cgiPathStream(paths);
-// 	while (std::getline(cgiPathStream, line, ','))
-// 	{
-// 		if (line.length() == 0)
-// 			continue;
-// 		this->cgiPath.push_back(line);
-// 	}
-// }
 
 void Location ::setCgiExtension(const std::string &extensions)
 {
@@ -188,14 +176,12 @@ void Location ::setCgiExtension(const std::string &extensions)
 	}
 }
 
-// Load data from a string configuration
 int Location::loadData(const std::string &content)
 {
 	std::string start_string = STR_START;
 	std::string line;
 	std::string straux;
 	std::map<std::string, int> varnames = var_names_location();
-
 	std::istringstream fileContentStream(content);
 	while (std::getline(fileContentStream, line, ';'))
 	{
@@ -262,7 +248,6 @@ void Location::checkVariables(bool serverAutoIndex)
 		if (!Parser::checkCgi(this->cgiExtensionStr))
 			exit(1);
 	}
-	
 	switch (Parser::checkRootAliasReturn(this->root, this->alias,this->return_))
 	{
 		case ROOT:
@@ -283,7 +268,6 @@ void Location::checkVariables(bool serverAutoIndex)
 		default:
 			break;
 	}
-
 	switch (Parser::checkAutoIndex(this->getAutoIndexStr()))
 	{
 		case true:
@@ -301,7 +285,6 @@ void Location::checkVariables(bool serverAutoIndex)
 				this->autoindex = false;
 			break;
 	}
-	
 	this->setAllowMethods(this->allowMethodsStr);
 	if (!Parser::checkAllowedMethods(this->allowMethodsStr))
 		this->isGetAllowed = true;
@@ -318,13 +301,6 @@ void Location::checkVariables(bool serverAutoIndex)
 	else if (this->isCookie && !this->cookiesStr.empty())
 		this->setCookies(this->cookiesStr);
 
-	if (this->isSessionId && this->sessionIdStr.empty())
-	{
-		printLog("WARNING", "set-sesion-id\t\t\tnot defined.");
-		this->isSessionId = false;
-	}
-	else if (this->isSessionId && !this->sessionIdStr.empty())
-		this->setSessionIdStr(this->sessionIdStr);
 }
 
 std::vector<std::string> Location::getCgiExtension()

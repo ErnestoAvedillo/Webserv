@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Server.hpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/30 13:49:18 by eavedill          #+#    #+#             */
+/*   Updated: 2024/06/30 14:35:38 by eavedill         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef SERVER_HPP
 # define SERVER_HPP
 # include <vector>
@@ -14,15 +26,15 @@
 # include "Parser.hpp"
 # include "ExtendedString.hpp"
 
-#define VAR_PORT	"port"
-#define VAR_HOST	"host"
-#define VAR_SERVER_NAME	"server_name"
-#define VAR_ERROR_PAGE	"error_page"
-#define VAR_ROOT	"root"
-#define VAR_INDEX	"index"
+#define VAR_PORT					"port"
+#define VAR_HOST					"host"
+#define VAR_SERVER_NAME				"server_name"
+#define VAR_ERROR_PAGE				"error_page"
+#define VAR_ROOT					"root"
+#define VAR_INDEX					"index"
 #define VAR_CLIENT_MAX_BODY_SIZE	"client_max_body_size"
-#define VAR_LOCATIONS	"location"
-#define VAR_AUTOINDEX	"autoindex"
+#define VAR_LOCATIONS				"location"
+#define VAR_AUTOINDEX				"autoindex"
 
 #ifdef __APPLE__
 	#define READ_EVENT EVFILT_READ
@@ -41,30 +53,27 @@ class ListeningSocket;
 class Server 
 {
 	protected:
-		bool		isDefault;
-		std::map<int, ListeningSocket *> port;
-		std::vector<std::string> ports;
-		long long			maxBodySize;
-		std::string		maxBodySizeStr;
-		std::string	Host;
-		std::string	serverName;
-		ExtendedString errorPage;
-		std::string root;
-		std::string index;
-		std::string autoIndexStr;
-		bool autoIndex;
-		std::vector<Location *> locations;
-		CGI *cgiModule;
-		in_addr_t hostAddr;
-		// void	setDefaultData();
+		bool								isDefault;
+		std::map<int, ListeningSocket *>	port;
+		std::vector<std::string>			ports;
+		long long							maxBodySize;
+		std::string							maxBodySizeStr;
+		std::string							Host;
+		std::string							serverName;
+		ExtendedString 						errorPage;
+		std::string 						root;
+		std::string 						index;
+		std::string 						autoIndexStr;
+		bool 								autoIndex;
+		std::vector<Location *>				locations;
+		CGI 								*cgiModule;
+		in_addr_t 							hostAddr;
 
 	public:
-		// Server();
 		Server(std::string  &);
 		~Server();
 		Server(Server const &);
-		Server &operator=(Server const &);
-		//---- Server Methods ------//
+		Server	&operator=(Server const &);
 		//---- Server Methods ------//
 		int		loadData(std::string const &);
 		CGI		*cgiModuleClone();
@@ -83,34 +92,30 @@ class Server
 		void	setPorts(std::string const &ports);
 		void    setHostAddr(in_addr_t Addr);
 		void	setAutoindex(std::string const &);
-
 		//---- Server getters ------//
-		ListeningSocket *getListening(int i);
-		std::vector<std::string> getPorts();
-		std::vector<int> getServerFds();
-
-		ListeningSocket *		getPort(int i);
-		bool getIsDefault();
-		std::string	getHost();
-		std::string	getServerName();
-		std::string	getErrorPage();
-		std::string	getRoot();
-		std::string	getIndex();
-		std::string	getCGIExtension(const std::string &);
-		std::string	getCGIFolder();
-		in_addr_t	getHostAddr();
-		std::string	getMaxClientBodySizeStr();
-		long long		getMaxClientBodySize();
-		std::vector<Location *> getLocations();
-		bool getAutoIndex();
-		void	print();
-		void createListeningSockets();
-		void checkVariables();
-
-		//std::vector<class Location> getLocations();
+		ListeningSocket 			*getListening(int i);
+		std::vector<std::string>	getPorts();
+		std::vector<int>			getServerFds();
+		ListeningSocket *			getPort(int i);
+		bool						getIsDefault();
+		std::string					getHost();
+		std::string					getServerName();
+		std::string					getErrorPage();
+		std::string					getRoot();
+		std::string					getIndex();
+		std::string					getCGIExtension(const std::string &);
+		std::string					getCGIFolder();
+		in_addr_t					getHostAddr();
+		std::string					getMaxClientBodySizeStr();
+		long long					getMaxClientBodySize();
+		std::vector<Location *>		getLocations();
+		bool						getAutoIndex();
+		void						print();
+		void						createListeningSockets();
+		void						checkVariables();
 };
 
-typedef void (Server::*server)(std::string);
-typedef std::map<std::string, server> server_methods_t;
+typedef void	(Server::*server)(std::string);
+typedef 		std::map<std::string, server> server_methods_t;
 
 #endif

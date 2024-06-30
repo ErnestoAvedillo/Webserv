@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   StatusCode.cpp                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/30 13:51:07 by eavedill          #+#    #+#             */
+/*   Updated: 2024/06/30 15:15:28 by eavedill         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../inc/StatusCode.hpp"
 
 StatusCode::StatusCode()
@@ -65,7 +77,6 @@ void StatusCode::setFileContentForStatusCode(int CodeNumber, const std::string &
 	ExtendedString content("");
 	std::ifstream fileStream;
 	fileStream.open(CodeFileContent.c_str(), std::ios::out | std::ios::binary); //| std::ios::app | std::ios::ate
-
 	if(fileStream.is_open())
 	{
 		char buffer[MAX_SENT_BYTES];
@@ -77,7 +88,6 @@ void StatusCode::setFileContentForStatusCode(int CodeNumber, const std::string &
 	{
 		printLog("WARNING", CodeFileContent + " File does not exist.\t Set error page to default " CHR_GREEN "GET" RESET " value");
 	}
-
 	mapCodesFileContent[CodeNumber] = content;
 }
 
@@ -120,7 +130,6 @@ void StatusCode::loadErrorPageFromDir(const ExtendedString &dir)
 	}
 	while ((dirp = readdir(dp)) != NULL)
 	{
-		// std::cout << "dir " << dir << std::endl;
 		if (dirp->d_type == DT_REG)
 		{
 			std::string fileName = dir + "/" + dirp->d_name;

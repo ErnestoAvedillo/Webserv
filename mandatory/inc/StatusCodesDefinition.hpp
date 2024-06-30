@@ -1,4 +1,16 @@
-#define DEFAULT_ERROR_FILE "./StatusCodes/ErrorTemplate.html"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   StatusCodesDefinition.hpp                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/30 13:49:29 by eavedill          #+#    #+#             */
+/*   Updated: 2024/06/30 13:49:29 by eavedill         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#define DEFAULT_ERROR_FILE "./Templates/ErrorTemplate.html"
 #define CONTINUE_CODE 100
 #define SWITCHING_PROTOCOLS_CODE 101
 #define OK_CODE 200

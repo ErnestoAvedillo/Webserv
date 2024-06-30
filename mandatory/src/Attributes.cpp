@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 18:22:26 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/15 14:34:16 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/30 15:10:47 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,8 @@ Attributes::Attributes(const std::string& filename)
 	this->setAttributesFromFile(filename);
 }
 
-Attributes::~Attributes() {
+Attributes::~Attributes() 
+{
 }
 
 void Attributes::setAttributesFromFile(const std::string& filename) 
@@ -65,7 +66,6 @@ std::string Attributes::getCreated()
 std::string Attributes::getModified() 
 {
 	std::tm *timeInfo = std::gmtime(&this->attributes.st_mtime);
-
 	char buffer[80];
 	std::strftime(buffer, sizeof(buffer), "%A, %d-%b-%y %H:%M:%S GMT", timeInfo);
 	return buffer;

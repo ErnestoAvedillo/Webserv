@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Location.hpp                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/30 13:48:41 by eavedill          #+#    #+#             */
+/*   Updated: 2024/06/30 13:48:42 by eavedill         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef LOCATION_HPP
 #define LOCATION_HPP
 
@@ -92,6 +104,7 @@ class Location
 		bool getIsSessionId() const;
 		std::vector<std::string>  getCookies() const;
 		std::string getSessionId() const;
+
 		// Setter methods
 
 		void setName(const std::string&);

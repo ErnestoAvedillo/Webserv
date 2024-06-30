@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   utils.cpp                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/30 13:51:03 by eavedill          #+#    #+#             */
+/*   Updated: 2024/06/30 15:15:09 by eavedill         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../inc/utils.hpp"
 
 template <typename T>
@@ -28,7 +40,6 @@ bool validIPAddress(std::string ip)
 	size_t pos = 0;
 	std::string token;
 	int count = 0;
-	
 	while ((pos = ip.find('.')) != std::string::npos)
 	{
 		token = ip.substr(0, pos);
@@ -37,10 +48,8 @@ bool validIPAddress(std::string ip)
 		ip.erase(0, pos + 1);
 		count++;
 	}
-	
 	if (count != 4 || !isNumber(ip) || !isrange(std::atoi(ip.c_str()), 0, 255))
 		return false;
-	
 	return count == 4;
 }
 
@@ -75,7 +84,8 @@ int isFilePermissions(std::string path, int mode)
 	return 1;
 }
 
-size_t stringToSizeT(const std::string& str) {
+size_t stringToSizeT(const std::string& str) 
+{
 	std::stringstream ss(str);
 	size_t result = 0;
 	ss >> result;
@@ -86,14 +96,10 @@ size_t stringToSizeT(const std::string& str) {
 std::vector<std::string> splitString(const std::string& str, char delimiter) {
 	std::vector<std::string> result;
 	std::string token;
-	std::cout << "str: " << str << std::endl;
 	std::istringstream tokenStream(str);
-
 	while (std::getline(tokenStream, token, delimiter)) {
-		// if (token != "")
-			result.push_back(token);
+		result.push_back(token);
 	}
-
 	return result;
 }
 
@@ -117,7 +123,8 @@ std::string removeBlanksAndTabs(const std::string& input) {
 	return result;
 }
 
-void replaceString(std::string& mainString, const std::string& searchString, const std::string& replaceString) {
+void replaceString(std::string& mainString, const std::string& searchString, const std::string& replaceString) 
+{
 	size_t pos = 0;
 	while ((pos = mainString.find(searchString, pos)) != std::string::npos) {
 		mainString.replace(pos, searchString.length(), replaceString);
@@ -125,7 +132,8 @@ void replaceString(std::string& mainString, const std::string& searchString, con
 	}
 }
 
-int count_chars(const std::string& str, char c) {
+int count_chars(const std::string& str, char c) 
+{
 	int count = 0;
 	for (size_t i = 0; i < str.size(); i++) {
 		if (str[i] == c) {
@@ -138,11 +146,9 @@ int count_chars(const std::string& str, char c) {
 std::string getLocalTime()
 {
     std::time_t currentTime = std::time(NULL);
-
     std::tm* timeInfo = std::localtime(&currentTime);
     char buffer[20];
     std::strftime(buffer, sizeof(buffer), "%Y/%m/%d %H:%M:%S", timeInfo);
-
     return std::string(buffer);
 }
 
@@ -161,10 +167,8 @@ void printLog(std::string type ,std::string message)
 static int hexStringToInt(const std::string& hexStr) {
     int value;
     std::stringstream ss;
-
     ss << std::hex << hexStr;
     ss >> value;
-
     return value;
 }
 
@@ -191,10 +195,23 @@ std::string decodeURL(const std::string& url)
 	return decoded;
 }
 
-void replaceFirstString(std::string& mainString, const std::string& searchString, const std::string& replaceString) {
+void replaceFirstString(std::string& mainString, const std::string& searchString, const std::string& replaceString) 
+{
 	size_t pos = 0;
 	if ((pos = mainString.find(searchString, pos)) != std::string::npos) {
 		mainString.replace(pos, searchString.length(), replaceString);
 		pos += replaceString.length();
 	}
+}
+
+std::string getRandomHash(int lenght)
+{
+	std::string characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+	std::string hash;
+	int x;
+    std::srand(static_cast<unsigned>(std::time(0)) ^ reinterpret_cast<unsigned long>(&x));
+	for (int i = 0 ; i < lenght; i++)
+		hash += characters[rand() % characters.size()];
+	return hash;
 }

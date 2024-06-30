@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   LocationParser.cpp                                 :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/30 13:51:38 by eavedill          #+#    #+#             */
+/*   Updated: 2024/06/30 15:22:31 by eavedill         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../inc/LocationParser.hpp"
 #include <chrono>
 #include <ctime>
@@ -6,8 +18,6 @@ static std::string getMimeType(std::string contentType)
 {
 	size_t point = contentType.find_last_of(".");
 	std::string extension = contentType.substr(point + 1, contentType.size());
-
-	/* Create once only */
 	std::map<std::string, std::string> Mimetype = create_filetypes();
 	if (Mimetype.find(extension) != Mimetype.end())
 		return(Mimetype[extension]);
@@ -15,25 +25,11 @@ static std::string getMimeType(std::string contentType)
 		 return ("text/html");
 }
 
-bool LocationParser::getIsAutoIndex()
-{
-	return this->isAutoIndex;
-}
-
-bool LocationParser::getIsCGI()
-{
-	return this->isCGI;
-}
-
-size_t LocationParser::getStartRange()
-{
-	return this->startRange;
-}
-
-size_t LocationParser::getEndRange()
-{
-	return this->endRange;
-}
+bool LocationParser::getIsAutoIndex() { return this->isAutoIndex; }
+bool LocationParser::getIsCGI(){ return this->isCGI; }
+Header LocationParser::getResponse() { return this->response; }
+Header LocationParser::getRequest() { return this->request; }
+std::string LocationParser::getQuery() { return this->query; }
 
 int LocationParser::isAllowedMethod(Location *location)
 {
@@ -52,7 +48,6 @@ int LocationParser::isAllowedMethod(Location *location)
 			response.setStatus("405 Method Not Allowed");
 			return NOT_ALLOWED;
 		}
-
 	}
 	else if (this->request.getMethod() == "DELETE")
 	{
@@ -79,8 +74,6 @@ int LocationParser::matchingLocation()
 			this->isAutoIndex = locations[i]->getAutoIndex();
 			if ((this->isCookie = locations[i]->getIsCookie()) == true)
 				this->cookies = locations[i]->getCookies();
-			if ((this->isSessionId = locations[i]->getIsSessionId()) == true)
-				this->sessionId = locations[i]->getSessionId();
 			if (locations[i]->getIsCgi() == true)
 			{
 				std::string extension;
@@ -119,7 +112,6 @@ int LocationParser::matchingLocation()
 		}
 	}
 	return NO_LOCATION;
-
 }
 
 off_t getFileSize(const std::string &filename)
@@ -129,27 +121,6 @@ off_t getFileSize(const std::string &filename)
 	return rc == 0 ? stat_buf.st_size : -1;
 }
 
-std::string escapeNonPrintableChars(const std::string& str) {
-    std::string escapedStr;
-    for (size_t i = 0; i < str.size(); ++i) {
-        switch (str[i]) {
-            case '\n':
-                escapedStr += "\\n";
-                break;
-            case '\r':
-                escapedStr += "\\r";
-                break;
-            case '\t':
-                escapedStr += "\\t";
-                break;
-            default:
-                escapedStr += str[i];
-                break;
-        }
-    }
-    return escapedStr;
-}
-
 bool isBadRequest(std::string request)
 {
 	if (request.empty())
@@ -157,7 +128,6 @@ bool isBadRequest(std::string request)
 	std::istringstream iss(request);
 	std::string line;
 	bool firstLine = true;
-
     while (std::getline(iss, line))
 	{   
 		if (firstLine)
@@ -214,36 +184,6 @@ void LocationParser::setCookies()
 	}
 }
 
-void LocationParser::setSessionId()
-{
-	std::cout << "SESSIONID " << this->sessionId << std::endl;
-	std::cout << "ISSESSIONID " << this->isSessionId << std::endl;
-	if (isSessionId)
-	{
-		std::string cookieHeader = this->request.getAttribute("Cookie");
-		if (cookieHeader.empty() || cookieHeader.find(this->sessionId) == std::string::npos)
-		{
-			std::cout << "cookieHeader " << cookieHeader << std::endl;
-
-			this->sessionId = this->sessionId + "=" + getRandomHash(50);
-		
-			std::time_t now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-			std::tm* expireDate = std::gmtime(&now);
-			// expireDate->tm_min += 2; // Add 2 minutes to the current time
-			expireDate->tm_sec += 30;
-			if (expireDate->tm_sec >= 60) { // Ajusta si los segundos exceden 60
-				expireDate->tm_sec -= 60;
-				expireDate->tm_min += 1;
-			}
-
-			std::string expireDateString = std::asctime(expireDate);
-			expireDateString = expireDateString.substr(0, expireDateString.size() - 1); // Remove the newline character
-
-			response.setCookie(sessionId + "; path=/ ; expires=" + expireDateString + " GMT");
-		}
-	}
-}
-
 void LocationParser::checks()
 {
 	std::string path;
@@ -269,12 +209,11 @@ void LocationParser::checks()
 		case REDIRECT:
 			return ;
 	}
-
 	this->request.setPath(decodeURL(this->request.getPath()));
 	ExtendedString tmp = this->request.getPath();
 	tmp.replaceFirstString("//", "/");
 	this->request.setPath(tmp);
-	if (isBadRequest(receiver->getRequest()))//|| isURIMalformed(this->request.getPath())
+	if (isBadRequest(receiver->getRequest()))
 	{
 		response.setStatus("400 Bad Request");
 		throw BAD_REQUEST_CODE;
@@ -302,31 +241,6 @@ void LocationParser::checks()
 	{
 		if (getMimeType(this->request.getPath()).find("video") != std::string::npos)
 		{
-			// std::string attr = request.getAttribute("Range");
-			// int tt = isFilePermissions(this->request.getPath(), F_OK | R_OK);
-			// (void)tt;
-			// if (isFilePermissions(this->request.getPath(), F_OK | R_OK) == 1 && request.getAttribute("Range") != "")
-			// {
-			
-			// 	response.setStatus("206 Partial Content");
-			// 	response.setContentType(this->request.getPath());
-				
-			// 	if (this->request.getAttribute("Range") != "")
-			// 	{
-			// 		this->startRange = stringToSizeT(this->request.getAttribute("Range").substr(6, this->request.getAttribute("Range").find("-")));
-			// 		std::cout << "STARTRANGE " << this->startRange << std::endl;
-			// 		std::string endRangeStr = this->request.getAttribute("Range").substr(this->request.getAttribute("Range").find("-") + 1, this->request.getAttribute("Range").size());
-			// 		std::cout << "ENDRANGE " << endRangeStr << std::endl;
-			// 		if (endRangeStr.empty())
-			// 		{
-			// 			this->endRange = getFileSize(this->request.getPath());
-			// 		}
-			// 		else
-			// 		{
-			// 			this->endRange = stringToSizeT(endRangeStr);
-			// 		}
-			// 	}
-			// }
 			if (isFilePermissions(this->request.getPath(), F_OK | R_OK) == 1)
 			{
 				response.setContentType(this->request.getPath());
@@ -357,7 +271,6 @@ void LocationParser::checks()
 	}
 	else if (this->request.getMethod() == "POST")
 	{
-		
 		std::string body = receiver->getBody();
 		if (body.size() > (size_t)this->server->getMaxClientBodySize())
 		{
@@ -408,15 +321,23 @@ void LocationParser::checks()
 		else if (receiver->getisform())
 		{
 			this->query = decodeURL(body);
-			std::cout << this->query << std::endl;
-
 			response.setStatus("201 Created");
-			throw CREATED_CODE;
+			return ;
+
 		}
 		response.setServer(server->getServerName());
 	}
 	else if (this->request.getMethod() == "DELETE")
 	{
+		switch (isFilePermissions(this->request.getPath(), W_OK))
+		{
+			case -5:
+				response.setStatus("404 Not Found");
+				throw NOT_FOUND_CODE;
+			case -4:
+				response.setStatus("403 Forbidden");
+				throw FORBIDDEN_CODE;
+		}
 		if (std::remove(this->request.getPath().c_str()) == 0)
 			response.setStatus("200 OK");
 		else
@@ -443,25 +364,11 @@ LocationParser::LocationParser(Header request_, Server *server_, Receive *receiv
 	this->isAutoIndex = server->getAutoIndex();
 	this->startRange = 0;
 	this->endRange = 0;
+	this->isCookie = false;
 }
 
 LocationParser::~LocationParser()
 {
 
 
-}
-
-Header LocationParser::getResponse()
-{
-	return this->response;
-}
-
-Header LocationParser::getRequest()
-{
-	return this->request;
-}
-
-std::string LocationParser::getQuery()
-{
-	return this->query;
 }
