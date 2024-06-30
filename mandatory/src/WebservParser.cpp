@@ -59,7 +59,7 @@ static bool endWithSemicolon(std::string &fileString)
 			continue;
 		else
 		{
-			printLog("ERROR", "Missing semicolon " CHR_YELLOW ":" RESET " at the end: \"" YELLOW + line + RESET"\"");
+			printLog("ERROR", "Missing semicolon " CHR_YELLOW ";" RESET " at the end: \"" YELLOW + line + RESET"\"");
 			return false;
 		}
 	}

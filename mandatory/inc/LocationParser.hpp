@@ -53,7 +53,5 @@ class LocationParser
 		bool getIsCGI();
 		void checks();
 		void setCookies();
-		size_t getStartRange();
-		size_t getEndRange();
 		std::string getQuery();
 };

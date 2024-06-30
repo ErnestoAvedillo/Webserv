@@ -86,10 +86,9 @@ bool Receive::receiveHeader(int fd)
                     this->isform = true;
                 else
                 {
-                     this->body += this->buffer.substr(0, this->buffer.rfind(this->boundary) - 4);
-                    this->body = this->body.substr(0, this->body.find(this->boundary) - 4);
-                    this->postHeader = this->body.substr(this->body.find(this->boundary) + this->boundary.size() + 4, this->body.find("\r\n\r\n"));
+                    this->postHeader = this->body.substr(this->boundary.size() + 4, this->body.find("\r\n\r\n") - this->boundary.size() - 4);
                     this->body = this->body.substr(this->body.find("\r\n\r\n") + 4);
+                    this->body = this->body.substr(0, this->body.rfind(this->boundary) - 2);
                 }
                 this->isbody = false;
                 return true;

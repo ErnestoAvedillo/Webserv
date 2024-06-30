@@ -13,25 +13,11 @@ static std::string getMimeType(std::string contentType)
 		 return ("text/html");
 }
 
-bool LocationParser::getIsAutoIndex()
-{
-	return this->isAutoIndex;
-}
-
-bool LocationParser::getIsCGI()
-{
-	return this->isCGI;
-}
-
-size_t LocationParser::getStartRange()
-{
-	return this->startRange;
-}
-
-size_t LocationParser::getEndRange()
-{
-	return this->endRange;
-}
+bool LocationParser::getIsAutoIndex() { return this->isAutoIndex; }
+bool LocationParser::getIsCGI(){ return this->isCGI; }
+Header LocationParser::getResponse() { return this->response; }
+Header LocationParser::getRequest() { return this->request; }
+std::string LocationParser::getQuery() { return this->query; }
 
 int LocationParser::isAllowedMethod(Location *location)
 {
@@ -123,27 +109,6 @@ off_t getFileSize(const std::string &filename)
 	struct stat stat_buf;
 	int rc = stat(filename.c_str(), &stat_buf);
 	return rc == 0 ? stat_buf.st_size : -1;
-}
-
-std::string escapeNonPrintableChars(const std::string& str) {
-    std::string escapedStr;
-    for (size_t i = 0; i < str.size(); ++i) {
-        switch (str[i]) {
-            case '\n':
-                escapedStr += "\\n";
-                break;
-            case '\r':
-                escapedStr += "\\r";
-                break;
-            case '\t':
-                escapedStr += "\\t";
-                break;
-            default:
-                escapedStr += str[i];
-                break;
-        }
-    }
-    return escapedStr;
 }
 
 bool isBadRequest(std::string request)
@@ -268,31 +233,6 @@ void LocationParser::checks()
 	{
 		if (getMimeType(this->request.getPath()).find("video") != std::string::npos)
 		{
-			// std::string attr = request.getAttribute("Range");
-			// int tt = isFilePermissions(this->request.getPath(), F_OK | R_OK);
-			// (void)tt;
-			// if (isFilePermissions(this->request.getPath(), F_OK | R_OK) == 1 && request.getAttribute("Range") != "")
-			// {
-			
-			// 	response.setStatus("206 Partial Content");
-			// 	response.setContentType(this->request.getPath());
-				
-			// 	if (this->request.getAttribute("Range") != "")
-			// 	{
-			// 		this->startRange = stringToSizeT(this->request.getAttribute("Range").substr(6, this->request.getAttribute("Range").find("-")));
-			// 		std::cout << "STARTRANGE " << this->startRange << std::endl;
-			// 		std::string endRangeStr = this->request.getAttribute("Range").substr(this->request.getAttribute("Range").find("-") + 1, this->request.getAttribute("Range").size());
-			// 		std::cout << "ENDRANGE " << endRangeStr << std::endl;
-			// 		if (endRangeStr.empty())
-			// 		{
-			// 			this->endRange = getFileSize(this->request.getPath());
-			// 		}
-			// 		else
-			// 		{
-			// 			this->endRange = stringToSizeT(endRangeStr);
-			// 		}
-			// 	}
-			// }
 			if (isFilePermissions(this->request.getPath(), F_OK | R_OK) == 1)
 			{
 				response.setContentType(this->request.getPath());
@@ -374,10 +314,8 @@ void LocationParser::checks()
 		else if (receiver->getisform())
 		{
 			this->query = decodeURL(body);
-			std::cout << this->query << std::endl;
-
 			response.setStatus("201 Created");
-			throw CREATED_CODE;
+			return ;
 		}
 		response.setServer(server->getServerName());
 	}
@@ -425,19 +363,4 @@ LocationParser::~LocationParser()
 {
 
 
-}
-
-Header LocationParser::getResponse()
-{
-	return this->response;
-}
-
-Header LocationParser::getRequest()
-{
-	return this->request;
-}
-
-std::string LocationParser::getQuery()
-{
-	return this->query;
 }
