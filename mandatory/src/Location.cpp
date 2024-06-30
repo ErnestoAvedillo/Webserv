@@ -55,14 +55,18 @@ Location::Location()
 	allowMethodsStr = "";
 	autoindex = "";
 	alias = "";
-	// cgiPathStr = "";
 	cgiExtensionStr = "";
 	isCgi = false;
+	isCookie = false;
+	cookiesStr = "";
+	std::cout << "INITITALIZE" << std::endl;
 }
 Location::Location(std::string const &content)
 {
 	this->isCgi = false;
 	this->cgiEnabledStr = "";
+	isCookie = false;
+	cookiesStr = "";
 	this->loadData(content);
 }
 
@@ -156,17 +160,6 @@ void Location::setAllowMethods(const std::string& methods)
 		}
 	}
 }
-// void Location ::setCgiPath(const std::string &paths)
-// {
-// 	std::string line;
-// 	std::istringstream cgiPathStream(paths);
-// 	while (std::getline(cgiPathStream, line, ','))
-// 	{
-// 		if (line.length() == 0)
-// 			continue;
-// 		this->cgiPath.push_back(line);
-// 	}
-// }
 
 void Location ::setCgiExtension(const std::string &extensions)
 {
@@ -231,7 +224,6 @@ void Location::print()
 	std::cout << "Allow Methods: " << allowMethodsStr << std::endl;
 	std::cout << "Autoindex: " << autoindex << std::endl;
 	std::cout << "Alias: " << alias << std::endl;
-	// std::cout << "Cgi Path: " << cgiPathStr << std::endl;
 	std::cout << "Cgi Extension: " << cgiExtensionStr << std::endl;
 }
 

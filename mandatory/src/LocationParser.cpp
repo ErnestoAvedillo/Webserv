@@ -409,6 +409,7 @@ LocationParser::LocationParser(Header request_, Server *server_, Receive *receiv
 	this->isAutoIndex = server->getAutoIndex();
 	this->startRange = 0;
 	this->endRange = 0;
+	this->isCookie = false;
 }
 
 LocationParser::~LocationParser()
