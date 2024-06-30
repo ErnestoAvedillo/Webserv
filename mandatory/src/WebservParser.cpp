@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   WebservParser.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/30 13:50:32 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/30 13:50:39 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/30 15:11:42 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@ std::string removeComments(std::string &str)
 	std::string 		aux;
 	std::istringstream	fileContentStream(str);
 	std::string 		serverContentConfig = "";
-	
 	while (std::getline(fileContentStream, line))
 	{
 		line = line.substr(0, line.find_first_of("#"));
@@ -57,10 +56,8 @@ static bool mismatchedBraces(std::string fileString)
 static bool endWithSemicolon(std::string &fileString)
 {
 	std::string			line;
-
 	fileString = removeComments(fileString);
 	fileString = removeBlanksAndTabs(fileString);
-
 	std::istringstream fileStream(fileString);
 	while (std::getline(fileStream, line))
 	{
@@ -94,7 +91,6 @@ static bool hasDoublePoints(std::string &fileString)
 	std::istringstream fileStream(fileString);
 	while (std::getline(fileStream, line))
 	{
-
 		if ((line.length() == 0 || line == "{" || line == "}" || line == "};") || (!line.empty() && (line.find(":") != std::string::npos)))
 			continue;
 		else
@@ -110,16 +106,12 @@ bool WebServer::checkSyntax()
 {
 	if (!isServerBlock(this->configFileString))
 		return false;
-
 	if (!mismatchedBraces(this->configFileString))
 		return false;
-	
 	if (!endWithSemicolon(this->configFileString))
 		return false;
-
 	if (!hasDoublePoints(this->configFileString))
 		return false;
-
 	return true;
 }
 
@@ -163,7 +155,6 @@ void WebServer::processConfigFile()
 
 	while (this->configFileString.find("server:{") != std::string::npos)
 	{
-		
 		configFileString.erase(std::remove(configFileString.begin(), configFileString.end(), '\n'), configFileString.end());
 		pos = this->configFileString.find("server:{", 8);
 		if(pos == std::string::npos)
@@ -187,11 +178,9 @@ bool WebServer::parseInfo()
 	{
 		std::cout << CHR_CYAN"-------------Checking Server [" << i + 1  << "]------------" RESET<< std::endl;
 		this->servers[i]->checkVariables();
-		// this->servers[i]->print(); // print all Server parameters for debug
 		printLog("NOTICE", "OK! Server " + toString(i + 1));
 		std::cout << CHR_CYAN"--------------------------------------------" RESET<< std::endl;
 	}
-
 	std::vector<std::string> ports;
 	for (size_t i = 0; i < this->servers.size(); i++)
 	{

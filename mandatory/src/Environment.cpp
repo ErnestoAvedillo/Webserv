@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Environment.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/30 13:50:02 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/30 13:50:03 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/30 15:27:37 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,9 +44,7 @@ std::vector<char*> Environment::getEnv()
         itb++;
     }
     _envArray.push_back(NULL);
-
     return _envArray;
-
 }
 
 std::string Environment::getEnv(std::string key)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Environment.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/30 13:47:48 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/30 13:47:52 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/30 14:57:33 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ class Environment
 	public:
 		Environment();
 		~Environment();
-		void setEnv(const std::string $key, const std::string $value);
-		std::vector<char*>getEnv();
-		std::string getEnv(std::string key);
+		void				setEnv(const std::string $key, const std::string $value);
+		std::vector<char*>	getEnv();
+		std::string			getEnv(std::string key);
 };

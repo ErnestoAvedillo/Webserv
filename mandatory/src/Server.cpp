@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/30 13:51:20 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/30 13:51:20 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/30 15:17:30 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,11 +66,13 @@ Server::~Server()
 		delete this->locations[i];
 }
 
-Server::Server(Server const &copy) {
+Server::Server(Server const &copy) 
+{
 	*this = copy;
 }
 
-Server &Server::operator=(Server const &copy) {
+Server &Server::operator=(Server const &copy) 
+{
 	if (this != &copy) {
 		this->isDefault = copy.isDefault;
 		this->port = copy.port;
@@ -85,11 +87,11 @@ Server &Server::operator=(Server const &copy) {
 	return *this;
 }
 
-int Server::loadData(std::string const &content) {
+int Server::loadData(std::string const &content) 
+{
 	std::string line;
 	std::string straux;
 	std::map<std::string, int> varnames = var_names_server();
-
 	std::istringstream fileContentStream(content.substr(8, content.length() - 1));
 	while (std::getline(fileContentStream, line,';'))
 	{
@@ -154,7 +156,6 @@ void Server::createListeningSockets()
 	}
 }
 
-
 void Server::checkVariables()
 {
 	if (Parser::checkPorts(this->getPorts()) == false)
@@ -185,6 +186,5 @@ void Server::checkVariables()
 		printLog("NOTICE", "OK! Location " + toString(i + 1));
 		std::cout << CHR_MGENTA"------------------------------" RESET << std::endl;
 	}
-	
 	std::cout << std::endl;
 }

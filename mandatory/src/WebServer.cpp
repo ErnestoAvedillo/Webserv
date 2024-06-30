@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   WebServer.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/30 13:50:54 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/30 13:50:59 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/30 15:14:05 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,6 @@ void WebServer::launchServers()
 {
 	std::cout << CHR_YELLOW "Launching servers..." RESET << std::endl << std::endl;
 	std::cout << "\e[4;37m    Date & time    \t\t\t\t\t\t\tport\tfd" << RESET << std::endl;
-
 	this->createListeningSockets();
 	std::cout << std::endl;
 	try

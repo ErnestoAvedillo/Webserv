@@ -3,16 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   FileContent.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/30 13:50:28 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/30 13:50:29 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/30 15:26:47 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/FileContent.hpp"
 
-// FileContent::FileContent(Server *srv) : StatusCode()
 FileContent::FileContent() : StatusCode()
 {
 	fileName = "";
@@ -78,12 +77,10 @@ std::string FileContent::getContent()
 
 			if (this->startRange != 0 && this->getFirstFragment())
 			{
-				//file.seekg(0, std::ios::beg);
 				file.seekg(startRange, std::ios::beg);
 				lastSendingPosition = currentSendingPosition;
 				file.read(buffer, MAX_SENT_BYTES);
 				content.append(buffer, file.gcount());
-				//this->setIsSendComplete(true);
 			}
 			else
 			{
@@ -94,7 +91,6 @@ std::string FileContent::getContent()
 			currentSendingPosition = file.tellg();
 			if (file.eof())
 			{
-//				std::cout << "Cierro fichero " << fileName << std::endl;
 				file.close();
 				this->setIsSendComplete(true);
 			}
@@ -110,7 +106,6 @@ std::string FileContent::getContent()
 
 bool FileContent::setFileName(const std::string &file_name, const std::string &fileArgs)
 {
-	std::cout << file_name << std::endl;
 	bool fileOrFolderExists = this->FileOrFolerExtists(file_name);
 	if (fileOrFolderExists)
 	{
@@ -123,30 +118,17 @@ bool FileContent::setFileName(const std::string &file_name, const std::string &f
 			listDir->setSubdirectory(file_name);
 			listDir->setContentToList();
 		}
-		// else if (cgiModule->setIdentifyCGIFromFileName(file_name))
-		// else if (this->isCgi)
 		else if (cgiModule->getIsCGI() )
 		{
-			std::cout << "CGI" << std::endl;
 			cgiModule->setFileName(file_name, fileArgs);
 			this->setIsFileOpen(true);
 		}
 		else
 		{
-			// if (this->isInputDirectory())
-			// {
-			// 	fileName = homeFolder + indexName;
-			// }
-			// else
-			// {
-				fileName = file_name;
-			// }
+			fileName = file_name;
 			stat(fileName.c_str(), &fileStat);
 			completeContentSize = fileStat.st_size;
 			this->setIsFileOpen(this->openFile());
-			// isFileOpen = true;
-			// if (this->getIsFileOpen())
-			// 		file.seekg(startRange, std::ios::beg);
 		}
 	}
 	return this->getIsFileOpen();
@@ -195,7 +177,6 @@ std::string FileContent::getLastModified()
 		return "";
 	}
 	char buffer[80];
-
 	strftime(buffer, sizeof(buffer), "%A, %d-%b-%y %H:%M:%S GMT", localtime(&fileStat.st_mtime));
 	return buffer;
 }

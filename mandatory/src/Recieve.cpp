@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Recieve.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/30 13:51:26 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/30 13:51:26 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/30 15:19:01 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,10 @@
 
 Receive::Receive() : buffer(""), request(""), body(""), isbody(false), maxSize(0), sizeSent(0), isform(false)
 {
-    // std::cerr << "Receive created" << std::endl;
 }
 
 Receive::~Receive()
 {
-    // std::cerr << "Receive destroyed" << std::endl;
 }
 
 Receive::Receive(Receive const &copy)
@@ -43,13 +41,11 @@ Receive &Receive::operator=(Receive const &copy)
     return *this;
 }
 
- /* Setters */
 void Receive::setBuffer(std::string buffer) { this->buffer = buffer; }
 void Receive::setRequest(std::string request) { this->request = request; }
 void Receive::setBody(std::string body) { this->body = body; }
 void Receive::setmaxSize(size_t size) { this->maxSize = size; }
 
- /* Getters */
 std::string Receive::getBuffer() { return this->buffer; }
 std::string Receive::getRequest() { return this->request; }
 std::string Receive::getBody() { return this->body; }
@@ -114,7 +110,7 @@ bool Receive::receiveHeader(int fd)
         std::memset(buf, 0, MAX_MSG_SIZE);
     }
     
-    if (ret < 0) // This is not handle as an error 
+    if (ret < 0) 
         return false;
     else if (ret == 0)
     {
@@ -128,7 +124,6 @@ bool Receive::receiveBody(int fd)
 {
     char buf[MAX_MSG_SIZE] = {0};
     int ret = 0;
-
     while ((ret = recv(fd, buf, MAX_MSG_SIZE, 0)) > 0)
     {
         this->sizeSent += ret;

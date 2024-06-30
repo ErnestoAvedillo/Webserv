@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Parser.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/30 13:51:31 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/30 13:51:31 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/30 15:20:52 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,13 +60,11 @@ in_addr_t Parser::isValidHost(std::string hostname)
 	struct addrinfo hints, *res;
     struct sockaddr_in *addr;	
 	in_addr_t in_addr;
-
 	std::memset(&hints, 0, sizeof(hints));
     std::memset(&in_addr, 0, sizeof(in_addr));
 	hints.ai_family = AF_INET;
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_flags = AI_PASSIVE;
-	
 	int status = getaddrinfo(hostname.c_str(), NULL, &hints, &res);
 	if (status != 0)
 		return 0;
@@ -106,8 +104,6 @@ bool Parser::checkErrorPage(std::string errorPage)
 		printLog("WARNING", "error_page\t<" + errorPage + ">\tnot a valid directory." );
 		return false;
 	}
-	
-
 	std::vector<std::string> foundFiles;
 	DIR *errorDirectory = opendir(errorPage.c_str());
 	struct dirent *entry;
@@ -122,13 +118,10 @@ bool Parser::checkErrorPage(std::string errorPage)
                 break;
             }
         }
-
 	}
 	closedir(errorDirectory);
-
 	std::sort(foundFiles.begin(), foundFiles.end());
 	std::cout << CHR_GREEN << getLocalTime() << " [" << "NOTICE" << "]" RESET << "\t\terror_pages found\t" << RESET ;
-
 	if (foundFiles.size() == 0)
 	{
 		printLog("WARNING", "error_page\t<" + errorPage + ">\tno error files found." );
@@ -177,7 +170,6 @@ bool Parser::checkIndex(std::string index, std::string root)
 {
 	if (index.length() == 0)
 		return true;
-
 	switch (isFilePermissions(root + "/" + index, R_OK))
 	{
 		case -1:
@@ -198,7 +190,7 @@ bool Parser::checkIndex(std::string index, std::string root)
 	return true;
 }
 
-const long long MAX_BYTES = 1099511627776; // 1 Terabyte for example
+const long long MAX_BYTES = 1099511627776;
 
 long long convertToBytes(const std::string& sizeStr)
 {
@@ -206,7 +198,6 @@ long long convertToBytes(const std::string& sizeStr)
     while (pos < sizeStr.size() && (std::isdigit(sizeStr[pos]) || sizeStr[pos] == '.')) {
         pos++;
     }
-
     if (pos == 0) {
         throw std::invalid_argument("Invalid size format");
     }
@@ -217,13 +208,11 @@ long long convertToBytes(const std::string& sizeStr)
     for (size_t i = 0; i < unit.size(); ++i) {
         unit[i] = std::tolower(unit[i]);
     }
-
     const long long BYTES_IN_KB = 1024;
     const long long BYTES_IN_MB = BYTES_IN_KB * 1024;
     const long long BYTES_IN_GB = BYTES_IN_MB * 1024;
     const long long BYTES_IN_TB = BYTES_IN_GB * 1024;
     const long long BITS_IN_BYTE = 8;
-
     long long bytes;
     if (unit.empty() || unit == "b") {
         bytes = static_cast<long long>(sizeValue);
@@ -248,11 +237,9 @@ long long convertToBytes(const std::string& sizeStr)
     } else {
         throw std::invalid_argument("Unknown size unit");
     }
-
     if (bytes > MAX_BYTES) {
         throw std::overflow_error("Size exceeds the maximum allowed bytes");
     }
-
     return bytes;
 }
 
@@ -286,7 +273,6 @@ long long	Parser::checkClientBodySize(std::string maxClientBodySize)
 	}
 	return nbr;
 }
-
 
 bool Parser::checkAutoIndex(std::string autoindex)
 {
@@ -372,7 +358,6 @@ bool Parser::checkCgi(std::string cgiExtension)
 		printLog("ERROR", "cgi_extension\t\t\tis not defined.");
 		return false;
 	}
-	
 	return true;
 }
 

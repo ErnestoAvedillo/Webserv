@@ -31,7 +31,7 @@ void	WebServer::addEventSet()
 		{
 			struct epoll_event event;
 			memset(&event, 0, sizeof(event));
-			event.events = EPOLLIN | EPOLLET; // Edge-triggered mode
+			event.events = EPOLLIN | EPOLLET;
 			event.data.fd = serverFds[j];
 			if (epoll_ctl(this->kq, EPOLL_CTL_ADD, serverFds[j], &event) == -1)
 			{
@@ -50,8 +50,6 @@ int WebServer::waitEvent(struct epoll_event *evList)
 
 void WebServer::modifEvent(struct epoll_event eventList, int type)
 {
-	// struct epoll_event evSet;
-
 	eventList.events = type;
 	if (epoll_ctl(this->kq, EPOLL_CTL_MOD, eventList.data.fd, &eventList) == -1)
 	{
@@ -95,7 +93,6 @@ int WebServer::acceptNewEvent(int curfd)
 		std::cerr << "Error listening" << std::endl;
 		exit(1);
 	}
-
 	while (1)
 	{
 		struct sockaddr_storage addr;
@@ -117,5 +114,4 @@ int WebServer::acceptNewEvent(int curfd)
 	}
 	return fd;
 }
-
 #endif

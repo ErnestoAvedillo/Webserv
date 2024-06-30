@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Header.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/30 13:52:00 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/30 13:52:00 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/30 15:26:03 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@ Header::Header(std::string receiveHeader)
 {
 	std::istringstream iss(receiveHeader);
 	std::string line;
-
 	while (std::getline(iss, line))
 	{
 		size_t colonPos = line.find(':');
@@ -55,11 +54,6 @@ Header::Header(std::string receiveHeader)
 			}
 		}
 	}
-	// std::cout << "HEADER" << std::endl;
-	// for (std::map<std::string, std::string>::const_iterator it = attributes.begin(); it != attributes.end(); ++it)
-	// {
-	// 	std::cout << it->first << " => " << it->second << std::endl;
-	// }
 }
 
 void Header::setAttribute(std::string key, std::string value)
@@ -96,8 +90,6 @@ void Header::setPath(std::string path)
 std::string Header::generateHeader() const
 {
 	std::string header;
-	
-	// std::cout << "Version: $" << Version << "$" << std::endl;
 	header = protocol + " " + status + "\r\n"; 
 	header += "Server: " + server + "\r\n";
 	header += "Date: " + date + "\r\n";
@@ -110,7 +102,6 @@ std::string Header::generateHeader() const
 		header += it->first + ": " + it->second + "\r\n";
 	for (std::multimap<std::string, std::string>::const_iterator it = cookies.begin(); it != cookies.end(); ++it)
 		header += it->first + ": " + it->second + "\r\n";
-	// response.setAttribute("Set-Cookie", "id=123; name=Joseph; lastname=Cheel; theme=light;");
 	header += "\r\n";
 	
 	return header;
@@ -143,15 +134,10 @@ void Header::setServer(std::string server)
 
 void Header::setDate()
 {
-	// Get the current time
 	std::time_t currentTime = std::time(NULL);
-
-	// Convert the current time to a string in the desired format
 	std::tm* timeInfo = std::gmtime(&currentTime);
 	char buffer[80];
 	std::strftime(buffer, sizeof(buffer), "%A, %d-%b-%y %H:%M:%S GMT", timeInfo);
-
-	// Set the date in the header
 	this->date = buffer;
 }
 
@@ -175,15 +161,11 @@ void Header::setContentType(std::string contentType)
 {
 	size_t point = contentType.find_last_of(".");
 	std::string extension = contentType.substr(point + 1, contentType.size());
-
-	/* Create once only */
 	std::map<std::string, std::string> Mimetype = create_filetypes();
-
 	if (Mimetype.find(extension) != Mimetype.end())
 		this->contentType = Mimetype[extension];
 	else
 		this->contentType = "text/html";
-
 }
 
 void Header::printReceivedHeader()
