@@ -163,9 +163,9 @@ void ListeningSocket::setCgiEnviroment()
 	this->cgiModule->setEnv(SERVER_ADDR_KEY, server->getHost());
 	this->cgiModule->setEnv(SERVER_NAME_KEY, server->getServerName());
 	this->cgiModule->setEnv(REQUEST_METHOD_KEY, this->request.getMethod());
-	// this->cgiModule->setEnv(PATH_INFO, this->request.getPath());
-	// this->cgiModule->setEnv(PROT, this->request.getProtocol());
-	this->cgiModule->setEnv(SERVER_PORT_KEY, this->request.getAttribute("Host").substr(this->request.getAttribute("Host").find(":")));
+	// this->cgiModule->setEnv(PATH_INFO_KEY, this->request.getPath());
+	// // this->cgiModule->setEnv(PROT, this->request.getProtocol());
+	this->cgiModule->setEnv(SERVER_PORT_KEY, toString(this->port));
 	this->cgiModule->setEnv(CONTENT_LENGTH_KEY, this->request.getAttribute("Content-Lenght"));
 	this->cgiModule->setEnv(CONTENT_TYPE_KEY, this->request.getAttribute("Content-Type"));
 	this->cgiModule->setEnv(HTTP_USER_AGENT_KEY, this->request.getAttribute("User-Agent"));
@@ -192,15 +192,13 @@ void ListeningSocket::loadRequest(std::vector<Server *> servers)
 		this->response = Parser.getResponse();
 		return ;
 	}
-	this->cgiModule->setEnv(SCRIPT_FILENAME_KEY, this->request.getPath());
 	Parser.setCookies();
 	this->request = Parser.getRequest();
+	this->cgiModule->setEnv(PATH_INFO_KEY, this->request.getPath().substr(0, this->request.getPath().rfind("/")));
+	this->cgiModule->setEnv(SCRIPT_FILENAME_KEY, this->request.getPath());
 	this->response = Parser.getResponse();
 	this->setIsAutoIndex(Parser.getIsAutoIndex());
 	this->setIsCGI(Parser.getIsCGI());
-
-	this->setStartRange(Parser.getStartRange());
-	this->setEndRange(Parser.getEndRange());
 	
 	this->setFileName(this->request.getPath(), Parser.getQuery());
 }

@@ -98,6 +98,7 @@ std::string FileContent::getContent()
 
 bool FileContent::setFileName(const std::string &file_name, const std::string &fileArgs)
 {
+	std::cout << file_name << std::endl;
 	bool fileOrFolderExists = this->FileOrFolerExtists(file_name);
 	if (fileOrFolderExists)
 	{

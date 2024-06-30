@@ -38,16 +38,12 @@ class FileContent : public StatusCode
 		long long currentSendingPosition;
 		long long lastSendingPosition;
 		ListDir *listDir;
-		//Server *server;
 		size_t completeContentSize;
 		std::string splitFileFromArgs(const std::string &);
 		bool FileOrFolerExtists(const std::string &);
 		size_t endRange;
-	//	bool isCgi;
 	public:
-		// FileContent(Server *);
 		FileContent();
-		// FileContent(const std::string &, Server *);
 		~FileContent();
 		int openFile();
 		bool setFileName(const std::string &, const std::string &);
