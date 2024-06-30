@@ -57,16 +57,19 @@ Location::Location()
 	allowMethodsStr = "";
 	autoindex = "";
 	alias = "";
-	// cgiPathStr = "";
 	cgiExtensionStr = "";
 	isCgi = false;
 	isSessionId = false;
 	isCookie = false;
+	cookiesStr = "";
 }
 Location::Location(std::string const &content)
 {
 	this->isCgi = false;
 	this->cgiEnabledStr = "";
+	isCookie = false;
+	cookiesStr = "";
+	isSessionId = false;
 	this->loadData(content);
 }
 
@@ -160,17 +163,6 @@ void Location::setAllowMethods(const std::string& methods)
 		}
 	}
 }
-// void Location ::setCgiPath(const std::string &paths)
-// {
-// 	std::string line;
-// 	std::istringstream cgiPathStream(paths);
-// 	while (std::getline(cgiPathStream, line, ','))
-// 	{
-// 		if (line.length() == 0)
-// 			continue;
-// 		this->cgiPath.push_back(line);
-// 	}
-// }
 
 void Location ::setCgiExtension(const std::string &extensions)
 {

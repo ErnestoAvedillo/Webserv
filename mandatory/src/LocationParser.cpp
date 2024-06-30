@@ -383,6 +383,15 @@ void LocationParser::checks()
 	}
 	else if (this->request.getMethod() == "DELETE")
 	{
+		switch (isFilePermissions(this->request.getPath(), W_OK))
+		{
+			case -5:
+				response.setStatus("404 Not Found");
+				throw NOT_FOUND_CODE;
+			case -4:
+				response.setStatus("403 Forbidden");
+				throw FORBIDDEN_CODE;
+		}
 		if (std::remove(this->request.getPath().c_str()) == 0)
 			response.setStatus("200 OK");
 		else
@@ -409,6 +418,7 @@ LocationParser::LocationParser(Header request_, Server *server_, Receive *receiv
 	this->isAutoIndex = server->getAutoIndex();
 	this->startRange = 0;
 	this->endRange = 0;
+	this->isCookie = false;
 }
 
 LocationParser::~LocationParser()
