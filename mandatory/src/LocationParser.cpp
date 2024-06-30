@@ -6,13 +6,11 @@
 /*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/30 13:51:38 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/30 15:22:31 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/06/30 16:30:02 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/LocationParser.hpp"
-#include <chrono>
-#include <ctime>
 
 static std::string getMimeType(std::string contentType)
 {
