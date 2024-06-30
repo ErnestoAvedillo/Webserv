@@ -1,4 +1,6 @@
 #include "../inc/LocationParser.hpp"
+#include <chrono>
+#include <ctime>
 
 static std::string getMimeType(std::string contentType)
 {
@@ -72,16 +74,21 @@ int LocationParser::matchingLocation()
 		{
 			if (isAllowedMethod(locations[i]) == NOT_ALLOWED)
 				return NOT_ALLOWED;
+			
 			std::string rawPath = this->request.getPath();
 			this->isAutoIndex = locations[i]->getAutoIndex();
+			if ((this->isCookie = locations[i]->getIsCookie()) == true)
+				this->cookies = locations[i]->getCookies();
+			if ((this->isSessionId = locations[i]->getIsSessionId()) == true)
+				this->sessionId = locations[i]->getSessionId();
 			if (locations[i]->getIsCgi() == true)
 			{
 				std::string extension;
 				if (rawPath.rfind(".") != std::string::npos)
 					extension = rawPath.substr(rawPath.rfind(".") + 1, rawPath.size());
-
 				for (size_t y = 0; y < locations[i]->getCgiExtension().size(); y++)
 				{
+
 					if (locations[i]->getCgiExtension()[y] == extension)
 						this->isCGI = true;
 				}		
@@ -192,12 +199,58 @@ bool isMethodNotStandard(std::string method)
 	return false;
 }
 
+void LocationParser::setCookies()
+{
+	if (isCookie)
+	{
+		std::string setcookie;
+		std::vector<std::string> querylines = splitString(this->query, '&');
+		for (size_t i = 0; i < querylines.size(); i++)
+		{
+			std::vector<std::string> queryline = splitString(querylines[i], '=');
+			if (std::find(this->cookies.begin(), this->cookies.end(), queryline[0]) != this->cookies.end())
+				response.setCookie(queryline[0] + "=" + queryline[1] + "; path=/");
+		}	
+	}
+}
+
+void LocationParser::setSessionId()
+{
+	std::cout << "SESSIONID " << this->sessionId << std::endl;
+	std::cout << "ISSESSIONID " << this->isSessionId << std::endl;
+	if (isSessionId)
+	{
+		std::string cookieHeader = this->request.getAttribute("Cookie");
+		if (cookieHeader.empty() || cookieHeader.find(this->sessionId) == std::string::npos)
+		{
+			std::cout << "cookieHeader " << cookieHeader << std::endl;
+
+			this->sessionId = this->sessionId + "=" + getRandomHash(50);
+		
+			std::time_t now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+			std::tm* expireDate = std::gmtime(&now);
+			// expireDate->tm_min += 2; // Add 2 minutes to the current time
+			expireDate->tm_sec += 30;
+			if (expireDate->tm_sec >= 60) { // Ajusta si los segundos exceden 60
+				expireDate->tm_sec -= 60;
+				expireDate->tm_min += 1;
+			}
+
+			std::string expireDateString = std::asctime(expireDate);
+			expireDateString = expireDateString.substr(0, expireDateString.size() - 1); // Remove the newline character
+
+			response.setCookie(sessionId + "; path=/ ; expires=" + expireDateString + " GMT");
+		}
+	}
+}
+
 void LocationParser::checks()
 {
 	std::string path;
 	if (this->request.getPath().find("?") != std::string::npos)
 	{
 		this->query = this->request.getPath().substr(this->request.getPath().find("?") + 1);
+		this->query = decodeURL(this->query);
 		this->request.setPath(this->request.getPath().substr(0, this->request.getPath().find("?")));
 	}
 	switch (this->matchingLocation())
@@ -218,7 +271,9 @@ void LocationParser::checks()
 	}
 
 	this->request.setPath(decodeURL(this->request.getPath()));
-	// std::cout << request.getPath() << std::endl;
+	ExtendedString tmp = this->request.getPath();
+	tmp.replaceFirstString("//", "/");
+	this->request.setPath(tmp);
 	if (isBadRequest(receiver->getRequest()))//|| isURIMalformed(this->request.getPath())
 	{
 		response.setStatus("400 Bad Request");
@@ -330,10 +385,13 @@ void LocationParser::checks()
 			{
 				if (lines[i].find("filename=") != std::string::npos)
 				{
-					std::cout << "filename: " << lines[i] << std::endl;
 					std::string filename = lines[i].substr(lines[i].find("filename=") + 10, lines[i].size());
+					std::string path = this->request.getPath();
 					filename = filename.substr(0, filename.find("\""));
-					std::string path = this->request.getPath() + "/" + filename;
+					if (path.find(filename) == std::string::npos)
+					{
+						path +=  "/" + filename;	
+					}
 					if (access(path.c_str(), F_OK) == 0)
 					{
 						response.setStatus("403 Forbidden");
@@ -349,8 +407,11 @@ void LocationParser::checks()
 		}
 		else if (receiver->getisform())
 		{
-			this->query = body;
-			response.setStatus("200 Created");
+			this->query = decodeURL(body);
+			std::cout << this->query << std::endl;
+
+			response.setStatus("201 Created");
+			throw CREATED_CODE;
 		}
 		response.setServer(server->getServerName());
 	}
@@ -359,7 +420,10 @@ void LocationParser::checks()
 		if (std::remove(this->request.getPath().c_str()) == 0)
 			response.setStatus("200 OK");
 		else
+		{
 			response.setStatus("404 Not Found");
+			throw NOT_FOUND_CODE;
+		}
 	}
 	else
 	{

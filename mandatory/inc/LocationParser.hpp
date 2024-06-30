@@ -32,9 +32,7 @@ class LocationParser
 		Header request;
 		Header response;
 		Server *server;
-		// FileContent *fileContent;
 		Receive *receiver;
-		//std::string path;
 		std::string query;
 		bool isAutoIndex;
 		bool isCGI;
@@ -42,6 +40,11 @@ class LocationParser
 		size_t endRange;
 		std::string cgiPath;
 		// std::string
+		bool isCookie;
+		std::vector<std::string> cookies;
+		
+		bool isSessionId;
+		std::string sessionId;
 	public:
 		LocationParser(Header request, Server *server, Receive *receiver);
 		~LocationParser();
@@ -52,7 +55,9 @@ class LocationParser
 		bool getIsAutoIndex();
 		bool getIsCGI();
 		void checks();
+		void setCookies();
 		size_t getStartRange();
 		size_t getEndRange();
 		std::string getQuery();
+		void setSessionId();
 };

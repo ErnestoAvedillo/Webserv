@@ -68,3 +68,5 @@ T maximum(T a, T b)
 		return a;
 	return b;
 };
+
+std::string getRandomHash(int lenght);

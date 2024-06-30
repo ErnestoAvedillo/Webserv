@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Themed Form</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .light-theme {
+            background-color: #ffffff;
+            color: #000000;
+        }
+
+        .dark-theme {
+            background-color: #2e2e2e;
+            color: #ffffff;
+        }
+
+        .form-container {
+            text-align: center;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-group input {
+            padding: 8px;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus {
+            border-color: #0066cc;
+        }
+
+        .theme-switcher {
+            margin-bottom: 15px;
+            opacity: 0.5; /* Make the theme switcher more faded */
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .theme-switcher button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 24px;
+            opacity: 1; /* Ensure icons are fully visible despite the faded container */
+        }
+
+        .theme-switcher button:focus {
+            outline: none;
+        }
+
+        .theme-switcher .light-icon,
+        .theme-switcher .dark-icon {
+            display: inline-block;
+        }
+
+        .dark-theme .theme-switcher .light-icon {
+            opacity: 0.5;
+        }
+
+        .dark-theme .theme-switcher .dark-icon {
+            opacity: 1;
+        }
+
+        .light-theme .theme-switcher .light-icon {
+            opacity: 1;
+        }
+
+        .light-theme .theme-switcher .dark-icon {
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <div class="theme-switcher">
+            <button type="button" onclick="setTheme('light')">
+                <i class="fa-solid fa-sun light-icon"></i>
+            </button>
+            <button type="button" onclick="setTheme('dark')">
+                <i class="fa-solid fa-moon dark-icon"></i>
+            </button>
+        </div>
+        <h1>Enter your details</h1>
+        <form id="detailsForm">
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" placeholder="Enter your name">
+            </div>
+            <div class="form-group">
+                <label for="lastname">Last Name</label>
+                <input type="text" id="lastname" name="lastname" placeholder="Enter your last name">
+            </div>
+            <input type="hidden" id="theme" name="theme" value="">
+            <button type="button" onclick="submitForm()">Submit</button>
+        </form>
+    </div>
+
+    <script>
+        let theme = 'light'; // Default theme is light
+
+        // Apply the theme from previous session or default to light
+        if(localStorage.getItem('theme')) {
+            theme = localStorage.getItem('theme');
+        }
+        setTheme(theme);
+
+        function setTheme(newTheme) {
+            theme = newTheme;
+            document.body.classList.toggle('dark-theme', theme === 'dark');
+            document.body.classList.toggle('light-theme', theme === 'light');
+            localStorage.setItem('theme', theme);
+            document.getElementById('theme').value = theme;
+
+            // Update icons visibility based on the theme
+            document.querySelector('.light-icon').style.opacity = (theme === 'light') ? '1' : '0.5';
+            document.querySelector('.dark-icon').style.opacity = (theme === 'dark') ? '1' : '0.5';
+        }
+
+        function submitForm() {
+            const name = document.getElementById('name').value.trim();
+            const lastname = document.getElementById('lastname').value.trim();
+
+            if (!name) {
+                alert('Please enter your name.');
+                return;
+            } else if (!lastname) {
+                alert('Please enter your last name.');
+                return;
+            }
+
+            // Construct URL with form data and theme
+            const url = '/get-cookie/?' + new URLSearchParams({
+                name: name,
+                lastname: lastname,
+                theme: theme
+            });
+
+            // Redirect to the constructed URL
+            window.location.href = url;
+        }
+    </script>
+</body>
+</html>

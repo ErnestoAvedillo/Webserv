@@ -158,11 +158,29 @@ void ListeningSocket::matchServerName(std::vector<Server *> servers)
 	}
 }
 
+void ListeningSocket::setCgiEnviroment()
+{
+	this->cgiModule->setEnv(SERVER_ADDR_KEY, server->getHost());
+	this->cgiModule->setEnv(SERVER_NAME_KEY, server->getServerName());
+	this->cgiModule->setEnv(REQUEST_METHOD_KEY, this->request.getMethod());
+	// this->cgiModule->setEnv(PATH_INFO, this->request.getPath());
+	// this->cgiModule->setEnv(PROT, this->request.getProtocol());
+	this->cgiModule->setEnv(SERVER_PORT_KEY, this->request.getAttribute("Host").substr(this->request.getAttribute("Host").find(":")));
+	this->cgiModule->setEnv(CONTENT_LENGTH_KEY, this->request.getAttribute("Content-Lenght"));
+	this->cgiModule->setEnv(CONTENT_TYPE_KEY, this->request.getAttribute("Content-Type"));
+	this->cgiModule->setEnv(HTTP_USER_AGENT_KEY, this->request.getAttribute("User-Agent"));
+	// this->cgiModule->setEnv(, this->request.getAttribute("Host"));
+	this->cgiModule->setEnv(SERVER_SOFTWARE_KEY, "ws_cheelave/1.0");
+	this->cgiModule->setEnv(GATEWAY_INTERFACE_KEY, "CGI/1.1");
+	// this->cgiModule->setEnv(QUERY_STRING_KEY,this->);
+}
+
 void ListeningSocket::loadRequest(std::vector<Server *> servers)
 {
 	this->request = Header(this->receiver->getRequest());
 	matchServerName(servers);
-	LocationParser Parser(this->request, this->server, this->receiver);
+	LocationParser Parser(this->request, this->server, this->receiver);	
+	this->setCgiEnviroment();
 	try 
 	{
 		 Parser.checks();
@@ -170,7 +188,13 @@ void ListeningSocket::loadRequest(std::vector<Server *> servers)
 	catch (int e)
 	{
 		this->getFileContentForStatusCode(e);
+		this->request = Parser.getRequest();
+		this->response = Parser.getResponse();
+		return ;
 	}
+	this->cgiModule->setEnv(SCRIPT_FILENAME_KEY, this->request.getPath());
+	Parser.setCookies();
+	Parser.setSessionId();
 	this->request = Parser.getRequest();
 	this->response = Parser.getResponse();
 	this->setIsAutoIndex(Parser.getIsAutoIndex());
@@ -178,6 +202,6 @@ void ListeningSocket::loadRequest(std::vector<Server *> servers)
 
 	this->setStartRange(Parser.getStartRange());
 	this->setEndRange(Parser.getEndRange());
-
+	
 	this->setFileName(this->request.getPath(), Parser.getQuery());
 }
