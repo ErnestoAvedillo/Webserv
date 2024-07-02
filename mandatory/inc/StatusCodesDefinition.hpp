@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   StatusCodesDefinition.hpp                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
+/*   By: jcheel-n <jcheel-n@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/30 13:49:29 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/30 13:49:29 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/07/02 19:39:18 by jcheel-n         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#define DEFAULT_ERROR_FILE "./Templates/ErrorTemplate.html"
+#define DEFAULT_ERROR_FILE "./templates/error_template.html"
 #define CONTINUE_CODE 100
 #define SWITCHING_PROTOCOLS_CODE 101
 #define OK_CODE 200
