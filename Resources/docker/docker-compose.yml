@@ -2,8 +2,8 @@ services:
   linux:
     image: webserv_img
     build:
-      context: /Users/josephcheel/GITHUB/WebServer_Parser/
-      dockerfile: ./docker/Dockerfile
+      context: /absolute/path/to/project
+      dockerfile: ./Resources/docker/Dockerfile
     container_name: webserv
     restart: always
     ports:
