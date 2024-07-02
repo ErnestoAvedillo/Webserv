@@ -3,7 +3,7 @@ services:
     image: webserv_img
     build:
       context: /absolute/path/to/project
-      dockerfile: ./Resources/docker/Dockerfile
+      dockerfile: ./resources/docker/Dockerfile
     container_name: webserv
     restart: always
     ports:
