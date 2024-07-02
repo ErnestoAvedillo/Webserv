@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   FileContent.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/30 13:50:28 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/30 15:26:47 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/07/02 23:25:35 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,10 +49,18 @@ std::string FileContent::getContent()
 	{
 		 if (isAutoIndex && this->isInputDirectory())
 		{
-			isFileOpen = true;
-			content = listDir->getContentToSend();
-			this->setCompleteContentSize(content.size());
-			this->setIsSendComplete(listDir->getIsSendComlete());
+			isFileOpen = listDir->getIsFileOpen();
+			if (!isFileOpen)
+			{
+				content = this->getFileContentForStatusCode(NOT_FOUND_CODE);
+				this->setIsSendComplete(true);
+			}
+			else
+			{
+				content = listDir->getContentToSend();
+				this->setCompleteContentSize(content.size());
+				this->setIsSendComplete(listDir->getIsSendComlete());
+			}
 			return content;
 		}
 		else if (this->cgiModule->getIsCGI())

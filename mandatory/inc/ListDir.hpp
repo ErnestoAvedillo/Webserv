@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ListDir.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 19:03:57 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/30 14:47:57 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/07/02 23:13:22 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ class ListDir
 		std::size_t							posToSend;
 		std::map<std::string, Attributes *>	files;
 		bool								isSendComplete;
+		bool								isFileOpen;
 
 	public:
 		ListDir();
@@ -48,5 +49,6 @@ class ListDir
 		std::string	getContentToSend();
 		size_t		getSizeToSend();
 		void		setSubdirectory(const std::string &);
+		bool		getIsFileOpen();
 };
 

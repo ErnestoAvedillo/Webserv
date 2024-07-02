@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ListDir.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/30 13:51:56 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/30 15:25:36 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/07/02 23:14:13 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,6 +125,12 @@ void ListDir::openMasterListFile()
 {
 	std::string filename = TEMPLATE_LIST_DIR;
 	file.open(filename.c_str(), std::ios::out | std::ios::binary);
+	if (!file.is_open())
+	{
+		isFileOpen = false;
+		return;
+	}
+	isFileOpen = true;
 }
 
 std::string ListDir::getContentToSend() 
@@ -153,4 +159,9 @@ void ListDir::setSubdirectory(const std::string &subDir)
 	}
 	path += (path[path.size() -1] == '/') ? "" :"/";
 	this->setListOfFiles();
+}
+
+bool ListDir::getIsFileOpen()
+{
+	return isFileOpen;
 }
