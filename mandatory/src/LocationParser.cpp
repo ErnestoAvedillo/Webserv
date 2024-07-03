@@ -112,7 +112,7 @@ int LocationParser::matchingLocation()
 	return NO_LOCATION;
 }
 
-off_t getFileSize(const std::string &filename)
+long long getFileSize(const std::string &filename)
 {
 	struct stat stat_buf;
 	int rc = stat(filename.c_str(), &stat_buf);

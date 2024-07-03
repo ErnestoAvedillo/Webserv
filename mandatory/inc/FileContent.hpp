@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   FileContent.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/30 13:48:24 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/30 14:55:08 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/07/02 23:16:02 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@
 class FileContent : public StatusCode
 {
 	protected:
-		CGI 		*cgiModule;
+		CGI 						*cgiModule;
 	private:
 		std::string					fileName;
 		std::string					indexName;
