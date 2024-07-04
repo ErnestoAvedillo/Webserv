@@ -151,10 +151,10 @@ ExtendedString StatusCode::getInternContent()
 	content += "</head>\n";
 	content += "<body>\n";
 	content += "<table border = \"0\" cellspacing = \"2\">\n";
-	content += "<tr><td>This is an internal text defined.</td></tr>\n";
-	content += "<tr><td>{{ErrorCode}}.</td></tr>\n";
-	content += "<tr><td> Please generate the file ./Templates/ErrorTemplate.html</td></tr>\n";
-	content += "</table><\n";
+	content += "<tr><td><h2>This is an internal text defined.</h2></td></tr>\n";
+	content += "<tr><td><h4>{{ErrorCode}}.<h4></td></tr>\n";
+	content += "<tr><td><h5>Please generate the file ./templates/error_template.html or define it on statusCodesDefinition.hpp</h5></td></tr>\n";
+	content += "</table>\n";
 	content += "</body>\n";
 	content += "</html>\n";
 	return content;
