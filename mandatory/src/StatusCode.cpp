@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   StatusCode.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eavedill <eavedill@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/30 13:51:07 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/30 15:15:28 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/07/04 07:37:03 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,7 @@ void StatusCode::setFileContentForStatusCode(int CodeNumber, const std::string &
 	}
 	else
 	{
+		content = this->getInternContent();
 		printLog("WARNING", CodeFileContent + " File does not exist.\t Set error page to default " CHR_GREEN "GET" RESET " value");
 	}
 	mapCodesFileContent[CodeNumber] = content;
@@ -139,4 +140,22 @@ void StatusCode::loadErrorPageFromDir(const ExtendedString &dir)
 		}
 	}
 	closedir(dp);
+}
+
+ExtendedString StatusCode::getInternContent()
+{
+	ExtendedString content;
+	content = "<html>\n";
+	content += "<head>\n";
+	content += "<title> {{ErrorCode}}</title>\n";
+	content += "</head>\n";
+	content += "<body>\n";
+	content += "<table border = \"0\" cellspacing = \"2\">\n";
+	content += "<tr><td><h2>This is an internal text defined.</h2></td></tr>\n";
+	content += "<tr><td><h4>{{ErrorCode}}.<h4></td></tr>\n";
+	content += "<tr><td><h5>Please generate the file ./templates/error_template.html or define it on statusCodesDefinition.hpp</h5></td></tr>\n";
+	content += "</table>\n";
+	content += "</body>\n";
+	content += "</html>\n";
+	return content;
 }
