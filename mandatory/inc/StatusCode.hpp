@@ -6,7 +6,7 @@
 /*   By: eavedill <eavedill@student.42barcelona>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/30 13:49:24 by eavedill          #+#    #+#             */
-/*   Updated: 2024/06/30 13:49:24 by eavedill         ###   ########.fr       */
+/*   Updated: 2024/07/04 07:19:29 by eavedill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,4 +37,5 @@ public:
 	void setCurrentCode(int);
 	int getCurrentCode();
 	void loadErrorPageFromDir(const ExtendedString &);
+	ExtendedString getInternContent();
 };

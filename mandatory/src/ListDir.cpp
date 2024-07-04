@@ -97,6 +97,22 @@ void ListDir::setContentToList()
 {
 	contentToSend = "";
 	char buffer[MAX_SENT_BYTES];
+	if (!isFileOpen)
+	{	
+		contentToSend = "<html>\n";
+		contentToSend += "<head>\n";
+		contentToSend += "<title> List Directory Error</title>\n";
+		contentToSend += "</head>\n";
+		contentToSend += "<body>\n";
+		contentToSend += "<table border = \"0\" cellspacing = \"2\">\n";
+		contentToSend += "<tr><td><h2>List directory template not found</h2></td></tr>\n";
+		contentToSend += "<tr><td><h4>Please generate the file ./templates/dir_list.html or define it on ListDir.hpp</h4></td></tr>\n";
+		contentToSend += "</table>\n";
+		contentToSend += "</body>\n";
+		contentToSend += "</html>\n";
+		isFileOpen = true;
+		return ;
+	}
 	while(file.read(buffer, MAX_SENT_BYTES))
 	{
 		contentToSend.append(buffer, file.gcount());
@@ -135,7 +151,9 @@ void ListDir::openMasterListFile()
 
 std::string ListDir::getContentToSend() 
 {
-	std::string subStrToSend = contentToSend.substr(posToSend, MAX_SENT_BYTES);
+	std::string subStrToSend;
+	subStrToSend = contentToSend.substr(posToSend, MAX_SENT_BYTES);
+
 	if(posToSend + MAX_SENT_BYTES >= contentToSend.size())
 		posToSend = contentToSend.size();
 	else
