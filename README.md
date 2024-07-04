@@ -16,8 +16,7 @@
 ##### WebServer Communications
 - [X] Get ready to listen to specified ip:port(s), in an own process.
 - [X] Process the requests and send back the information.
-- [ ] Video Transfering
-- [ ] Locations Parser
+- [X] Locations Parser
 ### Resources
 
 * **[Chat-GPT Simple Function Explanation and Differences between poll(), select(), kqueue(), or epoll().](https://chat.openai.com/share/71fe729c-be31-4b8c-9c2b-4c10c7807177)**
