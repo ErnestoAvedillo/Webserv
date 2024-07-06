@@ -23,6 +23,7 @@ FileContent::FileContent() : StatusCode()
 	currentSendingPosition = 0;
 	lastSendingPosition = 0;
  	listDir = NULL;
+	this->setCurrentCode(404);
 }
 
 FileContent::~FileContent() 
